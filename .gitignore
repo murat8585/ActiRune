@@ -1,0 +1,22 @@
+# Flutter and Dart generated files
+.dart_tool/
+.packages
+.pub/
+build/
+
+# IDE and machine-local settings
+.idea/
+.vscode/
+local.properties
+
+# Signing material and environment secrets
+*.jks
+*.keystore
+*.p12
+*.mobileprovision
+.env
+.env.*
+key.properties
+
+# Canonical reference archives stay outside Git history; unpacked docs are tracked.
+docs/*.zip
