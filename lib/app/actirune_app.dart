@@ -10,14 +10,8 @@ class ActiRuneApp extends StatelessWidget {
   static final _router = GoRouter(
     initialLocation: '/onboarding',
     routes: [
-      GoRoute(
-        path: '/onboarding',
-        builder: (_, __) => const OnboardingScreen(),
-      ),
-      GoRoute(
-        path: '/app',
-        builder: (_, __) => const MainShell(),
-      ),
+      GoRoute(path: '/onboarding', builder: (_, _) => const OnboardingScreen()),
+      GoRoute(path: '/app', builder: (_, _) => const MainShell()),
     ],
   );
 

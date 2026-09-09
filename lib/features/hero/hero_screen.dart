@@ -11,7 +11,11 @@ class HeroScreen extends StatelessWidget {
       children: const [
         RuneCard(child: Text('Hero, ekipman, Lumi ve collection katmanı.')),
         SizedBox(height: 12),
-        RuneCard(child: Text('Bu ekranın üretim layout’u docs/visual_reference altındaki kilitli görsele göre uygulanacaktır.')),
+        RuneCard(
+          child: Text(
+            'Bu ekranın üretim layout’u docs/visual_reference altındaki kilitli görsele göre uygulanacaktır.',
+          ),
+        ),
       ],
     ),
   );

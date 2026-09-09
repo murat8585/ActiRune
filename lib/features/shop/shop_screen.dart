@@ -9,7 +9,9 @@ class ShopScreen extends StatelessWidget {
     body: const Padding(
       padding: EdgeInsets.all(16),
       child: RuneCard(
-        child: Text('Launch: free core + cosmetics/Crystal + rewarded ads + Founder Pack. Plus retention doğrulandıktan sonra.'),
+        child: Text(
+          'Launch: free core + cosmetics/Crystal + rewarded ads + Founder Pack. Plus retention doğrulandıktan sonra.',
+        ),
       ),
     ),
   );

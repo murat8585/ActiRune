@@ -27,9 +27,18 @@ ThemeData buildActiRuneTheme() {
     scaffoldBackgroundColor: ActiRuneColors.navy950,
     useMaterial3: true,
     textTheme: const TextTheme(
-      headlineLarge: TextStyle(fontWeight: FontWeight.w800, color: ActiRuneColors.textPrimary),
-      headlineMedium: TextStyle(fontWeight: FontWeight.w800, color: ActiRuneColors.textPrimary),
-      titleLarge: TextStyle(fontWeight: FontWeight.w700, color: ActiRuneColors.textPrimary),
+      headlineLarge: TextStyle(
+        fontWeight: FontWeight.w800,
+        color: ActiRuneColors.textPrimary,
+      ),
+      headlineMedium: TextStyle(
+        fontWeight: FontWeight.w800,
+        color: ActiRuneColors.textPrimary,
+      ),
+      titleLarge: TextStyle(
+        fontWeight: FontWeight.w700,
+        color: ActiRuneColors.textPrimary,
+      ),
       bodyLarge: TextStyle(color: ActiRuneColors.textPrimary),
       bodyMedium: TextStyle(color: ActiRuneColors.textSecondary),
     ),

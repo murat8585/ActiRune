@@ -17,12 +17,12 @@ class CombatSnapshot {
 
 class CombatEngine extends ChangeNotifier {
   CombatEngine({this.bossMaxHp = 2000, this.damagePerVerifiedRep = 100})
-      : _snapshot = CombatSnapshot(
-          bossHp: bossMaxHp,
-          bossMaxHp: bossMaxHp,
-          verifiedReps: 0,
-          combo: 0,
-        );
+    : _snapshot = CombatSnapshot(
+        bossHp: bossMaxHp,
+        bossMaxHp: bossMaxHp,
+        verifiedReps: 0,
+        combo: 0,
+      );
 
   final int bossMaxHp;
   final int damagePerVerifiedRep;

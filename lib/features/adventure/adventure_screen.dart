@@ -9,9 +9,17 @@ class AdventureScreen extends StatelessWidget {
     body: ListView(
       padding: const EdgeInsets.all(16),
       children: const [
-        RuneCard(child: Text('Yeşil Vadi V1. Buz, Volkan, Gökyüzü ve Karanlık Rün bölgeleri kilitli önizleme.')),
+        RuneCard(
+          child: Text(
+            'Yeşil Vadi V1. Buz, Volkan, Gökyüzü ve Karanlık Rün bölgeleri kilitli önizleme.',
+          ),
+        ),
         SizedBox(height: 12),
-        RuneCard(child: Text('Bu ekranın üretim layout’u docs/visual_reference altındaki kilitli görsele göre uygulanacaktır.')),
+        RuneCard(
+          child: Text(
+            'Bu ekranın üretim layout’u docs/visual_reference altındaki kilitli görsele göre uygulanacaktır.',
+          ),
+        ),
       ],
     ),
   );

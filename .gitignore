@@ -1,12 +1,14 @@
 # Flutter and Dart generated files
 .dart_tool/
 .packages
+.flutter-plugins-dependencies
 .pub/
 build/
 
 # IDE and machine-local settings
 .idea/
 .vscode/
+*.iml
 local.properties
 
 # Signing material and environment secrets

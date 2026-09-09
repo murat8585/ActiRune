@@ -18,12 +18,14 @@ class ActiRuneBattleGame extends FlameGame {
   Future<void> onLoad() async {
     await super.onLoad();
 
-    add(RectangleComponent(
-      position: Vector2.zero(),
-      size: size,
-      paint: Paint()..color = const Color(0xFF0A2946),
-      priority: -10,
-    ));
+    add(
+      RectangleComponent(
+        position: Vector2.zero(),
+        size: size,
+        paint: Paint()..color = const Color(0xFF0A2946),
+        priority: -10,
+      ),
+    );
 
     boss = RectangleComponent(
       position: Vector2(size.x * .5, size.y * .14),

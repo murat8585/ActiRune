@@ -4,40 +4,69 @@ import 'geometry.dart';
 enum SquatPhase { unknown, standing, descending, bottom, ascending }
 
 class VerifiedRep {
-  const VerifiedRep({required this.exercise, required this.at, required this.formScore});
+  const VerifiedRep({
+    required this.exercise,
+    required this.at,
+    required this.formScore,
+  });
   final String exercise;
   final DateTime at;
   final double formScore;
 }
 
 class SquatDetector {
+  SquatDetector({
+    this.minimumConfidence = .65,
+    this.standingAngle = 160,
+    this.bottomAngle = 105,
+    this.minimumBottomDuration = const Duration(milliseconds: 250),
+    this.cooldown = const Duration(milliseconds: 650),
+  });
+
+  final double minimumConfidence;
+  final double standingAngle;
+  final double bottomAngle;
+  final Duration minimumBottomDuration;
+  final Duration cooldown;
   SquatPhase phase = SquatPhase.unknown;
   DateTime? _bottomAt;
   DateTime? _lastRepAt;
 
   VerifiedRep? process(PoseFrame frame) {
-    final h = frame[Joint.leftHip];
-    final k = frame[Joint.leftKnee];
-    final a = frame[Joint.leftAnkle];
-    if (h == null || k == null || a == null) return null;
-    if ([h, k, a].any((p) => p.confidence < .65)) return null;
+    final left = _leg(frame, Joint.leftHip, Joint.leftKnee, Joint.leftAnkle);
+    final right = _leg(
+      frame,
+      Joint.rightHip,
+      Joint.rightKnee,
+      Joint.rightAnkle,
+    );
+    final points = left ?? right;
+    if (points == null) return null;
 
-    final angle = jointAngle(h, k, a);
+    final angle = jointAngle(points.$1, points.$2, points.$3);
 
-    if (angle > 160) {
+    if (angle > standingAngle) {
       if (phase == SquatPhase.ascending && _bottomAt != null) {
-        final repDurationMs = frame.timestamp.difference(_bottomAt!).inMilliseconds;
-        final cooldownOk = _lastRepAt == null ||
-            frame.timestamp.difference(_lastRepAt!).inMilliseconds >= 650;
+        final repDurationMs = frame.timestamp
+            .difference(_bottomAt!)
+            .inMilliseconds;
+        final cooldownOk =
+            _lastRepAt == null ||
+            frame.timestamp.difference(_lastRepAt!) >= cooldown;
         phase = SquatPhase.standing;
-        if (repDurationMs >= 250 && cooldownOk) {
+        _bottomAt = null;
+        if (repDurationMs >= minimumBottomDuration.inMilliseconds &&
+            cooldownOk) {
           _lastRepAt = frame.timestamp;
-          _bottomAt = null;
-          return VerifiedRep(exercise: 'squat', at: frame.timestamp, formScore: 1.0);
+          return VerifiedRep(
+            exercise: 'squat',
+            at: frame.timestamp,
+            formScore: 1.0,
+          );
         }
       }
       phase = SquatPhase.standing;
-    } else if (angle < 105) {
+    } else if (angle < bottomAngle) {
       if (phase == SquatPhase.standing || phase == SquatPhase.descending) {
         phase = SquatPhase.bottom;
         _bottomAt ??= frame.timestamp;
@@ -48,5 +77,19 @@ class SquatDetector {
       phase = SquatPhase.ascending;
     }
     return null;
+  }
+
+  (JointPoint, JointPoint, JointPoint)? _leg(
+    PoseFrame frame,
+    Joint hip,
+    Joint knee,
+    Joint ankle,
+  ) {
+    final h = frame[hip], k = frame[knee], a = frame[ankle];
+    if (h == null || k == null || a == null) return null;
+    if ([h, k, a].any((point) => point.confidence < minimumConfidence)) {
+      return null;
+    }
+    return (h, k, a);
   }
 }

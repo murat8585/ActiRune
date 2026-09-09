@@ -14,10 +14,26 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   static const _steps = [
     ('ACTIRUNE', 'Hareket et. Savaş. Güçlen.', Icons.auto_awesome),
-    ('Hareketin Güçtür', 'Gerçek hareketlerin savaşta güce dönüşür.', Icons.directions_run),
-    ('Kahramanını Seç', 'Savaşçı, Büyücü veya Korucu. Fiziksel yük aynı, fantezi farklı.', Icons.shield),
-    ('İlk Hareket', 'Kamera yalnız hareket doğrulamak için kullanılır. Ham video sunucuya gönderilmez.', Icons.camera_alt),
-    ('İlk Mini Savaş', 'Doğrulanmış tekrar boss HP’sini düşürür.', Icons.sports_martial_arts),
+    (
+      'Hareketin Güçtür',
+      'Gerçek hareketlerin savaşta güce dönüşür.',
+      Icons.directions_run,
+    ),
+    (
+      'Kahramanını Seç',
+      'Savaşçı, Büyücü veya Korucu. Fiziksel yük aynı, fantezi farklı.',
+      Icons.shield,
+    ),
+    (
+      'İlk Hareket',
+      'Kamera yalnız hareket doğrulamak için kullanılır. Ham video sunucuya gönderilmez.',
+      Icons.camera_alt,
+    ),
+    (
+      'İlk Mini Savaş',
+      'Doğrulanmış tekrar boss HP’sini düşürür.',
+      Icons.sports_martial_arts,
+    ),
     ('İlk Zafer', 'Loot kazan, Ana Dünya’ya geç.', Icons.emoji_events),
   ];
 
@@ -26,7 +42,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       context.go('/app');
       return;
     }
-    _controller.nextPage(duration: const Duration(milliseconds: 260), curve: Curves.easeOut);
+    _controller.nextPage(
+      duration: const Duration(milliseconds: 260),
+      curve: Curves.easeOut,
+    );
   }
 
   @override
@@ -49,9 +68,17 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       children: [
                         Icon(step.$3, size: 96, color: ActiRuneColors.cyan),
                         const SizedBox(height: 28),
-                        Text(step.$1, style: Theme.of(context).textTheme.headlineLarge, textAlign: TextAlign.center),
+                        Text(
+                          step.$1,
+                          style: Theme.of(context).textTheme.headlineLarge,
+                          textAlign: TextAlign.center,
+                        ),
                         const SizedBox(height: 16),
-                        Text(step.$2, style: Theme.of(context).textTheme.bodyLarge, textAlign: TextAlign.center),
+                        Text(
+                          step.$2,
+                          style: Theme.of(context).textTheme.bodyLarge,
+                          textAlign: TextAlign.center,
+                        ),
                       ],
                     ),
                   );
@@ -65,7 +92,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 height: 56,
                 child: FilledButton(
                   onPressed: _next,
-                  child: Text(_page == _steps.length - 1 ? 'ANA DÜNYAYA GİT' : 'DEVAM ET'),
+                  child: Text(
+                    _page == _steps.length - 1 ? 'ANA DÜNYAYA GİT' : 'DEVAM ET',
+                  ),
                 ),
               ),
             ),

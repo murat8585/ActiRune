@@ -9,9 +9,17 @@ class QuestsScreen extends StatelessWidget {
     body: ListView(
       padding: const EdgeInsets.all(16),
       children: const [
-        RuneCard(child: Text('Günlük, haftalık, dünya görevi, başarımlar ve dinlenme günü.')),
+        RuneCard(
+          child: Text(
+            'Günlük, haftalık, dünya görevi, başarımlar ve dinlenme günü.',
+          ),
+        ),
         SizedBox(height: 12),
-        RuneCard(child: Text('Bu ekranın üretim layout’u docs/visual_reference altındaki kilitli görsele göre uygulanacaktır.')),
+        RuneCard(
+          child: Text(
+            'Bu ekranın üretim layout’u docs/visual_reference altındaki kilitli görsele göre uygulanacaktır.',
+          ),
+        ),
       ],
     ),
   );

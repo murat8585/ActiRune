@@ -9,9 +9,17 @@ class SocialScreen extends StatelessWidget {
     body: ListView(
       padding: const EdgeInsets.all(16),
       children: const [
-        RuneCard(child: Text('V1 asenkron 1:1 meydan okuma, arkadaşlar, rövanş ve paylaşım.')),
+        RuneCard(
+          child: Text(
+            'V1 asenkron 1:1 meydan okuma, arkadaşlar, rövanş ve paylaşım.',
+          ),
+        ),
         SizedBox(height: 12),
-        RuneCard(child: Text('Bu ekranın üretim layout’u docs/visual_reference altındaki kilitli görsele göre uygulanacaktır.')),
+        RuneCard(
+          child: Text(
+            'Bu ekranın üretim layout’u docs/visual_reference altındaki kilitli görsele göre uygulanacaktır.',
+          ),
+        ),
       ],
     ),
   );
