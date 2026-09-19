@@ -12,6 +12,14 @@ This repository's implementation must be read against the current locked ActiRun
 4. Current approved V2 visual references and current runtime behavior.
 5. Historical documents only for background.
 
+## Temporary operational visual queue
+
+While the current Phase-1 screen-production program is active, also read:
+
+- `docs/product/TEMP_VISUAL_PRODUCTION_PLAN_20260919.md`
+
+This temporary file defines the current **screen-by-screen production order and the 10-variant → user selection → canonical lock workflow**. It does not override this authority or the Master Product Bible. After the Phase-1 visual-production work is complete and all selected screens are transferred into permanent canonical visual documentation, the temporary file must be deleted and this temporary pointer removed.
+
 ## Non-negotiable product rules
 
 - WALK = EXPLORE
