@@ -101,26 +101,26 @@ class BattleFlowHost extends StatelessWidget {
             onRecheck: onCameraRecheck ?? _noop,
             onStartLiveBattle: onLiveBattleStarted ?? _noop,
           ),
-          BattleSessionPhase.liveBattle || BattleSessionPhase.formCoach =>
-            IndexedStack(
-              index: session.snapshot.phase == BattleSessionPhase.formCoach
-                  ? 1
-                  : 0,
-              children: [
-                LiveBattleScreen(
-                  key: const ValueKey('battle-flow.live-battle'),
-                  session: session,
-                  cameraEnabled: cameraEnabled,
-                  onOpenFormCoach: onFormCoachOpened ?? _noop,
-                  onVictory: onVictoryReached ?? _noop,
-                ),
-                FormCoachScreen(
-                  key: const ValueKey('battle-flow.form-coach'),
-                  session: session,
-                  onResumeBattle: onLiveBattleResumed ?? _noop,
-                ),
-              ],
-            ),
+          BattleSessionPhase.liveBattle ||
+          BattleSessionPhase.formCoach => IndexedStack(
+            index: session.snapshot.phase == BattleSessionPhase.formCoach
+                ? 1
+                : 0,
+            children: [
+              LiveBattleScreen(
+                key: const ValueKey('battle-flow.live-battle'),
+                session: session,
+                cameraEnabled: cameraEnabled,
+                onOpenFormCoach: onFormCoachOpened ?? _noop,
+                onVictory: onVictoryReached ?? _noop,
+              ),
+              FormCoachScreen(
+                key: const ValueKey('battle-flow.form-coach'),
+                session: session,
+                onResumeBattle: onLiveBattleResumed ?? _noop,
+              ),
+            ],
+          ),
           BattleSessionPhase.victory => VictoryScreen(
             onContinue: onVictoryContinue ?? _noop,
             onReplay: onVictoryReplay ?? _noop,
