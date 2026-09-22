@@ -20,14 +20,16 @@ class ArtworkHotspot {
 /// Renders an approved artwork asset without stretching it and places
 /// transparent semantic interaction regions in the exact same fitted bounds.
 ///
-/// Hotspot coordinates are normalized to the source artwork (0..1). The
-/// source image is resolved at runtime so image and hit regions always share
-/// the same intrinsic aspect ratio, BoxFit and Alignment transform.
+/// Hotspot coordinates are normalized to the source artwork (0..1). Approved
+/// screens can provide their authoritative intrinsic size so interaction
+/// geometry is available on the first frame, independent of image decoding.
+/// If no size is supplied the widget resolves the asset dimensions at runtime.
 class ArtworkInteractionSurface extends StatefulWidget {
   const ArtworkInteractionSurface({
     super.key,
     required this.assetPath,
     required this.hotspots,
+    this.sourceSize,
     this.fit = BoxFit.contain,
     this.alignment = Alignment.center,
     this.backgroundColor = Colors.black,
@@ -35,6 +37,7 @@ class ArtworkInteractionSurface extends StatefulWidget {
 
   final String assetPath;
   final List<ArtworkHotspot> hotspots;
+  final Size? sourceSize;
   final BoxFit fit;
   final Alignment alignment;
   final Color backgroundColor;
@@ -47,20 +50,22 @@ class ArtworkInteractionSurface extends StatefulWidget {
 class _ArtworkInteractionSurfaceState extends State<ArtworkInteractionSurface> {
   ImageStream? _stream;
   ImageStreamListener? _listener;
-  Size? _sourceSize;
+  Size? _resolvedSourceSize;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _resolveImage();
+    if (widget.sourceSize == null) _resolveImage();
   }
 
   @override
   void didUpdateWidget(covariant ArtworkInteractionSurface oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.assetPath != widget.assetPath) {
-      _sourceSize = null;
-      _resolveImage();
+    if (oldWidget.assetPath != widget.assetPath ||
+        oldWidget.sourceSize != widget.sourceSize) {
+      _resolvedSourceSize = null;
+      _detachImageListener();
+      if (widget.sourceSize == null) _resolveImage();
     }
   }
 
@@ -69,28 +74,32 @@ class _ArtworkInteractionSurfaceState extends State<ArtworkInteractionSurface> {
     final stream = provider.resolve(createLocalImageConfiguration(context));
     if (_stream?.key == stream.key) return;
 
-    if (_stream != null && _listener != null) {
-      _stream!.removeListener(_listener!);
-    }
+    _detachImageListener();
 
     _listener = ImageStreamListener((info, _) {
       final next = Size(
         info.image.width.toDouble(),
         info.image.height.toDouble(),
       );
-      if (mounted && next != _sourceSize) {
-        setState(() => _sourceSize = next);
+      if (mounted && next != _resolvedSourceSize) {
+        setState(() => _resolvedSourceSize = next);
       }
     });
     _stream = stream;
     stream.addListener(_listener!);
   }
 
-  @override
-  void dispose() {
+  void _detachImageListener() {
     if (_stream != null && _listener != null) {
       _stream!.removeListener(_listener!);
     }
+    _stream = null;
+    _listener = null;
+  }
+
+  @override
+  void dispose() {
+    _detachImageListener();
     super.dispose();
   }
 
@@ -101,7 +110,7 @@ class _ArtworkInteractionSurfaceState extends State<ArtworkInteractionSurface> {
       child: LayoutBuilder(
         builder: (context, constraints) {
           final viewport = Size(constraints.maxWidth, constraints.maxHeight);
-          final source = _sourceSize;
+          final source = widget.sourceSize ?? _resolvedSourceSize;
 
           if (source == null || viewport.isEmpty) {
             return Image.asset(
