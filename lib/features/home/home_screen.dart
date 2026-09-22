@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../core/design/actirune_theme.dart';
 import '../../core/design/rune_card.dart';
 import '../battle/battle_screen.dart';
+import '../battle/battle_session_engine.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -82,9 +83,15 @@ class HomeScreen extends StatelessWidget {
             SizedBox(
               height: 62,
               child: FilledButton.icon(
-                onPressed: () => Navigator.of(
-                  context,
-                ).push(MaterialPageRoute(builder: (_) => const BattleScreen())),
+                onPressed: () => Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => const BattleScreen(
+                      // Transitional V2 fixture only. The canonical Adventure
+                      // encounter model will own movement selection.
+                      movement: VerifiedMovementType.squat,
+                    ),
+                  ),
+                ),
                 icon: const Icon(Icons.sports_martial_arts),
                 label: const Text(
                   'SAVAŞA DEVAM ET',
