@@ -166,10 +166,7 @@ class _ArtworkInteractionSurfaceState extends State<ArtworkInteractionSurface> {
 }
 
 class _ArtworkOverlayRegion extends StatelessWidget {
-  const _ArtworkOverlayRegion({
-    required this.imageRect,
-    required this.overlay,
-  });
+  const _ArtworkOverlayRegion({required this.imageRect, required this.overlay});
 
   final Rect imageRect;
   final ArtworkOverlay overlay;
