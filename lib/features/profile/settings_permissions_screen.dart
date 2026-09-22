@@ -4,7 +4,12 @@ import '../../core/widgets/artwork_interaction_surface.dart';
 
 enum PermissionsRootDestination { home, adventure, battle, hero, profile }
 
-enum PermissionTarget { camera, physicalActivity, notifications, healthIntegration }
+enum PermissionTarget {
+  camera,
+  physicalActivity,
+  notifications,
+  healthIntegration,
+}
 
 class SettingsPermissionsScreen extends StatelessWidget {
   const SettingsPermissionsScreen({
