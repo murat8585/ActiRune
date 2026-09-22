@@ -56,10 +56,7 @@ void main() {
     var closeCount = 0;
 
     await tester.pumpWidget(
-      buildSubject(
-        onBack: () => backCount++,
-        onClose: () => closeCount++,
-      ),
+      buildSubject(onBack: () => backCount++, onClose: () => closeCount++),
     );
     await tester.pumpAndSettle();
 
@@ -83,9 +80,7 @@ void main() {
   ) async {
     final selected = <ProPlan>[];
 
-    await tester.pumpWidget(
-      buildSubject(onPlanSelected: selected.add),
-    );
+    await tester.pumpWidget(buildSubject(onPlanSelected: selected.add));
     await tester.pumpAndSettle();
 
     await tester.tap(
