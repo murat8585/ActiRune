@@ -1,0 +1,37 @@
+name: ActiRune Daily Shrine Artwork Capture
+
+on:
+  push:
+    branches:
+      - integration/artwork-interactions-20260921
+    paths:
+      - '.github/workflows/actirune-daily-shrine-artifact.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout integration branch
+        uses: actions/checkout@v4
+        with:
+          ref: integration/artwork-interactions-20260921
+
+      - name: Guard exact Daily and Shrine artwork
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f visual_authority/20260921/current/01_CANONICAL_FINAL/VIS_0227__P1_DAILY_QUESTS_FINAL.png
+          test -f visual_authority/20260921/current/01_CANONICAL_FINAL/VIS_0225__P1_RUNE_SHRINE_READY_FINAL.png
+
+      - name: Upload exact Daily and Shrine artwork
+        uses: actions/upload-artifact@v4
+        with:
+          name: actirune-daily-shrine-reference
+          path: |
+            visual_authority/20260921/current/01_CANONICAL_FINAL/VIS_0227__P1_DAILY_QUESTS_FINAL.png
+            visual_authority/20260921/current/01_CANONICAL_FINAL/VIS_0225__P1_RUNE_SHRINE_READY_FINAL.png
+          retention-days: 1
