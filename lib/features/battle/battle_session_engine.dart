@@ -112,6 +112,20 @@ class BattleSessionEngine extends ChangeNotifier {
     );
   }
 
+  bool returnToBattlePrep() {
+    if (_snapshot.phase != BattleSessionPhase.cameraPrep ||
+        _snapshot.preparedMovement == null) {
+      return false;
+    }
+    _set(
+      _snapshot.copyWith(
+        phase: BattleSessionPhase.battlePrep,
+        isPaused: false,
+      ),
+    );
+    return true;
+  }
+
   void setSyntheticMode(bool enabled) {
     _set(_snapshot.copyWith(syntheticMode: enabled));
   }
