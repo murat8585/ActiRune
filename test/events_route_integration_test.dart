@@ -39,7 +39,9 @@ void main() {
     expect(find.byType(EventsScreen), findsNothing);
   });
 
-  testWidgets('Events filters and cards dispatch independently', (tester) async {
+  testWidgets('Events filters and cards dispatch independently', (
+    tester,
+  ) async {
     EventsFilter? selectedFilter;
     int? selectedEvent;
     var featuredCount = 0;
