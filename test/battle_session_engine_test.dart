@@ -50,31 +50,43 @@ void main() {
       expect(engine.snapshot.verifiedActionCount, 1);
     });
 
-    test('support artwork controls create typed requests without fake balance', () {
-      final engine = BattleSessionEngine();
-      engine.startLiveBattle();
+    test(
+      'support artwork controls create typed requests without fake balance',
+      () {
+        final engine = BattleSessionEngine();
+        engine.startLiveBattle();
 
-      expect(
-        engine.requestSupportAction(BattleSupportAction.runePower),
-        isTrue,
-      );
-      expect(engine.snapshot.lastSupportAction, BattleSupportAction.runePower);
-      expect(engine.snapshot.supportActionRequestCount, 1);
+        expect(
+          engine.requestSupportAction(BattleSupportAction.runePower),
+          isTrue,
+        );
+        expect(
+          engine.snapshot.lastSupportAction,
+          BattleSupportAction.runePower,
+        );
+        expect(engine.snapshot.supportActionRequestCount, 1);
 
-      expect(
-        engine.requestSupportAction(BattleSupportAction.protection),
-        isTrue,
-      );
-      expect(engine.snapshot.lastSupportAction, BattleSupportAction.protection);
-      expect(engine.snapshot.supportActionRequestCount, 2);
+        expect(
+          engine.requestSupportAction(BattleSupportAction.protection),
+          isTrue,
+        );
+        expect(
+          engine.snapshot.lastSupportAction,
+          BattleSupportAction.protection,
+        );
+        expect(engine.snapshot.supportActionRequestCount, 2);
 
-      expect(
-        engine.requestSupportAction(BattleSupportAction.powerPotion),
-        isTrue,
-      );
-      expect(engine.snapshot.lastSupportAction, BattleSupportAction.powerPotion);
-      expect(engine.snapshot.supportActionRequestCount, 3);
-    });
+        expect(
+          engine.requestSupportAction(BattleSupportAction.powerPotion),
+          isTrue,
+        );
+        expect(
+          engine.snapshot.lastSupportAction,
+          BattleSupportAction.powerPotion,
+        );
+        expect(engine.snapshot.supportActionRequestCount, 3);
+      },
+    );
 
     test('successful PvE rewarded retries consume exactly 3 then stop', () {
       final engine = BattleSessionEngine();
