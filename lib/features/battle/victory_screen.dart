@@ -32,34 +32,19 @@ class VictoryScreen extends StatelessWidget {
             ArtworkHotspot(
               id: 'victory.continue',
               semanticLabel: 'Devam Et',
-              normalizedRect: const Rect.fromLTWH(
-                0.176,
-                0.812,
-                0.648,
-                0.070,
-              ),
+              normalizedRect: const Rect.fromLTWH(0.176, 0.812, 0.648, 0.070),
               onTap: onContinue,
             ),
             ArtworkHotspot(
               id: 'victory.replay',
               semanticLabel: 'Tekrar Oyna',
-              normalizedRect: const Rect.fromLTWH(
-                0.055,
-                0.897,
-                0.424,
-                0.053,
-              ),
+              normalizedRect: const Rect.fromLTWH(0.055, 0.897, 0.424, 0.053),
               onTap: onReplay,
             ),
             ArtworkHotspot(
               id: 'victory.view-rewards',
               semanticLabel: 'Ödülleri Gör',
-              normalizedRect: const Rect.fromLTWH(
-                0.521,
-                0.897,
-                0.420,
-                0.053,
-              ),
+              normalizedRect: const Rect.fromLTWH(0.521, 0.897, 0.420, 0.053),
               onTap: onViewRewards,
             ),
           ],
