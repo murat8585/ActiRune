@@ -37,6 +37,7 @@ jobs:
           test -f visual_authority/20260921/current/01_CANONICAL_FINAL/VIS_0222__P1_PROFILE_FINAL.png
           test -f visual_authority/20260921/current/02_CORE_LOCKED_ANCHORS/VIS_0231__CORE_ADVENTURE_ANCHOR.png
           test -f visual_authority/20260921/final_remaining_13/01_EVENTS_FINAL.png
+          test -f visual_authority/20260921/final_remaining_13/02_EVENT_DETAIL_POPUP_FINAL.png
           test -f visual_authority/20260921/final_p1/02_P1_EQUIPMENT_FINAL.png
           test -f visual_authority/20260921/final_p1/03_P1_INVENTORY_FINAL.png
           test -f visual_authority/20260921/final_p1/05_P1_MOVEMENT_MASTERY_FINAL.png
@@ -66,6 +67,7 @@ jobs:
               'visual_authority/20260921/current/01_CANONICAL_FINAL/VIS_0222__P1_PROFILE_FINAL.png',
               'visual_authority/20260921/current/02_CORE_LOCKED_ANCHORS/VIS_0231__CORE_ADVENTURE_ANCHOR.png',
               'visual_authority/20260921/final_remaining_13/01_EVENTS_FINAL.png',
+              'visual_authority/20260921/final_remaining_13/02_EVENT_DETAIL_POPUP_FINAL.png',
               'visual_authority/20260921/final_p1/02_P1_EQUIPMENT_FINAL.png',
               'visual_authority/20260921/final_p1/03_P1_INVENTORY_FINAL.png',
               'visual_authority/20260921/final_p1/05_P1_MOVEMENT_MASTERY_FINAL.png',
@@ -116,6 +118,7 @@ jobs:
           test/main_shell_navigation_test.dart
           test/child_route_integration_test.dart
           test/events_route_integration_test.dart
+          test/event_detail_popup_test.dart
           test/home_interaction_test.dart
           test/adventure_interaction_test.dart
           test/hero_interaction_test.dart
