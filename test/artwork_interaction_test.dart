@@ -27,6 +27,8 @@ void main() {
     final session = BattleSessionEngine();
     await tester.pumpWidget(buildSubject(session: session));
     await tester.pumpAndSettle();
+    await tester.pump(const Duration(seconds: 1));
+    await tester.pumpAndSettle();
 
     expect(
       find.byKey(const ValueKey('artwork-hotspot-live-battle.pause')),
@@ -62,10 +64,7 @@ void main() {
     final session = BattleSessionEngine();
     var opened = 0;
     await tester.pumpWidget(
-      buildSubject(
-        session: session,
-        onOpenFormCoach: () => opened++,
-      ),
+      buildSubject(session: session, onOpenFormCoach: () => opened++),
     );
     await tester.pumpAndSettle();
 
