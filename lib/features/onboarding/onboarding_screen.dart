@@ -1,136 +1,95 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../core/design/actirune_theme.dart';
+import 'calibration_result_screen.dart';
+import 'first_calibration_screen.dart';
 import 'onboarding_welcome_screen.dart';
 
+typedef CalibrationRunner = Future<bool> Function();
+
+enum _OnboardingPhase { welcome, firstCalibration, calibrationResult }
+
 class OnboardingScreen extends StatefulWidget {
-  const OnboardingScreen({super.key, this.onLanguage, this.onAccessibility});
+  const OnboardingScreen({
+    super.key,
+    this.onLanguage,
+    this.onAccessibility,
+    this.onRunCalibration,
+    this.onEnterApp,
+  });
 
   final VoidCallback? onLanguage;
   final VoidCallback? onAccessibility;
+
+  /// Runs the real calibration owned by the product layer.
+  ///
+  /// The result screen is shown only when this returns true. A missing runner
+  /// keeps the primary calibration action disabled rather than fabricating a
+  /// successful calibration.
+  final CalibrationRunner? onRunCalibration;
+
+  /// Optional seam for tests/embedding. Production falls back to `/app`.
+  final VoidCallback? onEnterApp;
 
   @override
   State<OnboardingScreen> createState() => _OnboardingScreenState();
 }
 
 class _OnboardingScreenState extends State<OnboardingScreen> {
-  final _controller = PageController();
-  int _page = 0;
+  _OnboardingPhase _phase = _OnboardingPhase.welcome;
+  bool _calibrationInFlight = false;
 
-  static const _steps = [
-    ('ACTIRUNE', 'Hareket et. Savaş. Güçlen.', Icons.auto_awesome),
-    (
-      'Hareketin Güçtür',
-      'Gerçek hareketlerin savaşta güce dönüşür.',
-      Icons.directions_run,
-    ),
-    (
-      'Kahramanını Seç',
-      'Savaşçı, Büyücü veya Korucu. Fiziksel yük aynı, fantezi farklı.',
-      Icons.shield,
-    ),
-    (
-      'İlk Hareket',
-      'Kamera yalnız hareket doğrulamak için kullanılır. Ham video sunucuya gönderilmez.',
-      Icons.camera_alt,
-    ),
-    (
-      'İlk Mini Savaş',
-      'Doğrulanmış tekrar boss HP’sini düşürür.',
-      Icons.sports_martial_arts,
-    ),
-    ('İlk Zafer', 'Loot kazan, Ana Dünya’ya geç.', Icons.emoji_events),
-  ];
-
-  void _next() {
-    if (_page == _steps.length - 1) {
-      context.go('/app');
-      return;
-    }
-    _controller.nextPage(
-      duration: const Duration(milliseconds: 260),
-      curve: Curves.easeOut,
-    );
+  void _showFirstCalibration() {
+    if (_phase == _OnboardingPhase.firstCalibration) return;
+    setState(() => _phase = _OnboardingPhase.firstCalibration);
   }
 
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
+  Future<void> _runCalibration() async {
+    final runner = widget.onRunCalibration;
+    if (runner == null || _calibrationInFlight) return;
+
+    setState(() => _calibrationInFlight = true);
+    var succeeded = false;
+    try {
+      succeeded = await runner();
+    } finally {
+      if (mounted) {
+        setState(() => _calibrationInFlight = false);
+      }
+    }
+
+    if (!mounted || !succeeded) return;
+    setState(() => _phase = _OnboardingPhase.calibrationResult);
+  }
+
+  void _enterApp() {
+    final callback = widget.onEnterApp;
+    if (callback != null) {
+      callback();
+      return;
+    }
+    context.go('/app');
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      body: Stack(
-        children: [
-          Positioned.fill(
-            child: PageView.builder(
-              controller: _controller,
-              itemCount: _steps.length,
-              onPageChanged: (i) => setState(() => _page = i),
-              itemBuilder: (_, i) {
-                if (i == 0) {
-                  return OnboardingWelcomeScreen(
-                    onStart: _next,
-                    onLanguage: widget.onLanguage,
-                    onAccessibility: widget.onAccessibility,
-                  );
-                }
-
-                final step = _steps[i];
-                return SafeArea(
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(28, 28, 28, 112),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(step.$3, size: 96, color: ActiRuneColors.cyan),
-                        const SizedBox(height: 28),
-                        Text(
-                          step.$1,
-                          style: Theme.of(context).textTheme.headlineLarge,
-                          textAlign: TextAlign.center,
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          step.$2,
-                          style: Theme.of(context).textTheme.bodyLarge,
-                          textAlign: TextAlign.center,
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
-          if (_page != 0)
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: SafeArea(
-                top: false,
-                child: Padding(
-                  padding: const EdgeInsets.all(24),
-                  child: SizedBox(
-                    width: double.infinity,
-                    height: 56,
-                    child: FilledButton(
-                      onPressed: _next,
-                      child: Text(
-                        _page == _steps.length - 1
-                            ? 'ANA DÜNYAYA GİT'
-                            : 'DEVAM ET',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-        ],
-      ),
+      body: switch (_phase) {
+        _OnboardingPhase.welcome => OnboardingWelcomeScreen(
+          onStart: _showFirstCalibration,
+          onLanguage: widget.onLanguage,
+          onAccessibility: widget.onAccessibility,
+        ),
+        _OnboardingPhase.firstCalibration => FirstCalibrationScreen(
+          enabled: widget.onRunCalibration != null && !_calibrationInFlight,
+          onStartCalibration: _runCalibration,
+        ),
+        _OnboardingPhase.calibrationResult => CalibrationResultScreen(
+          onStartAdventure: _enterApp,
+          onRecalibrate: _showFirstCalibration,
+        ),
+      },
     );
   }
 }
