@@ -42,7 +42,9 @@ class _LiveBattleScreenState extends State<LiveBattleScreen>
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     _combat = CombatEngine();
-    widget.session.startLiveBattle();
+    if (widget.session.snapshot.phase != BattleSessionPhase.liveBattle) {
+      widget.session.startLiveBattle();
+    }
     if (widget.cameraEnabled) {
       _poseCamera = PoseCameraController(onVerifiedRep: _acceptVerifiedRep);
       _startCameraIfNeeded();
