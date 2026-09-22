@@ -57,13 +57,6 @@ jobs:
               print(f'ARTWORK_DIMENSION {path} {width}x{height}')
           PY
 
-      - name: Capture Victory reference
-        uses: actions/upload-artifact@v4
-        with:
-          name: actirune-victory-reference
-          path: visual_authority/20260921/final_p0_battle/P0_VICTORY_FINAL.png
-          retention-days: 1
-
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
@@ -86,6 +79,7 @@ jobs:
           test/battle_session_engine_test.dart
           test/artwork_interaction_test.dart
           test/form_coach_interaction_test.dart
+          test/victory_interaction_test.dart
 
       - name: Full Flutter tests
         run: flutter test --no-pub
