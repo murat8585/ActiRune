@@ -11,6 +11,7 @@ import '../features/home/daily_summary_popup.dart';
 import '../features/home/event_detail_popup.dart';
 import '../features/home/events_screen.dart';
 import '../features/home/home_screen.dart';
+import '../features/profile/achievements_screen.dart';
 import '../features/profile/player_level_screen.dart';
 import '../features/profile/profile_history_screen.dart';
 import '../features/profile/profile_screen.dart';
@@ -256,6 +257,21 @@ class _MainShellState extends State<MainShell> {
     );
   }
 
+  Future<void> _openAchievements(BuildContext context) async {
+    await Navigator.of(context).push<void>(
+      MaterialPageRoute<void>(
+        builder: (routeContext) => AchievementsScreen(
+          onBack: () => Navigator.of(routeContext).pop(),
+          onNotifications: () => _openNotifications(routeContext),
+          onShowInProfile: () => Navigator.of(routeContext).pop(),
+          onRootNavigate: (next) =>
+              _closeChildStackAndSelect(routeContext, next.name),
+          battleRootEnabled: _battleAvailable,
+        ),
+      ),
+    );
+  }
+
   Future<void> _openProfileHistory(BuildContext context) async {
     await Navigator.of(context).push<void>(
       MaterialPageRoute<void>(
@@ -392,6 +408,7 @@ class _MainShellState extends State<MainShell> {
       ),
       ProfileScreen(
         onProfileDetails: () => _openPlayerLevel(context),
+        onBadges: () => _openAchievements(context),
         onWorldProgress: () => _openWorldProgression(context),
         onHistory: () => _openProfileHistory(context),
         onAccountInfo: () => _openAccount(context),
