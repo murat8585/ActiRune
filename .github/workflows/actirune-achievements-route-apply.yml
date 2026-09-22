@@ -56,14 +56,18 @@ jobs:
           cache: true
       - name: Resolve dependencies
         run: flutter pub get
-      - name: Format MainShell
-        run: dart format lib/app/main_shell.dart
+      - name: Format Achievements route and tests
+        run: dart format lib/app/main_shell.dart test/achievements_screen_test.dart
       - name: Commit Achievements route
         shell: bash
         run: |
           set -euo pipefail
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add lib/app/main_shell.dart
-          git commit -m 'Connect Profile Achievements route'
+          git add lib/app/main_shell.dart test/achievements_screen_test.dart
+          if git diff --cached --quiet; then
+            echo 'No Achievements formatting or route changes to commit.'
+            exit 0
+          fi
+          git commit -m 'Apply canonical Achievements route formatting'
           git push origin HEAD:integration/artwork-interactions-20260921
