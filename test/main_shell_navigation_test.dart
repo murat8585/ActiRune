@@ -33,59 +33,64 @@ void main() {
     expect(resumeBattle.onPressed, isNull);
   });
 
-  testWidgets('artwork roots replace the shell NavigationBar instead of stacking', (
-    tester,
-  ) async {
-    await tester.pumpWidget(const MaterialApp(home: MainShell()));
-    await tester.pump();
+  testWidgets(
+    'artwork roots replace the shell NavigationBar instead of stacking',
+    (tester) async {
+      await tester.pumpWidget(const MaterialApp(home: MainShell()));
+      await tester.pump();
 
-    await tester.tap(find.text('Macera'));
-    await tester.pump();
+      await tester.tap(find.text('Macera'));
+      await tester.pump();
 
-    expect(find.byType(AdventureScreen), findsOneWidget);
-    expect(find.byType(NavigationBar), findsNothing);
+      expect(find.byType(AdventureScreen), findsOneWidget);
+      expect(find.byType(NavigationBar), findsNothing);
 
-    await tester.tap(
-      find.byKey(const ValueKey('artwork-hotspot-adventure.nav-profile')),
-    );
-    await tester.pump();
+      await tester.tap(
+        find.byKey(const ValueKey('artwork-hotspot-adventure.nav-profile')),
+      );
+      await tester.pump();
 
-    expect(find.byType(ProfileScreen), findsOneWidget);
-    expect(find.byType(NavigationBar), findsNothing);
+      expect(find.byType(ProfileScreen), findsOneWidget);
+      expect(find.byType(NavigationBar), findsNothing);
 
-    await tester.tap(
-      find.byKey(const ValueKey('artwork-hotspot-profile.nav-home')),
-    );
-    await tester.pump();
+      await tester.tap(
+        find.byKey(const ValueKey('artwork-hotspot-profile.nav-home')),
+      );
+      await tester.pump();
 
-    expect(find.byType(HomeScreen), findsOneWidget);
-    expect(find.byType(NavigationBar), findsOneWidget);
-  });
+      expect(find.byType(HomeScreen), findsOneWidget);
+      expect(find.byType(NavigationBar), findsOneWidget);
+    },
+  );
 
-  testWidgets('Battle root remains inaccessible without a real encounter owner', (
-    tester,
-  ) async {
-    await tester.pumpWidget(const MaterialApp(home: MainShell()));
-    await tester.pump();
+  testWidgets(
+    'Battle root remains inaccessible without a real encounter owner',
+    (tester) async {
+      await tester.pumpWidget(const MaterialApp(home: MainShell()));
+      await tester.pump();
 
-    await tester.tap(find.text('Savaş'));
-    await tester.pump();
+      await tester.tap(find.text('Savaş'));
+      await tester.pump();
 
-    expect(find.byType(HomeScreen), findsOneWidget);
-    expect(tester.widget<NavigationBar>(find.byType(NavigationBar)).selectedIndex, 0);
+      expect(find.byType(HomeScreen), findsOneWidget);
+      expect(
+        tester.widget<NavigationBar>(find.byType(NavigationBar)).selectedIndex,
+        0,
+      );
 
-    await tester.tap(find.text('Macera'));
-    await tester.pump();
-    expect(find.byType(AdventureScreen), findsOneWidget);
+      await tester.tap(find.text('Macera'));
+      await tester.pump();
+      expect(find.byType(AdventureScreen), findsOneWidget);
 
-    await tester.tap(
-      find.byKey(const ValueKey('artwork-hotspot-adventure.nav-battle')),
-    );
-    await tester.pump();
+      await tester.tap(
+        find.byKey(const ValueKey('artwork-hotspot-adventure.nav-battle')),
+      );
+      await tester.pump();
 
-    expect(find.byType(AdventureScreen), findsOneWidget);
-    expect(find.byType(NavigationBar), findsNothing);
-  });
+      expect(find.byType(AdventureScreen), findsOneWidget);
+      expect(find.byType(NavigationBar), findsNothing);
+    },
+  );
 
   testWidgets('a real battle root enables canonical Battle navigation', (
     tester,
