@@ -118,10 +118,7 @@ class BattleSessionEngine extends ChangeNotifier {
       return false;
     }
     _set(
-      _snapshot.copyWith(
-        phase: BattleSessionPhase.battlePrep,
-        isPaused: false,
-      ),
+      _snapshot.copyWith(phase: BattleSessionPhase.battlePrep, isPaused: false),
     );
     return true;
   }
