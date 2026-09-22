@@ -145,12 +145,7 @@ class CameraPrepScreen extends StatelessWidget {
             if (!readiness.allReady)
               const ArtworkOverlay(
                 id: 'camera-prep.ready-disabled',
-                normalizedRect: Rect.fromLTWH(
-                  0.1010,
-                  0.8038,
-                  0.7694,
-                  0.0658,
-                ),
+                normalizedRect: Rect.fromLTWH(0.1010, 0.8038, 0.7694, 0.0658),
                 child: ColoredBox(color: Color(0x99000000)),
               ),
           ],
@@ -215,9 +210,18 @@ class _ReadinessBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final (icon, color) = switch (status.state) {
-      CameraPrepCheckState.ready => (Icons.check_circle_outline, const Color(0xFF79F7AE)),
-      CameraPrepCheckState.checking => (Icons.progress_activity, const Color(0xFFFFC96B)),
-      CameraPrepCheckState.warning => (Icons.error_outline, const Color(0xFFFF7A7A)),
+      CameraPrepCheckState.ready => (
+        Icons.check_circle_outline,
+        const Color(0xFF79F7AE),
+      ),
+      CameraPrepCheckState.checking => (
+        Icons.progress_activity,
+        const Color(0xFFFFC96B),
+      ),
+      CameraPrepCheckState.warning => (
+        Icons.error_outline,
+        const Color(0xFFFF7A7A),
+      ),
     };
 
     return ColoredBox(
