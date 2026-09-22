@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../features/adventure/adventure_screen.dart';
+import '../features/adventure/world_progression_screen.dart';
 import '../features/battle/battle_prep_screen.dart';
 import '../features/hero/equipment_screen.dart';
 import '../features/hero/hero_screen.dart';
@@ -186,6 +187,23 @@ class _MainShellState extends State<MainShell> {
     );
   }
 
+  Future<void> _openWorldProgression(BuildContext context) async {
+    await Navigator.of(context).push<void>(
+      MaterialPageRoute<void>(
+        builder: (routeContext) => WorldProgressionScreen(
+          onBack: () => Navigator.of(routeContext).pop(),
+          onHeroProfile: () =>
+              _closeChildStackAndSelect(routeContext, 'hero'),
+          onNotifications: () => _openNotifications(routeContext),
+          onSettings: () => _openSettingsHub(routeContext),
+          onRootNavigate: (next) =>
+              _closeChildStackAndSelect(routeContext, next.name),
+          battleRootEnabled: _battleAvailable,
+        ),
+      ),
+    );
+  }
+
   Future<void> _openInventory(BuildContext context) async {
     await Navigator.of(context).push<void>(
       MaterialPageRoute<void>(
@@ -360,6 +378,7 @@ class _MainShellState extends State<MainShell> {
         onQuests: () => _openQuestChain(context),
         onEvents: () => _openEvents(context),
         onSettings: () => _openSettingsHub(context),
+        onWorldMap: () => _openWorldProgression(context),
         onRootNavigate: _selectAdventureRoot,
         battleRootEnabled: _battleAvailable,
       ),
