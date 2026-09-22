@@ -18,7 +18,7 @@ class OnboardingWelcomeScreen extends StatelessWidget {
   static const artworkAsset =
       'visual_authority/20260921/final_remaining_13/'
       '05_ONBOARDING_WELCOME_FINAL.png';
-  static const artworkSize = Size(941, 1672);
+  static const artworkSize = Size(941, 1671);
 
   final VoidCallback onStart;
   final VoidCallback? onLanguage;
