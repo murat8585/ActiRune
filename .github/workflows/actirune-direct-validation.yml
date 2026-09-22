@@ -1,0 +1,66 @@
+name: ActiRune Direct Validation
+
+on:
+  push:
+    branches:
+      - integration/artwork-interactions-20260921
+    paths:
+      - 'lib/**'
+      - 'test/**'
+      - 'pubspec.yaml'
+      - '.github/workflows/actirune-direct-validation.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: actirune-direct-validation
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - name: Checkout integration branch
+        uses: actions/checkout@v4
+        with:
+          ref: integration/artwork-interactions-20260921
+
+      - name: Guard canonical artwork presence
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f visual_authority/20260921/current/02_CORE_LOCKED_ANCHORS/VIS_0168__CORE_LIVE_BATTLE_ANCHOR.png
+          test -f visual_authority/20260921/current/02_CORE_LOCKED_ANCHORS/VIS_0353__CORE_FORM_COACH_OVERLAY_ANCHOR.png
+          test -f visual_authority/20260921/final_p0_battle/P0_VICTORY_FINAL.png
+          test -f visual_authority/20260921/final_p0_battle/P0_DEFEAT_FINAL_CANDIDATE.png
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Resolve dependencies
+        run: flutter pub get
+
+      - name: Verify formatting
+        run: dart format --output=none --set-exit-if-changed lib test
+
+      - name: Analyze
+        run: flutter analyze
+
+      - name: Focused battle tests
+        run: >-
+          flutter test --no-pub
+          test/combat_engine_test.dart
+          test/battle_session_engine_test.dart
+          test/artwork_interaction_test.dart
+
+      - name: Full Flutter tests
+        run: flutter test --no-pub
+
+      - name: Diff hygiene
+        run: git diff --check
