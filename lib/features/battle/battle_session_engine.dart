@@ -80,14 +80,14 @@ class BattleSessionSnapshot {
 /// or loadout contract instead of being invented in the UI layer.
 class BattleSessionEngine extends ChangeNotifier {
   BattleSessionEngine()
-      : _snapshot = const BattleSessionSnapshot(
-          phase: BattleSessionPhase.battlePrep,
-          isPaused: false,
-          syntheticMode: false,
-          verifiedActionCount: 0,
-          supportActionRequestCount: 0,
-          rewardedRetriesRemaining: 3,
-        );
+    : _snapshot = const BattleSessionSnapshot(
+        phase: BattleSessionPhase.battlePrep,
+        isPaused: false,
+        syntheticMode: false,
+        verifiedActionCount: 0,
+        supportActionRequestCount: 0,
+        rewardedRetriesRemaining: 3,
+      );
 
   BattleSessionSnapshot _snapshot;
   BattleSessionSnapshot get snapshot => _snapshot;
@@ -118,10 +118,7 @@ class BattleSessionEngine extends ChangeNotifier {
 
   void startLiveBattle() {
     _set(
-      _snapshot.copyWith(
-        phase: BattleSessionPhase.liveBattle,
-        isPaused: false,
-      ),
+      _snapshot.copyWith(phase: BattleSessionPhase.liveBattle, isPaused: false),
     );
   }
 
@@ -136,10 +133,7 @@ class BattleSessionEngine extends ChangeNotifier {
   void openFormCoach() {
     if (_snapshot.phase != BattleSessionPhase.liveBattle) return;
     _set(
-      _snapshot.copyWith(
-        phase: BattleSessionPhase.formCoach,
-        isPaused: true,
-      ),
+      _snapshot.copyWith(phase: BattleSessionPhase.formCoach, isPaused: true),
     );
   }
 
@@ -149,10 +143,7 @@ class BattleSessionEngine extends ChangeNotifier {
       return;
     }
     _set(
-      _snapshot.copyWith(
-        phase: BattleSessionPhase.liveBattle,
-        isPaused: false,
-      ),
+      _snapshot.copyWith(phase: BattleSessionPhase.liveBattle, isPaused: false),
     );
   }
 
@@ -193,21 +184,13 @@ class BattleSessionEngine extends ChangeNotifier {
   void markVictory() {
     if (_snapshot.phase == BattleSessionPhase.retired) return;
     _set(
-      _snapshot.copyWith(
-        phase: BattleSessionPhase.victory,
-        isPaused: false,
-      ),
+      _snapshot.copyWith(phase: BattleSessionPhase.victory, isPaused: false),
     );
   }
 
   void markDefeat() {
     if (_snapshot.phase == BattleSessionPhase.retired) return;
-    _set(
-      _snapshot.copyWith(
-        phase: BattleSessionPhase.defeat,
-        isPaused: false,
-      ),
-    );
+    _set(_snapshot.copyWith(phase: BattleSessionPhase.defeat, isPaused: false));
   }
 
   /// Latest user override: a successful rewarded ad restarts the same PvE
@@ -233,7 +216,9 @@ class BattleSessionEngine extends ChangeNotifier {
   }
 
   void retire() {
-    _set(_snapshot.copyWith(phase: BattleSessionPhase.retired, isPaused: false));
+    _set(
+      _snapshot.copyWith(phase: BattleSessionPhase.retired, isPaused: false),
+    );
   }
 
   void _set(BattleSessionSnapshot next) {
