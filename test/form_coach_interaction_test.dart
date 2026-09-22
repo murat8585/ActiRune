@@ -65,33 +65,36 @@ void main() {
       findsNothing,
     );
     expect(
-      find.byKey(const ValueKey('artwork-hotspot-form-coach.repetition-counter')),
+      find.byKey(
+        const ValueKey('artwork-hotspot-form-coach.repetition-counter'),
+      ),
       findsNothing,
     );
   });
 
-  testWidgets('Form Coach keeps battle state and returns to same live session', (
-    tester,
-  ) async {
-    final session = formCoachSession();
-    var resumed = 0;
-    final actionsBefore = session.snapshot.verifiedActionCount;
+  testWidgets(
+    'Form Coach keeps battle state and returns to same live session',
+    (tester) async {
+      final session = formCoachSession();
+      var resumed = 0;
+      final actionsBefore = session.snapshot.verifiedActionCount;
 
-    await tester.pumpWidget(
-      buildSubject(session: session, onResumeBattle: () => resumed++),
-    );
-    await settleArtwork(tester);
+      await tester.pumpWidget(
+        buildSubject(session: session, onResumeBattle: () => resumed++),
+      );
+      await settleArtwork(tester);
 
-    await tester.tap(
-      find.byKey(const ValueKey('artwork-hotspot-form-coach.pause')),
-    );
-    await tester.pump();
+      await tester.tap(
+        find.byKey(const ValueKey('artwork-hotspot-form-coach.pause')),
+      );
+      await tester.pump();
 
-    expect(resumed, 1);
-    expect(session.snapshot.phase, BattleSessionPhase.liveBattle);
-    expect(session.snapshot.isPaused, isFalse);
-    expect(session.snapshot.verifiedActionCount, actionsBefore);
-  });
+      expect(resumed, 1);
+      expect(session.snapshot.phase, BattleSessionPhase.liveBattle);
+      expect(session.snapshot.isPaused, isFalse);
+      expect(session.snapshot.verifiedActionCount, actionsBefore);
+    },
+  );
 
   testWidgets('Form Coach support controls emit typed requests only', (
     tester,
