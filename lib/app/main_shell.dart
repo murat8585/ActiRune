@@ -6,6 +6,7 @@ import '../features/hero/equipment_screen.dart';
 import '../features/hero/hero_screen.dart';
 import '../features/hero/inventory_screen.dart';
 import '../features/hero/movement_mastery_screen.dart';
+import '../features/home/event_detail_popup.dart';
 import '../features/home/events_screen.dart';
 import '../features/home/home_screen.dart';
 import '../features/profile/player_level_screen.dart';
@@ -78,11 +79,26 @@ class _MainShellState extends State<MainShell> {
     _select(next);
   }
 
+  Future<void> _openEventDetail(BuildContext context) async {
+    await showGeneralDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      barrierLabel: 'Etkinlik Detayı',
+      barrierColor: Colors.transparent,
+      transitionDuration: Duration.zero,
+      pageBuilder: (dialogContext, _, __) => EventDetailPopup(
+        onClose: () => Navigator.of(dialogContext).pop(),
+      ),
+    );
+  }
+
   Future<void> _openEvents(BuildContext context) async {
     await Navigator.of(context).push<void>(
       MaterialPageRoute<void>(
         builder: (routeContext) => EventsScreen(
           onBack: () => Navigator.of(routeContext).pop(),
+          onFeaturedEvent: () => _openEventDetail(routeContext),
+          onEvent: (_) => _openEventDetail(routeContext),
           onRootNavigate: (next) =>
               _closeChildStackAndSelect(routeContext, next.name),
           battleRootEnabled: _battleAvailable,
