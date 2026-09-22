@@ -19,6 +19,7 @@ import '../features/profile/settings_hub_screen.dart';
 import '../features/profile/settings_notifications_screen.dart';
 import '../features/profile/settings_permissions_screen.dart';
 import '../features/profile/settings_privacy_screen.dart';
+import '../features/quests/daily_quests_screen.dart';
 
 enum _ShellDestination { home, adventure, battle, hero, profile }
 
@@ -122,6 +123,18 @@ class _MainShellState extends State<MainShell> {
       transitionDuration: Duration.zero,
       pageBuilder: (dialogContext, _, _) =>
           EventDetailPopup(onClose: () => Navigator.of(dialogContext).pop()),
+    );
+  }
+
+  Future<void> _openDailyQuests(BuildContext context) async {
+    await Navigator.of(context).push<void>(
+      MaterialPageRoute<void>(
+        builder: (routeContext) => DailyQuestsScreen(
+          onRootNavigate: (next) =>
+              _closeChildStackAndSelect(routeContext, next.name),
+          battleRootEnabled: _battleAvailable,
+        ),
+      ),
     );
   }
 
@@ -301,6 +314,7 @@ class _MainShellState extends State<MainShell> {
   List<Widget> _screens(BuildContext context) {
     return [
       HomeScreen(
+        onDailyStreak: () => _openDailyQuests(context),
         onEvents: () => _openEvents(context),
         onYesterdaySummary: () => _openDailySummary(context),
         onRootNavigate: _selectHomeRoot,
