@@ -32,6 +32,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          test -f visual_authority/20260921/final_p0_battle/P0_BATTLE_PREP_FINAL.png
+          test -f visual_authority/20260921/final_p0_battle/P0_CAMERA_PREP_FINAL.png
           test -f visual_authority/20260921/current/02_CORE_LOCKED_ANCHORS/VIS_0168__CORE_LIVE_BATTLE_ANCHOR.png
           test -f visual_authority/20260921/current/02_CORE_LOCKED_ANCHORS/VIS_0353__CORE_FORM_COACH_OVERLAY_ANCHOR.png
           test -f visual_authority/20260921/final_p0_battle/P0_VICTORY_FINAL.png
@@ -43,6 +45,8 @@ jobs:
           python3 - <<'PY'
           import struct
           paths = [
+              'visual_authority/20260921/final_p0_battle/P0_BATTLE_PREP_FINAL.png',
+              'visual_authority/20260921/final_p0_battle/P0_CAMERA_PREP_FINAL.png',
               'visual_authority/20260921/current/02_CORE_LOCKED_ANCHORS/VIS_0168__CORE_LIVE_BATTLE_ANCHOR.png',
               'visual_authority/20260921/current/02_CORE_LOCKED_ANCHORS/VIS_0353__CORE_FORM_COACH_OVERLAY_ANCHOR.png',
               'visual_authority/20260921/final_p0_battle/P0_VICTORY_FINAL.png',
@@ -56,6 +60,15 @@ jobs:
               width, height = struct.unpack('>II', header[16:24])
               print(f'ARTWORK_DIMENSION {path} {width}x{height}')
           PY
+
+      - name: Capture P0 prep references
+        uses: actions/upload-artifact@v4
+        with:
+          name: actirune-p0-prep-references
+          path: |
+            visual_authority/20260921/final_p0_battle/P0_BATTLE_PREP_FINAL.png
+            visual_authority/20260921/final_p0_battle/P0_CAMERA_PREP_FINAL.png
+          retention-days: 1
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
