@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../features/adventure/adventure_screen.dart';
 import '../features/battle/battle_prep_screen.dart';
+import '../features/hero/equipment_screen.dart';
 import '../features/hero/hero_screen.dart';
 import '../features/home/home_screen.dart';
 import '../features/profile/profile_screen.dart';
@@ -87,6 +88,34 @@ class _MainShellState extends State<MainShell> {
     });
   }
 
+  void _selectEquipmentRoot(EquipmentRootDestination next) {
+    _select(switch (next) {
+      EquipmentRootDestination.home => _ShellDestination.home,
+      EquipmentRootDestination.adventure => _ShellDestination.adventure,
+      EquipmentRootDestination.battle => _ShellDestination.battle,
+      EquipmentRootDestination.hero => _ShellDestination.hero,
+      EquipmentRootDestination.profile => _ShellDestination.profile,
+    });
+  }
+
+  Future<void> _openEquipment(BuildContext context) async {
+    await Navigator.of(context).push<void>(
+      MaterialPageRoute<void>(
+        builder: (routeContext) => EquipmentScreen(
+          onBack: () => Navigator.of(routeContext).pop(),
+          onRootNavigate: (next) {
+            if (next == EquipmentRootDestination.battle && !_battleAvailable) {
+              return;
+            }
+            Navigator.of(routeContext).pop();
+            _selectEquipmentRoot(next);
+          },
+          battleRootEnabled: _battleAvailable,
+        ),
+      ),
+    );
+  }
+
   List<Widget> _screens(BuildContext context) {
     return [
       HomeScreen(
@@ -100,6 +129,7 @@ class _MainShellState extends State<MainShell> {
       widget.battleRootBuilder?.call(context, _selectBattleRoot) ??
           const SizedBox.shrink(),
       HeroScreen(
+        onEquipment: () => _openEquipment(context),
         onRootNavigate: _selectHeroRoot,
         battleRootEnabled: _battleAvailable,
       ),
