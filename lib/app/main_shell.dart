@@ -21,11 +21,10 @@ import '../features/profile/settings_privacy_screen.dart';
 
 enum _ShellDestination { home, adventure, battle, hero, profile }
 
-typedef BattleRootBuilder =
-    Widget Function(
-      BuildContext context,
-      ValueChanged<BattlePrepRootDestination> onRootNavigate,
-    );
+typedef BattleRootBuilder = Widget Function(
+  BuildContext context,
+  ValueChanged<BattlePrepRootDestination> onRootNavigate,
+);
 
 class MainShell extends StatefulWidget {
   const MainShell({super.key, this.battleRootBuilder});
@@ -86,9 +85,8 @@ class _MainShellState extends State<MainShell> {
       barrierLabel: 'Etkinlik Detayı',
       barrierColor: Colors.transparent,
       transitionDuration: Duration.zero,
-      pageBuilder: (dialogContext, _, __) => EventDetailPopup(
-        onClose: () => Navigator.of(dialogContext).pop(),
-      ),
+      pageBuilder: (dialogContext, _, __) =>
+          EventDetailPopup(onClose: () => Navigator.of(dialogContext).pop()),
     );
   }
 
