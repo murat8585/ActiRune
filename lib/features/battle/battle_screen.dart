@@ -1,205 +1,139 @@
-import 'package:flame/game.dart';
-import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import '../../core/design/actirune_theme.dart';
-import 'combat/combat_engine.dart';
-import 'game/actirune_battle_game.dart';
-import '../pose/detector/squat_detector.dart';
-import '../pose/provider/pose_camera_controller.dart';
 
+import 'battle_flow_host.dart';
+import 'battle_prep_screen.dart';
+import 'battle_session_engine.dart';
+import 'camera_prep_screen.dart';
+
+typedef BattleRewardedRetryRequest = Future<bool> Function();
+
+/// Route-level adapter for one canonical PvE encounter.
+///
+/// The caller owns encounter selection and external navigation. This screen
+/// owns exactly one [BattleSessionEngine] so battle state survives the
+/// Battle Prep -> Camera Prep -> Live Battle <-> Form Coach -> Result flow.
 class BattleScreen extends StatefulWidget {
-  const BattleScreen({super.key});
+  const BattleScreen({
+    super.key,
+    required this.movement,
+    this.cameraReadiness = CameraPrepReadiness.checking,
+    this.cameraEnabled = true,
+    this.onExitEncounter,
+    this.onRootNavigate,
+    this.onEquipment,
+    this.onRunes,
+    this.onCompanion,
+    this.onAbilities,
+    this.onBattleTips,
+    this.onBattlePrepInfo,
+    this.onCameraPrepInfo,
+    this.onCameraRecheck,
+    this.onRewardedRetry,
+    this.onVictoryReplay,
+    this.onVictoryViewRewards,
+    this.onDefeatViewTactics,
+  });
+
+  final VerifiedMovementType movement;
+  final CameraPrepReadiness cameraReadiness;
+  final bool cameraEnabled;
+
+  final VoidCallback? onExitEncounter;
+  final ValueChanged<BattlePrepRootDestination>? onRootNavigate;
+
+  final VoidCallback? onEquipment;
+  final VoidCallback? onRunes;
+  final VoidCallback? onCompanion;
+  final VoidCallback? onAbilities;
+  final VoidCallback? onBattleTips;
+  final VoidCallback? onBattlePrepInfo;
+
+  final VoidCallback? onCameraPrepInfo;
+  final VoidCallback? onCameraRecheck;
+
+  final BattleRewardedRetryRequest? onRewardedRetry;
+  final VoidCallback? onVictoryReplay;
+  final VoidCallback? onVictoryViewRewards;
+  final VoidCallback? onDefeatViewTactics;
+
   @override
   State<BattleScreen> createState() => _BattleScreenState();
 }
 
-class _BattleScreenState extends State<BattleScreen>
-    with WidgetsBindingObserver {
-  late final CombatEngine combat;
-  late final ActiRuneBattleGame game;
-  late final PoseCameraController poseCamera;
+class _BattleScreenState extends State<BattleScreen> {
+  late final BattleSessionEngine _session;
 
   @override
   void initState() {
     super.initState();
-    combat = CombatEngine();
-    game = ActiRuneBattleGame(combat);
-    WidgetsBinding.instance.addObserver(this);
-    poseCamera = PoseCameraController(onVerifiedRep: _acceptVerifiedRep);
-    poseCamera.start().whenComplete(() {
-      if (mounted) setState(() {});
-    });
+    _session = BattleSessionEngine()..prepare(widget.movement);
   }
 
   @override
   void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
-    poseCamera.dispose();
-    combat.dispose();
+    _session.dispose();
     super.dispose();
   }
 
-  void _acceptVerifiedRep(VerifiedRep rep) {
-    if (!mounted) return;
-    combat.acceptVerifiedRep(formScore: rep.formScore);
-    game.playVerifiedHit();
+  void _exitEncounter() {
+    if (_session.snapshot.phase != BattleSessionPhase.retired) {
+      _session.retire();
+    }
+
+    final callback = widget.onExitEncounter;
+    if (callback != null) {
+      callback();
+      return;
+    }
+
+    Navigator.of(context).maybePop();
   }
 
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.inactive ||
-        state == AppLifecycleState.paused ||
-        state == AppLifecycleState.detached) {
-      poseCamera.stop();
-    } else if (state == AppLifecycleState.resumed && !poseCamera.isReady) {
-      poseCamera.start().whenComplete(() {
-        if (mounted) setState(() {});
-      });
+  void _rootNavigate(BattlePrepRootDestination destination) {
+    final callback = widget.onRootNavigate;
+    if (callback != null) {
+      callback(destination);
+      return;
     }
+
+    Navigator.of(context).maybePop();
+  }
+
+  Future<void> _requestRewardedRetry() async {
+    final request = widget.onRewardedRetry;
+    if (request == null) return;
+
+    final rewarded = await request();
+    if (!mounted || !rewarded) return;
+
+    _session.restartAfterSuccessfulRewardedAd();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: AnimatedBuilder(
-        animation: combat,
-        builder: (context, _) {
-          final s = combat.snapshot;
-          return Stack(
-            fit: StackFit.expand,
-            children: [
-              GameWidget(game: game),
-              SafeArea(
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    children: [
-                      Row(
-                        children: [
-                          IconButton.filledTonal(
-                            onPressed: () => Navigator.pop(context),
-                            icon: const Icon(Icons.arrow_back),
-                          ),
-                          const Spacer(),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 18,
-                              vertical: 10,
-                            ),
-                            decoration: BoxDecoration(
-                              color: ActiRuneColors.surface,
-                              borderRadius: BorderRadius.circular(18),
-                            ),
-                            child: Text(
-                              'Squat  ${s.verifiedReps} / 15',
-                              style: const TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                          const Spacer(),
-                          IconButton.filledTonal(
-                            onPressed: () {},
-                            icon: const Icon(Icons.pause),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 14),
-                      LinearProgressIndicator(
-                        value: s.hpFraction,
-                        minHeight: 12,
-                        color: ActiRuneColors.danger,
-                      ),
-                      const SizedBox(height: 6),
-                      Text('Buz Devi Gözcüsü   ${s.bossHp} / ${s.bossMaxHp}'),
-                      const Spacer(),
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: Container(
-                          padding: const EdgeInsets.all(14),
-                          decoration: BoxDecoration(
-                            color: ActiRuneColors.surface,
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          child: Text(
-                            'x${s.combo}\nKOMBO',
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ),
-                      const Spacer(),
-                      Container(
-                        width: 148,
-                        height: 110,
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF061729),
-                          borderRadius: BorderRadius.circular(18),
-                          border: Border.all(color: ActiRuneColors.cyan),
-                        ),
-                        clipBehavior: Clip.antiAlias,
-                        child: _cameraPanel(),
-                      ),
-                      const SizedBox(height: 12),
-                      const Text(
-                        'Mükemmel!',
-                        style: TextStyle(
-                          fontSize: 30,
-                          fontWeight: FontWeight.bold,
-                          color: ActiRuneColors.cyan,
-                        ),
-                      ),
-                      const Text('Rün Gücü Yükseliyor!'),
-                      const SizedBox(height: 12),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          );
-        },
-      ),
-    );
-  }
-
-  Widget _cameraPanel() {
-    final controller = poseCamera.camera;
-    if (controller != null && controller.value.isInitialized) {
-      return Stack(
-        fit: StackFit.expand,
-        children: [
-          CameraPreview(controller),
-          const Align(
-            alignment: Alignment.bottomCenter,
-            child: ColoredBox(
-              color: Color(0x99061729),
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                child: Text('POSE AKTİF', style: TextStyle(fontSize: 11)),
-              ),
-            ),
-          ),
-        ],
-      );
-    }
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Icon(
-          poseCamera.error == null ? Icons.videocam : Icons.videocam_off,
-          color: ActiRuneColors.cyan,
-        ),
-        Text(
-          poseCamera.error == null
-              ? 'KAMERA HAZIRLANIYOR'
-              : 'KAMERA KULLANILAMIYOR',
-        ),
-      ],
+    return BattleFlowHost(
+      session: _session,
+      cameraReadiness: widget.cameraReadiness,
+      cameraEnabled: widget.cameraEnabled,
+      onBattlePrepBack: _exitEncounter,
+      onBattlePrepInfo: widget.onBattlePrepInfo,
+      onEquipment: widget.onEquipment,
+      onRunes: widget.onRunes,
+      onCompanion: widget.onCompanion,
+      onAbilities: widget.onAbilities,
+      onBattleTips: widget.onBattleTips,
+      onReturnToAdventure: _exitEncounter,
+      onRootNavigate: _rootNavigate,
+      onCameraPrepInfo: widget.onCameraPrepInfo,
+      onCameraRecheck: widget.onCameraRecheck,
+      onVictoryContinue: _exitEncounter,
+      onVictoryReplay: widget.onVictoryReplay,
+      onVictoryViewRewards: widget.onVictoryViewRewards,
+      onRewardedRetryRequested: () {
+        _requestRewardedRetry();
+      },
+      onDefeatReturnToAdventure: _exitEncounter,
+      onDefeatViewTactics: widget.onDefeatViewTactics,
     );
   }
 }
