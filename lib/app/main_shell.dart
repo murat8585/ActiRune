@@ -86,7 +86,7 @@ class _MainShellState extends State<MainShell> {
       barrierLabel: 'Etkinlik Detayı',
       barrierColor: Colors.transparent,
       transitionDuration: Duration.zero,
-      pageBuilder: (dialogContext, _, __) =>
+      pageBuilder: (dialogContext, _, _) =>
           EventDetailPopup(onClose: () => Navigator.of(dialogContext).pop()),
     );
   }
