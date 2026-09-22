@@ -70,15 +70,8 @@ jobs:
       - name: Resolve dependencies
         run: flutter pub get
 
-      - name: Format BattleScreen adapter test
-        run: dart format test/battle_screen_adapter_test.dart
-
-      - name: Capture formatted BattleScreen adapter test
-        uses: actions/upload-artifact@v4
-        with:
-          name: actirune-formatted-battle-screen-adapter-test
-          path: test/battle_screen_adapter_test.dart
-          retention-days: 1
+      - name: Verify formatting
+        run: dart format --output=none --set-exit-if-changed lib test
 
       - name: Analyze
         run: flutter analyze
