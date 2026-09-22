@@ -4,7 +4,13 @@ import '../../core/widgets/artwork_interaction_surface.dart';
 
 enum NotificationsRootDestination { home, adventure, battle, hero, profile }
 
-enum NotificationPreference { questReminders, events, social, runeLeague, system }
+enum NotificationPreference {
+  questReminders,
+  events,
+  social,
+  runeLeague,
+  system,
+}
 
 class SettingsNotificationsScreen extends StatelessWidget {
   const SettingsNotificationsScreen({
