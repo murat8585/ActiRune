@@ -17,11 +17,24 @@ class ArtworkHotspot {
   final bool enabled;
 }
 
+@immutable
+class ArtworkOverlay {
+  const ArtworkOverlay({
+    required this.id,
+    required this.normalizedRect,
+    required this.child,
+  });
+
+  final String id;
+  final Rect normalizedRect;
+  final Widget child;
+}
+
 /// Renders an approved artwork asset without stretching it and places
 /// transparent semantic interaction regions in the exact same fitted bounds.
 ///
-/// Hotspot coordinates are normalized to the source artwork (0..1). Approved
-/// screens can provide their authoritative intrinsic size so interaction
+/// Hotspot and overlay coordinates are normalized to the source artwork
+/// (0..1). Approved screens can provide their authoritative intrinsic size so
 /// geometry is available on the first frame, independent of image decoding.
 /// If no size is supplied the widget resolves the asset dimensions at runtime.
 class ArtworkInteractionSurface extends StatefulWidget {
@@ -29,6 +42,7 @@ class ArtworkInteractionSurface extends StatefulWidget {
     super.key,
     required this.assetPath,
     required this.hotspots,
+    this.overlays = const [],
     this.sourceSize,
     this.fit = BoxFit.contain,
     this.alignment = Alignment.center,
@@ -37,6 +51,7 @@ class ArtworkInteractionSurface extends StatefulWidget {
 
   final String assetPath;
   final List<ArtworkHotspot> hotspots;
+  final List<ArtworkOverlay> overlays;
   final Size? sourceSize;
   final BoxFit fit;
   final Alignment alignment;
@@ -138,11 +153,36 @@ class _ArtworkInteractionSurfaceState extends State<ArtworkInteractionSurface> {
                   excludeFromSemantics: true,
                 ),
               ),
+              for (final overlay in widget.overlays)
+                _ArtworkOverlayRegion(imageRect: imageRect, overlay: overlay),
               for (final hotspot in widget.hotspots)
                 _HotspotRegion(imageRect: imageRect, hotspot: hotspot),
             ],
           );
         },
+      ),
+    );
+  }
+}
+
+class _ArtworkOverlayRegion extends StatelessWidget {
+  const _ArtworkOverlayRegion({
+    required this.imageRect,
+    required this.overlay,
+  });
+
+  final Rect imageRect;
+  final ArtworkOverlay overlay;
+
+  @override
+  Widget build(BuildContext context) {
+    return Positioned.fromRect(
+      rect: _normalizedRectInImage(imageRect, overlay.normalizedRect),
+      child: IgnorePointer(
+        child: KeyedSubtree(
+          key: ValueKey('artwork-overlay-${overlay.id}'),
+          child: overlay.child,
+        ),
       ),
     );
   }
@@ -156,16 +196,8 @@ class _HotspotRegion extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final n = hotspot.normalizedRect;
-    final rect = Rect.fromLTWH(
-      imageRect.left + (n.left * imageRect.width),
-      imageRect.top + (n.top * imageRect.height),
-      n.width * imageRect.width,
-      n.height * imageRect.height,
-    );
-
     return Positioned.fromRect(
-      rect: rect,
+      rect: _normalizedRectInImage(imageRect, hotspot.normalizedRect),
       child: Semantics(
         key: ValueKey('artwork-hotspot-${hotspot.id}'),
         label: hotspot.semanticLabel,
@@ -180,4 +212,13 @@ class _HotspotRegion extends StatelessWidget {
       ),
     );
   }
+}
+
+Rect _normalizedRectInImage(Rect imageRect, Rect normalizedRect) {
+  return Rect.fromLTWH(
+    imageRect.left + (normalizedRect.left * imageRect.width),
+    imageRect.top + (normalizedRect.top * imageRect.height),
+    normalizedRect.width * imageRect.width,
+    normalizedRect.height * imageRect.height,
+  );
 }
