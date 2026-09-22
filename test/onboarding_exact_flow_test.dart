@@ -89,7 +89,9 @@ void main() {
     expect(find.byType(CalibrationResultScreen), findsOneWidget);
 
     await tester.tap(
-      find.byKey(const ValueKey('artwork-hotspot-calibration-result.recalibrate')),
+      find.byKey(
+        const ValueKey('artwork-hotspot-calibration-result.recalibrate'),
+      ),
     );
     await tester.pumpAndSettle();
 
@@ -97,35 +99,36 @@ void main() {
     expect(find.byType(CalibrationResultScreen), findsNothing);
   });
 
-  testWidgets('First Adventure leaves onboarding only after successful result', (
-    tester,
-  ) async {
-    var enteredApp = 0;
-    await tester.pumpWidget(
-      MaterialApp(
-        home: OnboardingScreen(
-          onRunCalibration: () async => true,
-          onEnterApp: () => enteredApp++,
+  testWidgets(
+    'First Adventure leaves onboarding only after successful result',
+    (tester) async {
+      var enteredApp = 0;
+      await tester.pumpWidget(
+        MaterialApp(
+          home: OnboardingScreen(
+            onRunCalibration: () async => true,
+            onEnterApp: () => enteredApp++,
+          ),
         ),
-      ),
-    );
-    await tester.pumpAndSettle();
-    await startWelcome(tester);
+      );
+      await tester.pumpAndSettle();
+      await startWelcome(tester);
 
-    await tester.tap(
-      find.byKey(const ValueKey('artwork-hotspot-first-calibration.start')),
-    );
-    await tester.pumpAndSettle();
+      await tester.tap(
+        find.byKey(const ValueKey('artwork-hotspot-first-calibration.start')),
+      );
+      await tester.pumpAndSettle();
 
-    await tester.tap(
-      find.byKey(
-        const ValueKey('artwork-hotspot-calibration-result.start-adventure'),
-      ),
-    );
-    await tester.pump();
+      await tester.tap(
+        find.byKey(
+          const ValueKey('artwork-hotspot-calibration-result.start-adventure'),
+        ),
+      );
+      await tester.pump();
 
-    expect(enteredApp, 1);
-  });
+      expect(enteredApp, 1);
+    },
+  );
 
   testWidgets('Calibration information panels do not become fake hotspots', (
     tester,
