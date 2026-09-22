@@ -1,0 +1,34 @@
+name: ActiRune Weekly League Artwork Capture
+
+on:
+  push:
+    branches:
+      - integration/artwork-interactions-20260921
+    paths:
+      - '.github/workflows/actirune-weekly-league-artifact.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout integration branch
+        uses: actions/checkout@v4
+        with:
+          ref: integration/artwork-interactions-20260921
+
+      - name: Guard exact Weekly League Result artwork
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f visual_authority/20260921/final_remaining_13/04_WEEKLY_LEAGUE_RESULT_POPUP_FINAL.png
+
+      - name: Upload exact Weekly League Result artwork
+        uses: actions/upload-artifact@v4
+        with:
+          name: actirune-weekly-league-reference
+          path: visual_authority/20260921/final_remaining_13/04_WEEKLY_LEAGUE_RESULT_POPUP_FINAL.png
+          retention-days: 1
