@@ -2,6 +2,7 @@ import 'package:actirune/app/main_shell.dart';
 import 'package:actirune/features/adventure/adventure_screen.dart';
 import 'package:actirune/features/adventure/world_progression_screen.dart';
 import 'package:actirune/features/home/home_screen.dart';
+import 'package:actirune/features/profile/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -37,6 +38,26 @@ void main() {
       ),
       findsOneWidget,
     );
+  });
+
+  testWidgets('Profile World Progress opens canonical World Progression', (
+    tester,
+  ) async {
+    await tester.pumpWidget(const MaterialApp(home: MainShell()));
+    await tester.pumpAndSettle();
+
+    await tester.tap(
+      find.byKey(const ValueKey('artwork-hotspot-home.nav-profile')),
+    );
+    await tester.pumpAndSettle();
+    expect(find.byType(ProfileScreen), findsOneWidget);
+
+    await tester.tap(
+      find.byKey(const ValueKey('artwork-hotspot-profile.world-progress')),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byType(WorldProgressionScreen), findsOneWidget);
   });
 
   testWidgets('World Progression back returns to Adventure', (tester) async {
