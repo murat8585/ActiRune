@@ -192,8 +192,7 @@ class _MainShellState extends State<MainShell> {
       MaterialPageRoute<void>(
         builder: (routeContext) => WorldProgressionScreen(
           onBack: () => Navigator.of(routeContext).pop(),
-          onHeroProfile: () =>
-              _closeChildStackAndSelect(routeContext, 'hero'),
+          onHeroProfile: () => _closeChildStackAndSelect(routeContext, 'hero'),
           onNotifications: () => _openNotifications(routeContext),
           onSettings: () => _openSettingsHub(routeContext),
           onRootNavigate: (next) =>

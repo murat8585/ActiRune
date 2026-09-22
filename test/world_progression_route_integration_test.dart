@@ -54,9 +54,7 @@ void main() {
     await openWorldProgression(tester);
 
     await tester.tap(
-      find.byKey(
-        const ValueKey('artwork-hotspot-world-progression.nav-home'),
-      ),
+      find.byKey(const ValueKey('artwork-hotspot-world-progression.nav-home')),
     );
     await tester.pumpAndSettle();
 

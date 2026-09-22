@@ -24,36 +24,39 @@ void main() {
     );
   }
 
-  testWidgets('World Progression uses canonical artwork and locked boss action', (
+  testWidgets(
+    'World Progression uses canonical artwork and locked boss action',
+    (tester) async {
+      var bossTaps = 0;
+      await tester.pumpWidget(
+        buildSubject(
+          onBossPreview: () => bossTaps++,
+          onShowNextTarget: () {},
+          onRewardPreview: () {},
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final surface = tester.widget<ArtworkInteractionSurface>(
+        find.byType(ArtworkInteractionSurface),
+      );
+      expect(surface.assetPath, WorldProgressionScreen.artworkAsset);
+      expect(surface.sourceSize, WorldProgressionScreen.artworkSize);
+      expect(WorldProgressionScreen.artworkSize, const Size(941, 1672));
+
+      final boss = find.byKey(
+        const ValueKey('artwork-hotspot-world-progression.boss-preview'),
+      );
+      expect(boss, findsOneWidget);
+      await tester.tap(boss, warnIfMissed: false);
+      await tester.pump();
+      expect(bossTaps, 0);
+    },
+  );
+
+  testWidgets('boss preview dispatches only after product unlock', (
     tester,
   ) async {
-    var bossTaps = 0;
-    await tester.pumpWidget(
-      buildSubject(
-        onBossPreview: () => bossTaps++,
-        onShowNextTarget: () {},
-        onRewardPreview: () {},
-      ),
-    );
-    await tester.pumpAndSettle();
-
-    final surface = tester.widget<ArtworkInteractionSurface>(
-      find.byType(ArtworkInteractionSurface),
-    );
-    expect(surface.assetPath, WorldProgressionScreen.artworkAsset);
-    expect(surface.sourceSize, WorldProgressionScreen.artworkSize);
-    expect(WorldProgressionScreen.artworkSize, const Size(941, 1672));
-
-    final boss = find.byKey(
-      const ValueKey('artwork-hotspot-world-progression.boss-preview'),
-    );
-    expect(boss, findsOneWidget);
-    await tester.tap(boss, warnIfMissed: false);
-    await tester.pump();
-    expect(bossTaps, 0);
-  });
-
-  testWidgets('boss preview dispatches only after product unlock', (tester) async {
     var bossTaps = 0;
     await tester.pumpWidget(
       buildSubject(bossUnlocked: true, onBossPreview: () => bossTaps++),
@@ -103,9 +106,7 @@ void main() {
     expect(rewardPreview, 1);
 
     await tester.tap(
-      find.byKey(
-        const ValueKey('artwork-hotspot-world-progression.nav-home'),
-      ),
+      find.byKey(const ValueKey('artwork-hotspot-world-progression.nav-home')),
     );
     await tester.pump();
     expect(routed, WorldProgressionRootDestination.home);
