@@ -104,16 +104,6 @@ jobs:
       - name: Resolve dependencies
         run: flutter pub get
 
-      - name: Format Events route test for capture
-        run: dart format test/events_route_integration_test.dart
-
-      - name: Capture formatted Events route test
-        uses: actions/upload-artifact@v4
-        with:
-          name: actirune-formatted-events-route-test
-          path: test/events_route_integration_test.dart
-          retention-days: 1
-
       - name: Verify formatting
         run: dart format --output=none --set-exit-if-changed lib test
 
