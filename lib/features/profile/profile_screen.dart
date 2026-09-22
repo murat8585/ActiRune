@@ -26,6 +26,7 @@ class ProfileScreen extends StatelessWidget {
     this.onPrivacy,
     this.onSettings,
     this.onRootNavigate,
+    this.battleRootEnabled = true,
   });
 
   static const artworkAsset =
@@ -47,6 +48,7 @@ class ProfileScreen extends StatelessWidget {
   final VoidCallback? onPrivacy;
   final VoidCallback? onSettings;
   final ValueChanged<ProfileRootDestination>? onRootNavigate;
+  final bool battleRootEnabled;
 
   ArtworkHotspot _hotspot({
     required String id,
@@ -69,12 +71,15 @@ class ProfileScreen extends StatelessWidget {
     required Rect normalizedRect,
   }) {
     final callback = onRootNavigate;
+    final enabled =
+        callback != null &&
+        (destination != ProfileRootDestination.battle || battleRootEnabled);
     return ArtworkHotspot(
       id: 'profile.nav-${destination.name}',
       semanticLabel: semanticLabel,
       normalizedRect: normalizedRect,
-      enabled: callback != null,
-      onTap: callback == null ? () {} : () => callback(destination),
+      enabled: enabled,
+      onTap: enabled ? () => callback(destination) : () {},
     );
   }
 
