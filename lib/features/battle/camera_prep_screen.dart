@@ -38,6 +38,29 @@ class CameraPrepReadiness {
       space.isReady &&
       poseDetection.isReady;
 
+  static const checking = CameraPrepReadiness(
+    camera: CameraPrepCheckStatus(
+      state: CameraPrepCheckState.checking,
+      label: 'Kontrol Ediliyor',
+    ),
+    fullBody: CameraPrepCheckStatus(
+      state: CameraPrepCheckState.checking,
+      label: 'Kontrol Ediliyor',
+    ),
+    lighting: CameraPrepCheckStatus(
+      state: CameraPrepCheckState.checking,
+      label: 'Kontrol Ediliyor',
+    ),
+    space: CameraPrepCheckStatus(
+      state: CameraPrepCheckState.checking,
+      label: 'Kontrol Ediliyor',
+    ),
+    poseDetection: CameraPrepCheckStatus(
+      state: CameraPrepCheckState.checking,
+      label: 'Kontrol Ediliyor',
+    ),
+  );
+
   static const ready = CameraPrepReadiness(
     camera: CameraPrepCheckStatus(
       state: CameraPrepCheckState.ready,
