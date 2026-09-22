@@ -7,18 +7,24 @@ Branch: `integration/artwork-interactions-20260921`
 - Run: 194
 - Commit: `847c32b442a16fd61ab8c5341892329cf4298096`
 - Result: SUCCESS
-- Scope: canonical Quest Chain artwork + interaction validation
+- Scope at that green checkpoint: canonical Quest Chain artwork + interaction validation
 
-## Current HEAD / open red gate
-- Current HEAD when this checkpoint was created: `5a18b7a6487991ed0ddf0ddeb3df0eb44f9d4e77`
-- Run: 197
-- Result: FAILURE
-- Failure step: `Verify formatting`
-- Exact file reported by CI: `test/quest_chain_screen_test.dart`
-- Production artwork guard and intrinsic geometry passed before the failure.
-- Analyzer / focused tests / full Flutter suite were skipped because formatting failed first.
+## Current HEAD / active screen
+- Active screen: Profile -> Achievements / Rozetler
+- Canonical Achievements artwork: `visual_authority/20260921/current/01_CANONICAL_FINAL/VIS_0215__P1_ACHIEVEMENTS_FINAL.png`
+- Profile -> Achievements route is connected.
+- Achievements interaction regressions exist in `test/achievements_screen_test.dart`.
+- Canonical Dart formatting for the Achievements route/test was applied by the repository workflow.
+- Post-format code commit before this checkpoint: `c4f08a5cf18eb3d2fa4f727f644c50cfdb6edb3e` (`Apply canonical Achievements route formatting`).
 
-## Completed / verified major areas
+## Latest validation evidence
+- Direct Validation Run 216 on `f6fe77df8d26f915059c1751c20ae9a8a1352615`: FAILURE at `Verify formatting`; canonical artwork presence and dimensions passed; analyze/tests were skipped.
+- Direct Validation Run 217 on `cba40ac66c451945dd98fcb2a61d75dedb291e68`: FAILURE at `Verify formatting`; exact changed file remained `test/achievements_screen_test.dart`.
+- Achievements Route Apply Run 3 on `8013fd1e4e0cb8323feb6af27673189a058fc95a`: SUCCESS.
+- That workflow ran Flutter's canonical formatter against `lib/app/main_shell.dart` and `test/achievements_screen_test.dart`, then committed the formatter output as `c4f08a5cf18eb3d2fa4f727f644c50cfdb6edb3e`.
+- A full Direct Validation has not yet been proven green on the canonical post-format tree, so Achievements is not marked VERIFIED yet.
+
+## Completed / previously verified major areas
 - Canonical root navigation: Ana Dünya / Macera / Savaş / Kahraman / Profil
 - Home, Adventure, Hero and Profile artwork shells
 - Battle Prep, Camera Prep, Live Battle, Form Coach, Victory, Defeat
@@ -31,27 +37,18 @@ Branch: `integration/artwork-interactions-20260921`
 - Hero/Profile child route batch
 - Rune Shrine Result exact-art shell
 - Daily Quests / Weekly Quests / Quest Chain / Rune Shrine Ready artwork included in strict validation
+- World Progression implementation progressed after the older Quest Chain checkpoint.
 
-## Current Quest Chain state
-- `VIS_0174__P1_QUEST_CHAIN_FINAL.png` is the canonical exact-art shell.
-- Adventure -> Görevler -> Quest Chain is wired.
-- Hero -> Karakter Hikayesi -> Quest Chain is wired.
-- `AKTİF GÖREVE GİT` enters Battle only when a real battle owner exists.
-- Daily-streak and completion-reward actions remain explicit owner callbacks; no fake engine state is created.
-
-## Current Daily / Shrine evidence boundary
-- Home -> Günlük Seri -> Daily Quests is authoritative.
-- Home -> Ödüller is Daily Reward, not Rune Shrine.
-- Daily `Günlük Rün Sandığı`, free task change and help have historical missing-engine-binding evidence; do not invent effects.
-- Rune Shrine Ready is a separate Home-family state with a voluntary rewarded-ad rule, historical cooldown 4h and daily max 3.
-- Rune Shrine Result shell is implemented and green, but the authoritative parent transition must not be guessed.
+## Product/evidence boundary
+- Do not invent gameplay effects, engine state, rewards, routes, entitlement behavior, or ad behavior where product/engine authority is absent.
+- Approved canonical artwork must be used as-is; do not generate replacement art in runtime implementation.
+- Meaningful gameplay progress remains movement-backed under the Master Product Bible.
 
 ## Next exact actions
-1. Apply canonical Dart formatting to `test/quest_chain_screen_test.dart`.
-2. Re-run Direct Validation and require full green: format -> analyze -> focused tests -> full Flutter suite -> diff hygiene.
-3. Update this checkpoint with the new green run/commit.
-4. Continue Daily Quests / Rune Shrine Ready owner-route work only where product/engine authority exists.
-5. Continue global interaction closure; no synthetic gameplay effects or routes.
+1. Run Direct Validation against the canonical post-format Achievements tree and require full green: format -> analyze -> focused interaction tests -> full Flutter suite -> diff hygiene.
+2. If a gate fails, use the exact CI evidence and make only the smallest evidence-backed correction.
+3. When fully green, record the exact green run and commit in this checkpoint.
+4. Only then close Achievements and move to the next Phase-1 implementation screen supported by canonical art and product authority.
 
 ## Permanent working rule
 After each meaningful green batch, update this file with the latest green commit, Actions run, completed scope, blockers and exact next step. This file is the GitHub recovery checkpoint when a chat/tab ends.
