@@ -94,9 +94,7 @@ void main() {
     expect(selectedTask, EventDetailTask.verifiedBattles);
 
     await tester.tap(
-      find.byKey(
-        const ValueKey('artwork-hotspot-event-detail.task-eventGoal'),
-      ),
+      find.byKey(const ValueKey('artwork-hotspot-event-detail.task-eventGoal')),
     );
     await tester.pump();
     expect(selectedTask, EventDetailTask.eventGoal);
