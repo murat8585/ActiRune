@@ -35,9 +35,7 @@ void main() {
     expect(find.byType(DailyQuestsScreen), findsOneWidget);
 
     await tester.tap(
-      find.byKey(
-        const ValueKey('artwork-hotspot-daily-quests.nav-adventure'),
-      ),
+      find.byKey(const ValueKey('artwork-hotspot-daily-quests.nav-adventure')),
     );
     await tester.pumpAndSettle();
 
