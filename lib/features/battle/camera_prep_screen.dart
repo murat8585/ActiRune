@@ -215,7 +215,7 @@ class _ReadinessBadge extends StatelessWidget {
         const Color(0xFF79F7AE),
       ),
       CameraPrepCheckState.checking => (
-        Icons.progress_activity,
+        Icons.hourglass_empty,
         const Color(0xFFFFC96B),
       ),
       CameraPrepCheckState.warning => (
