@@ -20,6 +20,7 @@ class LiveBattleScreen extends StatefulWidget {
   static const artworkAsset =
       'visual_authority/20260921/current/02_CORE_LOCKED_ANCHORS/'
       'VIS_0168__CORE_LIVE_BATTLE_ANCHOR.png';
+  static const artworkSize = Size(941, 1672);
 
   final BattleSessionEngine session;
   final VoidCallback onOpenFormCoach;
@@ -132,6 +133,7 @@ class _LiveBattleScreenState extends State<LiveBattleScreen>
         bottom: false,
         child: ArtworkInteractionSurface(
           assetPath: LiveBattleScreen.artworkAsset,
+          sourceSize: LiveBattleScreen.artworkSize,
           hotspots: [
             ArtworkHotspot(
               id: 'live-battle.pause',
