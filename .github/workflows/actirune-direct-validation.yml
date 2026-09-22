@@ -66,21 +66,6 @@ jobs:
       - name: Resolve dependencies
         run: flutter pub get
 
-      - name: Format Defeat rebuild source
-        run: >-
-          dart format
-          lib/core/widgets/artwork_interaction_surface.dart
-          lib/features/battle/defeat_screen.dart
-
-      - name: Capture formatted Defeat source
-        uses: actions/upload-artifact@v4
-        with:
-          name: actirune-defeat-formatted-source
-          path: |
-            lib/core/widgets/artwork_interaction_surface.dart
-            lib/features/battle/defeat_screen.dart
-          retention-days: 1
-
       - name: Verify formatting
         run: dart format --output=none --set-exit-if-changed lib test
 
