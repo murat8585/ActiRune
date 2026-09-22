@@ -74,6 +74,18 @@ jobs:
       - name: Resolve dependencies
         run: flutter pub get
 
+      - name: Format MainShell files for capture
+        run: dart format lib/app/main_shell.dart test/main_shell_navigation_test.dart
+
+      - name: Capture formatted MainShell files
+        uses: actions/upload-artifact@v4
+        with:
+          name: actirune-formatted-main-shell
+          path: |
+            lib/app/main_shell.dart
+            test/main_shell_navigation_test.dart
+          retention-days: 1
+
       - name: Verify formatting
         run: dart format --output=none --set-exit-if-changed lib test
 
