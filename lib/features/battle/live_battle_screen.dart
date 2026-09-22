@@ -50,7 +50,9 @@ class _LiveBattleScreenState extends State<LiveBattleScreen>
   @override
   void didUpdateWidget(covariant LiveBattleScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (!oldWidget.cameraEnabled && widget.cameraEnabled && _poseCamera == null) {
+    if (!oldWidget.cameraEnabled &&
+        widget.cameraEnabled &&
+        _poseCamera == null) {
       _poseCamera = PoseCameraController(onVerifiedRep: _acceptVerifiedRep);
       unawaited(_poseCamera!.start());
     } else if (oldWidget.cameraEnabled && !widget.cameraEnabled) {
@@ -134,23 +136,13 @@ class _LiveBattleScreenState extends State<LiveBattleScreen>
             ArtworkHotspot(
               id: 'live-battle.pause',
               semanticLabel: 'Durdur',
-              normalizedRect: const Rect.fromLTWH(
-                0.030,
-                0.116,
-                0.074,
-                0.060,
-              ),
+              normalizedRect: const Rect.fromLTWH(0.030, 0.116, 0.074, 0.060),
               onTap: _openFormCoach,
             ),
             ArtworkHotspot(
               id: 'live-battle.rune-power',
               semanticLabel: 'Rune Gücü',
-              normalizedRect: const Rect.fromLTWH(
-                0.083,
-                0.783,
-                0.235,
-                0.082,
-              ),
+              normalizedRect: const Rect.fromLTWH(0.083, 0.783, 0.235, 0.082),
               onTap: () => widget.session.requestSupportAction(
                 BattleSupportAction.runePower,
               ),
@@ -158,12 +150,7 @@ class _LiveBattleScreenState extends State<LiveBattleScreen>
             ArtworkHotspot(
               id: 'live-battle.protection',
               semanticLabel: 'Koruma',
-              normalizedRect: const Rect.fromLTWH(
-                0.371,
-                0.783,
-                0.235,
-                0.082,
-              ),
+              normalizedRect: const Rect.fromLTWH(0.371, 0.783, 0.235, 0.082),
               onTap: () => widget.session.requestSupportAction(
                 BattleSupportAction.protection,
               ),
@@ -171,12 +158,7 @@ class _LiveBattleScreenState extends State<LiveBattleScreen>
             ArtworkHotspot(
               id: 'live-battle.health-potion',
               semanticLabel: 'Güç İksiri',
-              normalizedRect: const Rect.fromLTWH(
-                0.662,
-                0.783,
-                0.235,
-                0.082,
-              ),
+              normalizedRect: const Rect.fromLTWH(0.662, 0.783, 0.235, 0.082),
               onTap: () => widget.session.requestSupportAction(
                 BattleSupportAction.powerPotion,
               ),
@@ -184,12 +166,7 @@ class _LiveBattleScreenState extends State<LiveBattleScreen>
             ArtworkHotspot(
               id: 'live-battle.battle-continue',
               semanticLabel: 'HAREKET DEVAM ETTİKÇE ZAFER YAKLAŞIR!',
-              normalizedRect: const Rect.fromLTWH(
-                0.182,
-                0.872,
-                0.638,
-                0.063,
-              ),
+              normalizedRect: const Rect.fromLTWH(0.182, 0.872, 0.638, 0.063),
               onTap: _continueBattle,
             ),
           ],
