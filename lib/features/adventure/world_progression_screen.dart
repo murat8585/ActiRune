@@ -21,8 +21,10 @@ class WorldProgressionScreen extends StatelessWidget {
     this.onWaterfallTemple,
     this.onWindCliffs,
     this.onShowNextTarget,
+    this.onBossPreview,
     this.onRewardPreview,
     this.onRootNavigate,
+    this.bossUnlocked = false,
     this.battleRootEnabled = true,
   });
 
@@ -41,8 +43,10 @@ class WorldProgressionScreen extends StatelessWidget {
   final VoidCallback? onWaterfallTemple;
   final VoidCallback? onWindCliffs;
   final VoidCallback? onShowNextTarget;
+  final VoidCallback? onBossPreview;
   final VoidCallback? onRewardPreview;
   final ValueChanged<WorldProgressionRootDestination>? onRootNavigate;
+  final bool bossUnlocked;
   final bool battleRootEnabled;
 
   ArtworkHotspot _hotspot({
@@ -50,13 +54,15 @@ class WorldProgressionScreen extends StatelessWidget {
     required String semanticLabel,
     required Rect normalizedRect,
     required VoidCallback? callback,
+    bool enabled = true,
   }) {
+    final active = enabled && callback != null;
     return ArtworkHotspot(
       id: id,
       semanticLabel: semanticLabel,
       normalizedRect: normalizedRect,
-      enabled: callback != null,
-      onTap: callback ?? () {},
+      enabled: active,
+      onTap: active ? callback : () {},
     );
   }
 
@@ -199,6 +205,18 @@ class WorldProgressionScreen extends StatelessWidget {
                 0.0330,
               ),
               callback: onShowNextTarget,
+            ),
+            _hotspot(
+              id: 'world-progression.boss-preview',
+              semanticLabel: "Boss'u İncele",
+              normalizedRect: const Rect.fromLTWH(
+                0.6500,
+                0.7420,
+                0.2950,
+                0.0330,
+              ),
+              callback: onBossPreview,
+              enabled: bossUnlocked,
             ),
             _hotspot(
               id: 'world-progression.reward-preview',
