@@ -59,12 +59,14 @@ class _MainShellState extends State<MainShell> {
     };
   }
 
-  void _selectHomeRoot(HomeRootDestination next) => _select(_rootByName(next.name));
+  void _selectHomeRoot(HomeRootDestination next) =>
+      _select(_rootByName(next.name));
   void _selectAdventureRoot(AdventureRootDestination next) =>
       _select(_rootByName(next.name));
   void _selectBattleRoot(BattlePrepRootDestination next) =>
       _select(_rootByName(next.name));
-  void _selectHeroRoot(HeroRootDestination next) => _select(_rootByName(next.name));
+  void _selectHeroRoot(HeroRootDestination next) =>
+      _select(_rootByName(next.name));
   void _selectProfileRoot(ProfileRootDestination next) =>
       _select(_rootByName(next.name));
 
