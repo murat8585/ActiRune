@@ -90,9 +90,7 @@ void main() {
     await tester.pump();
 
     await tester.tap(
-      find.byKey(
-        const ValueKey('artwork-hotspot-weekly-quests.daily-streak'),
-      ),
+      find.byKey(const ValueKey('artwork-hotspot-weekly-quests.daily-streak')),
     );
     await tester.pump();
     await tester.tap(
@@ -151,43 +149,38 @@ void main() {
     await tester.pumpWidget(const MaterialApp(home: MainShell()));
     await tester.pump();
 
-    await tester.tap(
-      find.byKey(const ValueKey('artwork-hotspot-home.quests')),
-    );
+    await tester.tap(find.byKey(const ValueKey('artwork-hotspot-home.quests')));
     await tester.pumpAndSettle();
     expect(find.byType(WeeklyQuestsScreen), findsOneWidget);
 
     await tester.tap(
-      find.byKey(
-        const ValueKey('artwork-hotspot-weekly-quests.daily-streak'),
-      ),
+      find.byKey(const ValueKey('artwork-hotspot-weekly-quests.daily-streak')),
     );
     await tester.pumpAndSettle();
     expect(find.byType(DailyQuestsScreen), findsOneWidget);
   });
 
-  testWidgets('MainShell exposes weekly reward only when an owner supplies it', (
-    tester,
-  ) async {
-    var claimed = 0;
-    await tester.pumpWidget(
-      MaterialApp(
-        home: MainShell(onWeeklyQuestChainReward: () => claimed++),
-      ),
-    );
-    await tester.pump();
+  testWidgets(
+    'MainShell exposes weekly reward only when an owner supplies it',
+    (tester) async {
+      var claimed = 0;
+      await tester.pumpWidget(
+        MaterialApp(home: MainShell(onWeeklyQuestChainReward: () => claimed++)),
+      );
+      await tester.pump();
 
-    await tester.tap(
-      find.byKey(const ValueKey('artwork-hotspot-home.quests')),
-    );
-    await tester.pumpAndSettle();
-    await tester.tap(
-      find.byKey(
-        const ValueKey('artwork-hotspot-weekly-quests.claim-quest-chain'),
-      ),
-    );
-    await tester.pump();
+      await tester.tap(
+        find.byKey(const ValueKey('artwork-hotspot-home.quests')),
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(
+        find.byKey(
+          const ValueKey('artwork-hotspot-weekly-quests.claim-quest-chain'),
+        ),
+      );
+      await tester.pump();
 
-    expect(claimed, 1);
-  });
+      expect(claimed, 1);
+    },
+  );
 }
