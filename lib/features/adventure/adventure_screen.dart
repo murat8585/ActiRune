@@ -23,6 +23,7 @@ class AdventureScreen extends StatelessWidget {
     this.onStory,
     this.onAdventureLog,
     this.onRootNavigate,
+    this.battleRootEnabled = true,
   });
 
   static const artworkAsset =
@@ -40,6 +41,7 @@ class AdventureScreen extends StatelessWidget {
   final VoidCallback? onStory;
   final VoidCallback? onAdventureLog;
   final ValueChanged<AdventureRootDestination>? onRootNavigate;
+  final bool battleRootEnabled;
 
   ArtworkHotspot _hotspot({
     required String id,
@@ -62,12 +64,15 @@ class AdventureScreen extends StatelessWidget {
     required Rect normalizedRect,
   }) {
     final callback = onRootNavigate;
+    final enabled =
+        callback != null &&
+        (destination != AdventureRootDestination.battle || battleRootEnabled);
     return ArtworkHotspot(
       id: 'adventure.nav-${destination.name}',
       semanticLabel: semanticLabel,
       normalizedRect: normalizedRect,
-      enabled: callback != null,
-      onTap: callback == null ? () {} : () => callback(destination),
+      enabled: enabled,
+      onTap: enabled ? () => callback(destination) : () {},
     );
   }
 
