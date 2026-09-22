@@ -114,9 +114,7 @@ void main() {
     expect(continueCount, 1);
 
     await tester.tap(
-      find.byKey(
-        const ValueKey('artwork-hotspot-daily-summary.view-details'),
-      ),
+      find.byKey(const ValueKey('artwork-hotspot-daily-summary.view-details')),
     );
     await tester.pump();
     expect(detailsCount, 1);
