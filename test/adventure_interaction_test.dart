@@ -124,9 +124,7 @@ void main() {
 
     expect(find.text('SAVAŞ HAZIRLIĞI'), findsNothing);
     await tester.tap(
-      find.byKey(
-        const ValueKey('artwork-hotspot-adventure.encounter-preview'),
-      ),
+      find.byKey(const ValueKey('artwork-hotspot-adventure.encounter-preview')),
     );
     await tester.pump();
 
