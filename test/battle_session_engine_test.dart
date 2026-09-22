@@ -34,6 +34,19 @@ void main() {
       expect(engine.snapshot.supportActionRequestCount, 0);
     });
 
+    test('Camera Prep can return to Battle Prep without losing movement', () {
+      final engine = BattleSessionEngine();
+      engine.prepare(VerifiedMovementType.lunge);
+      engine.enterCameraPrep(syntheticMode: true);
+
+      expect(engine.returnToBattlePrep(), isTrue);
+      expect(engine.snapshot.phase, BattleSessionPhase.battlePrep);
+      expect(engine.snapshot.preparedMovement, VerifiedMovementType.lunge);
+      expect(engine.snapshot.syntheticMode, isTrue);
+      expect(engine.snapshot.rewardedRetriesRemaining, 3);
+      expect(engine.returnToBattlePrep(), isFalse);
+    });
+
     test('Form Coach preserves the session and resumes live battle', () {
       final engine = BattleSessionEngine();
       engine.startLiveBattle();
