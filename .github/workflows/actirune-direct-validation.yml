@@ -88,6 +88,7 @@ jobs:
           test/victory_interaction_test.dart
           test/defeat_interaction_test.dart
           test/battle_flow_host_test.dart
+          test/battle_screen_adapter_test.dart
 
       - name: Full Flutter tests
         run: flutter test --no-pub
