@@ -57,8 +57,10 @@ jobs:
             lib/core/widgets/artwork_interaction_surface.dart
             lib/features/battle/battle_session_engine.dart
             lib/features/battle/live_battle_screen.dart
+            lib/features/battle/form_coach_screen.dart
             test/battle_session_engine_test.dart
             test/artwork_interaction_test.dart
+            test/form_coach_interaction_test.dart
           retention-days: 1
 
       - name: Analyze
@@ -70,6 +72,7 @@ jobs:
           test/combat_engine_test.dart
           test/battle_session_engine_test.dart
           test/artwork_interaction_test.dart
+          test/form_coach_interaction_test.dart
 
       - name: Full Flutter tests
         run: flutter test --no-pub
