@@ -41,26 +41,10 @@ class MainShell extends StatefulWidget {
     this.onQuestChainCompletionRewards,
   });
 
-  /// A battle root is supplied only when a real encounter/session owns it.
-  /// Without one, Battle stays visible in canonical artwork navigation but
-  /// cannot be selected, avoiding a fabricated idle battle screen.
   final BattleRootBuilder? battleRootBuilder;
-
-  /// The integration branch has no authoritative deeper daily-stats route.
-  /// An owning product layer may supply that destination without fabricating
-  /// one inside the artwork shell.
   final VoidCallback? onDailySummaryDetails;
-
-  /// Weekly quest reward mutation stays outside the artwork shell until the
-  /// owning quest engine supplies the real claim behavior.
   final VoidCallback? onWeeklyQuestChainReward;
-
-  /// Quest-chain streak details stay caller-owned until the progress engine
-  /// supplies the real destination.
   final VoidCallback? onQuestChainStreakDetails;
-
-  /// Chapter completion reward inspection stays caller-owned until the quest
-  /// engine supplies the real reward overview behavior.
   final VoidCallback? onQuestChainCompletionRewards;
 
   @override
@@ -372,7 +356,10 @@ class _MainShellState extends State<MainShell> {
         battleRootEnabled: _battleAvailable,
       ),
       AdventureScreen(
+        onDailyStreak: () => _openDailyQuests(context),
         onQuests: () => _openQuestChain(context),
+        onEvents: () => _openEvents(context),
+        onSettings: () => _openSettingsHub(context),
         onRootNavigate: _selectAdventureRoot,
         battleRootEnabled: _battleAvailable,
       ),
