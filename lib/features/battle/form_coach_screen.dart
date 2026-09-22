@@ -44,25 +44,22 @@ class FormCoachScreen extends StatelessWidget {
               id: 'form-coach.rune-action',
               semanticLabel: 'Rune Gücü',
               normalizedRect: const Rect.fromLTWH(0.867, 0.215, 0.082, 0.056),
-              onTap: () => session.requestSupportAction(
-                BattleSupportAction.runePower,
-              ),
+              onTap: () =>
+                  session.requestSupportAction(BattleSupportAction.runePower),
             ),
             ArtworkHotspot(
               id: 'form-coach.guard-action',
               semanticLabel: 'Koruma',
               normalizedRect: const Rect.fromLTWH(0.869, 0.288, 0.080, 0.054),
-              onTap: () => session.requestSupportAction(
-                BattleSupportAction.protection,
-              ),
+              onTap: () =>
+                  session.requestSupportAction(BattleSupportAction.protection),
             ),
             ArtworkHotspot(
               id: 'form-coach.potion-action',
               semanticLabel: 'Güç İksiri',
               normalizedRect: const Rect.fromLTWH(0.868, 0.357, 0.080, 0.052),
-              onTap: () => session.requestSupportAction(
-                BattleSupportAction.powerPotion,
-              ),
+              onTap: () =>
+                  session.requestSupportAction(BattleSupportAction.powerPotion),
             ),
           ],
         ),
