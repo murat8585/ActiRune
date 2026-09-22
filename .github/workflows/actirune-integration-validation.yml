@@ -5,7 +5,7 @@ on:
     branches:
       - integration/artwork-interactions-20260921
     paths:
-      - '_handoff/ACTIRUNE_INTEGRATION_SOURCE_BUNDLE_20260922.tar.gz.b64'
+      - '_handoff/READY_20260922'
   workflow_dispatch:
 
 permissions:
@@ -40,9 +40,11 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          B64='_handoff/ACTIRUNE_INTEGRATION_SOURCE_BUNDLE_20260922.tar.gz.b64'
-          test -s "$B64"
-          base64 --decode "$B64" > /tmp/actirune-source.tar.gz
+          shopt -s nullglob
+          parts=(_handoff/ACTIRUNE_INTEGRATION_SOURCE_BUNDLE_20260922.tar.gz.b64.part-*)
+          test ${#parts[@]} -gt 0
+          cat "${parts[@]}" > /tmp/actirune-source.b64
+          base64 --decode /tmp/actirune-source.b64 > /tmp/actirune-source.tar.gz
           echo '52892f29ba5ad170423f45c66d541ad5f565956a139f99b01b6c25937346958a  /tmp/actirune-source.tar.gz' | sha256sum -c -
           tar -xzf /tmp/actirune-source.tar.gz -C .
           if git status --short visual_authority | grep -q .; then
