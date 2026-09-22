@@ -242,42 +242,43 @@ void main() {
     expect(find.byType(QuestChainScreen), findsNothing);
   });
 
-  testWidgets('MainShell exposes quest-chain owner callbacks without faking UI', (
-    tester,
-  ) async {
-    var streak = 0;
-    var rewards = 0;
-    await tester.pumpWidget(
-      MaterialApp(
-        home: MainShell(
-          onQuestChainStreakDetails: () => streak++,
-          onQuestChainCompletionRewards: () => rewards++,
+  testWidgets(
+    'MainShell exposes quest-chain owner callbacks without faking UI',
+    (tester) async {
+      var streak = 0;
+      var rewards = 0;
+      await tester.pumpWidget(
+        MaterialApp(
+          home: MainShell(
+            onQuestChainStreakDetails: () => streak++,
+            onQuestChainCompletionRewards: () => rewards++,
+          ),
         ),
-      ),
-    );
-    await tester.pump();
+      );
+      await tester.pump();
 
-    await tester.tap(
-      find.byKey(const ValueKey('artwork-hotspot-home.nav-adventure')),
-    );
-    await tester.pump();
-    await tester.tap(
-      find.byKey(const ValueKey('artwork-hotspot-adventure.quests')),
-    );
-    await tester.pumpAndSettle();
+      await tester.tap(
+        find.byKey(const ValueKey('artwork-hotspot-home.nav-adventure')),
+      );
+      await tester.pump();
+      await tester.tap(
+        find.byKey(const ValueKey('artwork-hotspot-adventure.quests')),
+      );
+      await tester.pumpAndSettle();
 
-    await tester.tap(
-      find.byKey(const ValueKey('artwork-hotspot-quest-chain.daily-streak')),
-    );
-    await tester.pump();
-    await tester.tap(
-      find.byKey(
-        const ValueKey('artwork-hotspot-quest-chain.completion-rewards'),
-      ),
-    );
-    await tester.pump();
+      await tester.tap(
+        find.byKey(const ValueKey('artwork-hotspot-quest-chain.daily-streak')),
+      );
+      await tester.pump();
+      await tester.tap(
+        find.byKey(
+          const ValueKey('artwork-hotspot-quest-chain.completion-rewards'),
+        ),
+      );
+      await tester.pump();
 
-    expect(streak, 1);
-    expect(rewards, 1);
-  });
+      expect(streak, 1);
+      expect(rewards, 1);
+    },
+  );
 }
