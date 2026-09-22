@@ -57,6 +57,13 @@ jobs:
               print(f'ARTWORK_DIMENSION {path} {width}x{height}')
           PY
 
+      - name: Capture Victory reference
+        uses: actions/upload-artifact@v4
+        with:
+          name: actirune-victory-reference
+          path: visual_authority/20260921/final_p0_battle/P0_VICTORY_FINAL.png
+          retention-days: 1
+
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
@@ -66,22 +73,8 @@ jobs:
       - name: Resolve dependencies
         run: flutter pub get
 
-      - name: Format rebuilt source
-        run: dart format lib test
-
-      - name: Capture formatted source
-        uses: actions/upload-artifact@v4
-        with:
-          name: actirune-formatted-rebuild
-          path: |
-            lib/core/widgets/artwork_interaction_surface.dart
-            lib/features/battle/battle_session_engine.dart
-            lib/features/battle/live_battle_screen.dart
-            lib/features/battle/form_coach_screen.dart
-            test/battle_session_engine_test.dart
-            test/artwork_interaction_test.dart
-            test/form_coach_interaction_test.dart
-          retention-days: 1
+      - name: Verify formatting
+        run: dart format --output=none --set-exit-if-changed lib test
 
       - name: Analyze
         run: flutter analyze
