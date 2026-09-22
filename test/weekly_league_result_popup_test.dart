@@ -40,9 +40,7 @@ void main() {
     expect(leaderboardCount, 1);
 
     await tester.tap(
-      find.byKey(
-        const ValueKey('artwork-hotspot-weekly-league-result.close'),
-      ),
+      find.byKey(const ValueKey('artwork-hotspot-weekly-league-result.close')),
     );
     await tester.pump();
     expect(closeCount, 1);
