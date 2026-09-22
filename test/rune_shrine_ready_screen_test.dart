@@ -70,9 +70,7 @@ void main() {
     await tester.pump();
 
     final semantics = tester.widget<Semantics>(
-      find.byKey(
-        const ValueKey('artwork-hotspot-rune-shrine-ready.open-gift'),
-      ),
+      find.byKey(const ValueKey('artwork-hotspot-rune-shrine-ready.open-gift')),
     );
     expect(semantics.properties.enabled, isFalse);
   });
@@ -124,9 +122,7 @@ void main() {
 
       await tester.tap(
         find.byKey(
-          ValueKey(
-            'artwork-hotspot-rune-shrine-ready.nav-${destination.name}',
-          ),
+          ValueKey('artwork-hotspot-rune-shrine-ready.nav-${destination.name}'),
         ),
       );
       await tester.pump();
