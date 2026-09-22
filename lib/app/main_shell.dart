@@ -5,6 +5,7 @@ import '../features/battle/battle_prep_screen.dart';
 import '../features/hero/equipment_screen.dart';
 import '../features/hero/hero_screen.dart';
 import '../features/hero/inventory_screen.dart';
+import '../features/hero/movement_mastery_screen.dart';
 import '../features/home/home_screen.dart';
 import '../features/profile/profile_screen.dart';
 
@@ -109,6 +110,16 @@ class _MainShellState extends State<MainShell> {
     });
   }
 
+  void _selectMasteryRoot(MasteryRootDestination next) {
+    _select(switch (next) {
+      MasteryRootDestination.home => _ShellDestination.home,
+      MasteryRootDestination.adventure => _ShellDestination.adventure,
+      MasteryRootDestination.battle => _ShellDestination.battle,
+      MasteryRootDestination.hero => _ShellDestination.hero,
+      MasteryRootDestination.profile => _ShellDestination.profile,
+    });
+  }
+
   void _closeChildStackAndSelect(
     BuildContext routeContext,
     _ShellDestination next,
@@ -158,6 +169,24 @@ class _MainShellState extends State<MainShell> {
     );
   }
 
+  Future<void> _openMovementMastery(BuildContext context) async {
+    await Navigator.of(context).push<void>(
+      MaterialPageRoute<void>(
+        builder: (routeContext) => MovementMasteryScreen(
+          onBack: () => Navigator.of(routeContext).pop(),
+          onRootNavigate: (next) {
+            if (next == MasteryRootDestination.battle && !_battleAvailable) {
+              return;
+            }
+            Navigator.of(routeContext).pop();
+            _selectMasteryRoot(next);
+          },
+          battleRootEnabled: _battleAvailable,
+        ),
+      ),
+    );
+  }
+
   List<Widget> _screens(BuildContext context) {
     return [
       HomeScreen(
@@ -172,6 +201,7 @@ class _MainShellState extends State<MainShell> {
           const SizedBox.shrink(),
       HeroScreen(
         onEquipment: () => _openEquipment(context),
+        onMovementMastery: () => _openMovementMastery(context),
         onRootNavigate: _selectHeroRoot,
         battleRootEnabled: _battleAvailable,
       ),
