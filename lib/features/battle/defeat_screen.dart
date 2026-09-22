@@ -29,7 +29,8 @@ class DefeatScreen extends StatelessWidget {
       builder: (context, _) {
         final remaining = session.snapshot.rewardedRetriesRemaining;
         final retryEnabled =
-            session.snapshot.phase == BattleSessionPhase.defeat && remaining > 0;
+            session.snapshot.phase == BattleSessionPhase.defeat &&
+            remaining > 0;
 
         return Scaffold(
           backgroundColor: Colors.black,
@@ -68,12 +69,7 @@ class DefeatScreen extends StatelessWidget {
                 if (!retryEnabled)
                   const ArtworkOverlay(
                     id: 'defeat.retry-disabled',
-                    normalizedRect: Rect.fromLTWH(
-                      0.142,
-                      0.815,
-                      0.716,
-                      0.050,
-                    ),
+                    normalizedRect: Rect.fromLTWH(0.142, 0.815, 0.716, 0.050),
                     child: ColoredBox(color: Color(0x99000000)),
                   ),
               ],
