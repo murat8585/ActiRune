@@ -1,0 +1,43 @@
+name: ActiRune Pro Format Apply
+
+on:
+  push:
+    branches:
+      - integration/artwork-interactions-20260921
+    paths:
+      - '.github/workflows/actirune-pro-format-apply.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout integration branch
+        uses: actions/checkout@v4
+        with:
+          ref: integration/artwork-interactions-20260921
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - name: Resolve dependencies
+        run: flutter pub get
+      - name: Apply canonical Dart format to Pro test
+        run: dart format test/pro_paywall_screen_test.dart
+      - name: Commit canonical Pro formatting
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add test/pro_paywall_screen_test.dart
+          if git diff --cached --quiet; then
+            echo 'No Pro formatting changes to commit.'
+            exit 0
+          fi
+          git commit -m 'Apply canonical Pro test formatting'
+          git push origin HEAD:integration/artwork-interactions-20260921
