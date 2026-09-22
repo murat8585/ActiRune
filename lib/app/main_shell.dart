@@ -31,27 +31,23 @@ class _MainShellState extends State<MainShell> {
   }
 
   void _selectAdventureRoot(AdventureRootDestination next) {
-    _select(
-      switch (next) {
-        AdventureRootDestination.home => _ShellDestination.home,
-        AdventureRootDestination.adventure => _ShellDestination.adventure,
-        AdventureRootDestination.battle => _ShellDestination.battle,
-        AdventureRootDestination.hero => _ShellDestination.hero,
-        AdventureRootDestination.profile => _ShellDestination.profile,
-      },
-    );
+    _select(switch (next) {
+      AdventureRootDestination.home => _ShellDestination.home,
+      AdventureRootDestination.adventure => _ShellDestination.adventure,
+      AdventureRootDestination.battle => _ShellDestination.battle,
+      AdventureRootDestination.hero => _ShellDestination.hero,
+      AdventureRootDestination.profile => _ShellDestination.profile,
+    });
   }
 
   void _selectProfileRoot(ProfileRootDestination next) {
-    _select(
-      switch (next) {
-        ProfileRootDestination.home => _ShellDestination.home,
-        ProfileRootDestination.adventure => _ShellDestination.adventure,
-        ProfileRootDestination.battle => _ShellDestination.battle,
-        ProfileRootDestination.hero => _ShellDestination.hero,
-        ProfileRootDestination.profile => _ShellDestination.profile,
-      },
-    );
+    _select(switch (next) {
+      ProfileRootDestination.home => _ShellDestination.home,
+      ProfileRootDestination.adventure => _ShellDestination.adventure,
+      ProfileRootDestination.battle => _ShellDestination.battle,
+      ProfileRootDestination.hero => _ShellDestination.hero,
+      ProfileRootDestination.profile => _ShellDestination.profile,
+    });
   }
 
   List<Widget> _screens(BuildContext context) {
