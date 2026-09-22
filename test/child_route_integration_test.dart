@@ -96,7 +96,9 @@ void main() {
     expect(find.byType(MovementMasteryScreen), findsOneWidget);
   });
 
-  testWidgets('Profile opens Player Level and History children', (tester) async {
+  testWidgets('Profile opens Player Level and History children', (
+    tester,
+  ) async {
     await tester.pumpWidget(const MaterialApp(home: MainShell()));
     await tester.pumpAndSettle();
     await openProfile(tester);
@@ -142,9 +144,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byType(SettingsNotificationsScreen), findsOneWidget);
     await tester.tap(
-      find.byKey(
-        const ValueKey('artwork-hotspot-settings-notifications.back'),
-      ),
+      find.byKey(const ValueKey('artwork-hotspot-settings-notifications.back')),
     );
     await tester.pumpAndSettle();
 
@@ -169,7 +169,9 @@ void main() {
     expect(find.byType(SettingsHubScreen), findsOneWidget);
 
     await tester.tap(
-      find.byKey(const ValueKey('artwork-hotspot-settings.section-permissions')),
+      find.byKey(
+        const ValueKey('artwork-hotspot-settings.section-permissions'),
+      ),
     );
     await tester.pumpAndSettle();
     expect(find.byType(SettingsPermissionsScreen), findsOneWidget);
