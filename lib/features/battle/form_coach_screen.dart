@@ -13,6 +13,7 @@ class FormCoachScreen extends StatelessWidget {
   static const artworkAsset =
       'visual_authority/20260921/current/02_CORE_LOCKED_ANCHORS/'
       'VIS_0353__CORE_FORM_COACH_OVERLAY_ANCHOR.png';
+  static const artworkSize = Size(941, 1672);
 
   final BattleSessionEngine session;
   final VoidCallback onResumeBattle;
@@ -31,6 +32,7 @@ class FormCoachScreen extends StatelessWidget {
         bottom: false,
         child: ArtworkInteractionSurface(
           assetPath: FormCoachScreen.artworkAsset,
+          sourceSize: FormCoachScreen.artworkSize,
           hotspots: [
             ArtworkHotspot(
               id: 'form-coach.pause',
