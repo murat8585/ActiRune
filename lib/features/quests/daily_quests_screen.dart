@@ -58,8 +58,7 @@ class DailyQuestsScreen extends StatelessWidget {
     final callback = onRootNavigate;
     final enabled =
         callback != null &&
-        (destination != DailyQuestsRootDestination.battle ||
-            battleRootEnabled);
+        (destination != DailyQuestsRootDestination.battle || battleRootEnabled);
     return ArtworkHotspot(
       id: 'daily-quests.nav-${destination.name}',
       semanticLabel: semanticLabel,
