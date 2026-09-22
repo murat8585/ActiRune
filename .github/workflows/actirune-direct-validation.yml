@@ -70,22 +70,8 @@ jobs:
       - name: Resolve dependencies
         run: flutter pub get
 
-      - name: Format prep sources
-        run: >-
-          dart format
-          lib/features/battle/battle_session_engine.dart
-          lib/features/battle/camera_prep_screen.dart
-          test/camera_prep_interaction_test.dart
-
-      - name: Capture formatted prep sources
-        uses: actions/upload-artifact@v4
-        with:
-          name: actirune-formatted-prep-sources
-          path: |
-            lib/features/battle/battle_session_engine.dart
-            lib/features/battle/camera_prep_screen.dart
-            test/camera_prep_interaction_test.dart
-          retention-days: 1
+      - name: Verify formatting
+        run: dart format --output=none --set-exit-if-changed lib test
 
       - name: Analyze
         run: flutter analyze
