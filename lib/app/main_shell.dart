@@ -6,6 +6,7 @@ import '../features/hero/equipment_screen.dart';
 import '../features/hero/hero_screen.dart';
 import '../features/hero/inventory_screen.dart';
 import '../features/hero/movement_mastery_screen.dart';
+import '../features/home/events_screen.dart';
 import '../features/home/home_screen.dart';
 import '../features/profile/player_level_screen.dart';
 import '../features/profile/profile_history_screen.dart';
@@ -75,6 +76,19 @@ class _MainShellState extends State<MainShell> {
     if (next == _ShellDestination.battle && !_battleAvailable) return;
     Navigator.of(routeContext).popUntil((route) => route.isFirst);
     _select(next);
+  }
+
+  Future<void> _openEvents(BuildContext context) async {
+    await Navigator.of(context).push<void>(
+      MaterialPageRoute<void>(
+        builder: (routeContext) => EventsScreen(
+          onBack: () => Navigator.of(routeContext).pop(),
+          onRootNavigate: (next) =>
+              _closeChildStackAndSelect(routeContext, next.name),
+          battleRootEnabled: _battleAvailable,
+        ),
+      ),
+    );
   }
 
   Future<void> _openInventory(BuildContext context) async {
@@ -238,6 +252,7 @@ class _MainShellState extends State<MainShell> {
   List<Widget> _screens(BuildContext context) {
     return [
       HomeScreen(
+        onEvents: () => _openEvents(context),
         onRootNavigate: _selectHomeRoot,
         battleRootEnabled: _battleAvailable,
       ),
