@@ -392,6 +392,7 @@ class _MainShellState extends State<MainShell> {
       ),
       ProfileScreen(
         onProfileDetails: () => _openPlayerLevel(context),
+        onWorldProgress: () => _openWorldProgression(context),
         onHistory: () => _openProfileHistory(context),
         onAccountInfo: () => _openAccount(context),
         onNotifications: () => _openNotifications(context),
