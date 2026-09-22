@@ -1,6 +1,7 @@
 import 'package:actirune/app/main_shell.dart';
 import 'package:actirune/features/home/event_detail_popup.dart';
 import 'package:actirune/features/home/events_screen.dart';
+import 'package:actirune/features/profile/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -26,10 +27,14 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byType(EventDetailPopup), findsOneWidget);
-    expect(
+
+    await tester.tap(
       find.byKey(const ValueKey('artwork-hotspot-events.nav-profile')),
-      findsNothing,
+      warnIfMissed: false,
     );
+    await tester.pumpAndSettle();
+    expect(find.byType(EventDetailPopup), findsOneWidget);
+    expect(find.byType(ProfileScreen), findsNothing);
 
     await tester.tap(
       find.byKey(const ValueKey('artwork-hotspot-event-detail.close')),
