@@ -36,6 +36,17 @@ jobs:
           test -f visual_authority/20260921/current/01_CANONICAL_FINAL/VIS_0171__P1_HERO_MAIN_FINAL.png
           test -f visual_authority/20260921/current/01_CANONICAL_FINAL/VIS_0222__P1_PROFILE_FINAL.png
           test -f visual_authority/20260921/current/02_CORE_LOCKED_ANCHORS/VIS_0231__CORE_ADVENTURE_ANCHOR.png
+          test -f visual_authority/20260921/final_p1/02_P1_EQUIPMENT_FINAL.png
+          test -f visual_authority/20260921/final_p1/03_P1_INVENTORY_FINAL.png
+          test -f visual_authority/20260921/final_p1/05_P1_MOVEMENT_MASTERY_FINAL.png
+          test -f visual_authority/20260921/final_p1/06_P1_PLAYER_LEVEL_FINAL.png
+          test -f visual_authority/20260921/final_p1/07_P1_SETTINGS_HUB_FINAL.png
+          test -f visual_authority/20260921/final_remaining_13/08_SETTINGS_ACCOUNT_FINAL.png
+          test -f visual_authority/20260921/final_remaining_13/09_SETTINGS_NOTIFICATIONS_FINAL.png
+          test -f visual_authority/20260921/final_remaining_13/10_SETTINGS_PRIVACY_FINAL.png
+          test -f visual_authority/20260921/final_remaining_13/11_SETTINGS_PERMISSIONS_FINAL.png
+          test -f visual_authority/20260921/final_remaining_13/12_SETTINGS_ACCESSIBILITY_FINAL.png
+          test -f visual_authority/20260921/final_remaining_13/13_PROFILE_HISTORY_FINAL.png
           test -f visual_authority/20260921/final_p0_battle/P0_BATTLE_PREP_FINAL.png
           test -f visual_authority/20260921/final_p0_battle/P0_CAMERA_PREP_FINAL.png
           test -f visual_authority/20260921/current/02_CORE_LOCKED_ANCHORS/VIS_0168__CORE_LIVE_BATTLE_ANCHOR.png
@@ -53,6 +64,17 @@ jobs:
               'visual_authority/20260921/current/01_CANONICAL_FINAL/VIS_0171__P1_HERO_MAIN_FINAL.png',
               'visual_authority/20260921/current/01_CANONICAL_FINAL/VIS_0222__P1_PROFILE_FINAL.png',
               'visual_authority/20260921/current/02_CORE_LOCKED_ANCHORS/VIS_0231__CORE_ADVENTURE_ANCHOR.png',
+              'visual_authority/20260921/final_p1/02_P1_EQUIPMENT_FINAL.png',
+              'visual_authority/20260921/final_p1/03_P1_INVENTORY_FINAL.png',
+              'visual_authority/20260921/final_p1/05_P1_MOVEMENT_MASTERY_FINAL.png',
+              'visual_authority/20260921/final_p1/06_P1_PLAYER_LEVEL_FINAL.png',
+              'visual_authority/20260921/final_p1/07_P1_SETTINGS_HUB_FINAL.png',
+              'visual_authority/20260921/final_remaining_13/08_SETTINGS_ACCOUNT_FINAL.png',
+              'visual_authority/20260921/final_remaining_13/09_SETTINGS_NOTIFICATIONS_FINAL.png',
+              'visual_authority/20260921/final_remaining_13/10_SETTINGS_PRIVACY_FINAL.png',
+              'visual_authority/20260921/final_remaining_13/11_SETTINGS_PERMISSIONS_FINAL.png',
+              'visual_authority/20260921/final_remaining_13/12_SETTINGS_ACCESSIBILITY_FINAL.png',
+              'visual_authority/20260921/final_remaining_13/13_PROFILE_HISTORY_FINAL.png',
               'visual_authority/20260921/final_p0_battle/P0_BATTLE_PREP_FINAL.png',
               'visual_authority/20260921/final_p0_battle/P0_CAMERA_PREP_FINAL.png',
               'visual_authority/20260921/current/02_CORE_LOCKED_ANCHORS/VIS_0168__CORE_LIVE_BATTLE_ANCHOR.png',
@@ -66,28 +88,10 @@ jobs:
               if header[:8] != b'\x89PNG\r\n\x1a\n':
                   raise SystemExit(f'Not PNG: {path}')
               width, height = struct.unpack('>II', header[16:24])
+              if (width, height) != (941, 1672):
+                  raise SystemExit(f'Unexpected artwork size: {path} {width}x{height}')
               print(f'ARTWORK_DIMENSION {path} {width}x{height}')
           PY
-
-      - name: Capture child reference batch
-        uses: actions/upload-artifact@v4
-        with:
-          name: actirune-child-reference-batch
-          path: |
-            visual_authority/20260921/final_p1/02_P1_EQUIPMENT_FINAL.png
-            visual_authority/20260921/final_p1/03_P1_INVENTORY_FINAL.png
-            visual_authority/20260921/final_p1/04_P1_CRAFTING_FINAL.png
-            visual_authority/20260921/final_p1/05_P1_MOVEMENT_MASTERY_FINAL.png
-            visual_authority/20260921/final_p1/06_P1_PLAYER_LEVEL_FINAL.png
-            visual_authority/20260921/final_p1/07_P1_SETTINGS_HUB_FINAL.png
-            visual_authority/20260921/final_remaining_13/01_EVENTS_FINAL.png
-            visual_authority/20260921/final_remaining_13/08_SETTINGS_ACCOUNT_FINAL.png
-            visual_authority/20260921/final_remaining_13/09_SETTINGS_NOTIFICATIONS_FINAL.png
-            visual_authority/20260921/final_remaining_13/10_SETTINGS_PRIVACY_FINAL.png
-            visual_authority/20260921/final_remaining_13/11_SETTINGS_PERMISSIONS_FINAL.png
-            visual_authority/20260921/final_remaining_13/12_SETTINGS_ACCESSIBILITY_FINAL.png
-            visual_authority/20260921/final_remaining_13/13_PROFILE_HISTORY_FINAL.png
-          retention-days: 1
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
@@ -108,6 +112,7 @@ jobs:
         run: >-
           flutter test --no-pub
           test/main_shell_navigation_test.dart
+          test/child_route_integration_test.dart
           test/home_interaction_test.dart
           test/adventure_interaction_test.dart
           test/hero_interaction_test.dart
