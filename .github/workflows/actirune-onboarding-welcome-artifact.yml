@@ -1,0 +1,34 @@
+name: ActiRune Onboarding Welcome Artwork Capture
+
+on:
+  push:
+    branches:
+      - integration/artwork-interactions-20260921
+    paths:
+      - '.github/workflows/actirune-onboarding-welcome-artifact.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout integration branch
+        uses: actions/checkout@v4
+        with:
+          ref: integration/artwork-interactions-20260921
+
+      - name: Guard exact Onboarding Welcome artwork
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f visual_authority/20260921/final_remaining_13/05_ONBOARDING_WELCOME_FINAL.png
+
+      - name: Upload exact Onboarding Welcome artwork
+        uses: actions/upload-artifact@v4
+        with:
+          name: actirune-onboarding-welcome-reference
+          path: visual_authority/20260921/final_remaining_13/05_ONBOARDING_WELCOME_FINAL.png
+          retention-days: 1
