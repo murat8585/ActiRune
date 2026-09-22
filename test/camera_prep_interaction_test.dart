@@ -56,55 +56,58 @@ void main() {
     );
   }
 
-  testWidgets('Camera Prep exposes runtime readiness without fake row hotspots', (
-    tester,
-  ) async {
-    final session = cameraPrepSession();
-    await tester.pumpWidget(
-      buildSubject(session: session, readiness: notReady),
-    );
-    await tester.pump();
+  testWidgets(
+    'Camera Prep exposes runtime readiness without fake row hotspots',
+    (tester) async {
+      final session = cameraPrepSession();
+      await tester.pumpWidget(
+        buildSubject(session: session, readiness: notReady),
+      );
+      await tester.pump();
 
-    for (final id in const [
-      'camera',
-      'full-body',
-      'lighting',
-      'space',
-      'pose',
-    ]) {
+      for (final id in const [
+        'camera',
+        'full-body',
+        'lighting',
+        'space',
+        'pose',
+      ]) {
+        expect(
+          find.byKey(ValueKey('artwork-overlay-camera-prep.$id-status')),
+          findsOneWidget,
+        );
+      }
+
+      expect(find.text('Kontrol Ediliyor'), findsOneWidget);
+      expect(find.text('Yetersiz Işık'), findsOneWidget);
+      expect(find.text('Biraz Geri Çekil'), findsOneWidget);
+      expect(find.text('Alanı Boşalt'), findsOneWidget);
       expect(
-        find.byKey(ValueKey('artwork-overlay-camera-prep.$id-status')),
+        find.byKey(
+          const ValueKey('artwork-overlay-camera-prep.ready-disabled'),
+        ),
         findsOneWidget,
       );
-    }
 
-    expect(find.text('Kontrol Ediliyor'), findsOneWidget);
-    expect(find.text('Yetersiz Işık'), findsOneWidget);
-    expect(find.text('Biraz Geri Çekil'), findsOneWidget);
-    expect(find.text('Alanı Boşalt'), findsOneWidget);
-    expect(
-      find.byKey(const ValueKey('artwork-overlay-camera-prep.ready-disabled')),
-      findsOneWidget,
-    );
+      for (final id in const [
+        'camera-prep.back',
+        'camera-prep.info',
+        'camera-prep.ready',
+        'camera-prep.recheck',
+      ]) {
+        expect(find.byKey(ValueKey('artwork-hotspot-$id')), findsOneWidget);
+      }
 
-    for (final id in const [
-      'camera-prep.back',
-      'camera-prep.info',
-      'camera-prep.ready',
-      'camera-prep.recheck',
-    ]) {
-      expect(find.byKey(ValueKey('artwork-hotspot-$id')), findsOneWidget);
-    }
-
-    expect(
-      find.byKey(const ValueKey('artwork-hotspot-camera-prep.camera-row')),
-      findsNothing,
-    );
-    expect(
-      find.byKey(const ValueKey('artwork-hotspot-camera-prep.lighting-row')),
-      findsNothing,
-    );
-  });
+      expect(
+        find.byKey(const ValueKey('artwork-hotspot-camera-prep.camera-row')),
+        findsNothing,
+      );
+      expect(
+        find.byKey(const ValueKey('artwork-hotspot-camera-prep.lighting-row')),
+        findsNothing,
+      );
+    },
+  );
 
   testWidgets('HAZIRIM cannot start battle until every check is ready', (
     tester,
