@@ -37,6 +37,26 @@ jobs:
           test -f visual_authority/20260921/final_p0_battle/P0_VICTORY_FINAL.png
           test -f visual_authority/20260921/final_p0_battle/P0_DEFEAT_FINAL_CANDIDATE.png
 
+      - name: Inspect canonical artwork dimensions
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import struct
+          paths = [
+              'visual_authority/20260921/current/02_CORE_LOCKED_ANCHORS/VIS_0168__CORE_LIVE_BATTLE_ANCHOR.png',
+              'visual_authority/20260921/current/02_CORE_LOCKED_ANCHORS/VIS_0353__CORE_FORM_COACH_OVERLAY_ANCHOR.png',
+              'visual_authority/20260921/final_p0_battle/P0_VICTORY_FINAL.png',
+              'visual_authority/20260921/final_p0_battle/P0_DEFEAT_FINAL_CANDIDATE.png',
+          ]
+          for path in paths:
+              with open(path, 'rb') as handle:
+                  header = handle.read(24)
+              if header[:8] != b'\x89PNG\r\n\x1a\n':
+                  raise SystemExit(f'Not PNG: {path}')
+              width, height = struct.unpack('>II', header[16:24])
+              print(f'ARTWORK_DIMENSION {path} {width}x{height}')
+          PY
+
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
