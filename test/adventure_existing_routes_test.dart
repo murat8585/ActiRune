@@ -39,7 +39,9 @@ void main() {
     expect(find.byType(EventsScreen), findsOneWidget);
   });
 
-  testWidgets('Adventure Settings opens canonical Settings Hub', (tester) async {
+  testWidgets('Adventure Settings opens canonical Settings Hub', (
+    tester,
+  ) async {
     await openAdventure(tester);
 
     await tester.tap(
