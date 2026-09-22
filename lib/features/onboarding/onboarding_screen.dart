@@ -1,9 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+
 import '../../core/design/actirune_theme.dart';
+import 'onboarding_welcome_screen.dart';
 
 class OnboardingScreen extends StatefulWidget {
-  const OnboardingScreen({super.key});
+  const OnboardingScreen({
+    super.key,
+    this.onLanguage,
+    this.onAccessibility,
+  });
+
+  final VoidCallback? onLanguage;
+  final VoidCallback? onAccessibility;
+
   @override
   State<OnboardingScreen> createState() => _OnboardingScreenState();
 }
@@ -49,20 +59,35 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Column(
-          children: [
-            Expanded(
-              child: PageView.builder(
-                controller: _controller,
-                itemCount: _steps.length,
-                onPageChanged: (i) => setState(() => _page = i),
-                itemBuilder: (_, i) {
-                  final step = _steps[i];
-                  return Padding(
-                    padding: const EdgeInsets.all(28),
+      backgroundColor: Colors.black,
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: PageView.builder(
+              controller: _controller,
+              itemCount: _steps.length,
+              onPageChanged: (i) => setState(() => _page = i),
+              itemBuilder: (_, i) {
+                if (i == 0) {
+                  return OnboardingWelcomeScreen(
+                    onStart: _next,
+                    onLanguage: widget.onLanguage,
+                    onAccessibility: widget.onAccessibility,
+                  );
+                }
+
+                final step = _steps[i];
+                return SafeArea(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(28, 28, 28, 112),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -81,25 +106,34 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         ),
                       ],
                     ),
-                  );
-                },
-              ),
+                  ),
+                );
+              },
             ),
-            Padding(
-              padding: const EdgeInsets.all(24),
-              child: SizedBox(
-                width: double.infinity,
-                height: 56,
-                child: FilledButton(
-                  onPressed: _next,
-                  child: Text(
-                    _page == _steps.length - 1 ? 'ANA DÜNYAYA GİT' : 'DEVAM ET',
+          ),
+          if (_page != 0)
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: SafeArea(
+                top: false,
+                child: Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: SizedBox(
+                    width: double.infinity,
+                    height: 56,
+                    child: FilledButton(
+                      onPressed: _next,
+                      child: Text(
+                        _page == _steps.length - 1
+                            ? 'ANA DÜNYAYA GİT'
+                            : 'DEVAM ET',
+                      ),
+                    ),
                   ),
                 ),
               ),
             ),
-          ],
-        ),
+        ],
       ),
     );
   }
