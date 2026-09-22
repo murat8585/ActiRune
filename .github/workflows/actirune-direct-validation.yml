@@ -102,6 +102,27 @@ jobs:
       - name: Resolve dependencies
         run: flutter pub get
 
+      - name: Format child route sources for capture
+        run: >-
+          dart format
+          lib/app/main_shell.dart
+          lib/features/profile/settings_hub_screen.dart
+          lib/features/profile/settings_notifications_screen.dart
+          lib/features/profile/settings_permissions_screen.dart
+          test/child_route_integration_test.dart
+
+      - name: Capture formatted child route sources
+        uses: actions/upload-artifact@v4
+        with:
+          name: actirune-formatted-child-routes
+          path: |
+            lib/app/main_shell.dart
+            lib/features/profile/settings_hub_screen.dart
+            lib/features/profile/settings_notifications_screen.dart
+            lib/features/profile/settings_permissions_screen.dart
+            test/child_route_integration_test.dart
+          retention-days: 1
+
       - name: Verify formatting
         run: dart format --output=none --set-exit-if-changed lib test
 
