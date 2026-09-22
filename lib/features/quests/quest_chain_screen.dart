@@ -7,14 +7,16 @@ enum QuestChainRootDestination { home, adventure, battle, hero, profile }
 /// Canonical Karanlık Orman / Kurt Avcısı quest-chain screen from VIS_0174.
 ///
 /// Historical runtime evidence verifies that the visible `AKTİF GÖREVE GİT`
-/// CTA targets Battle Prep. This artwork shell deliberately keeps that action
-/// caller-owned so it cannot fabricate an unlocked encounter or battle state.
+/// CTA targets Battle Prep. This artwork shell deliberately keeps battle and
+/// reward actions caller-owned so it cannot fabricate encounter or economy
+/// state when their real engines are absent.
 class QuestChainScreen extends StatelessWidget {
   const QuestChainScreen({
     super.key,
     this.onBack,
     this.onDailyStreak,
     this.onActiveQuest,
+    this.onCompletionRewards,
     this.onRootNavigate,
     this.battleRootEnabled = true,
   });
@@ -27,6 +29,7 @@ class QuestChainScreen extends StatelessWidget {
   final VoidCallback? onBack;
   final VoidCallback? onDailyStreak;
   final VoidCallback? onActiveQuest;
+  final VoidCallback? onCompletionRewards;
   final ValueChanged<QuestChainRootDestination>? onRootNavigate;
   final bool battleRootEnabled;
 
@@ -78,10 +81,10 @@ class QuestChainScreen extends StatelessWidget {
               id: 'quest-chain.back',
               semanticLabel: 'Geri',
               normalizedRect: const Rect.fromLTWH(
-                0.0180,
-                0.1180,
-                0.1050,
-                0.0600,
+                0.0250,
+                0.1160,
+                0.0950,
+                0.0900,
               ),
               callback: onBack,
             ),
@@ -89,10 +92,10 @@ class QuestChainScreen extends StatelessWidget {
               id: 'quest-chain.daily-streak',
               semanticLabel: 'Günlük Seri 7 gün',
               normalizedRect: const Rect.fromLTWH(
-                0.6750,
-                0.0100,
-                0.3050,
-                0.0900,
+                0.7100,
+                0.0180,
+                0.2600,
+                0.0800,
               ),
               callback: onDailyStreak,
             ),
@@ -101,20 +104,31 @@ class QuestChainScreen extends StatelessWidget {
               semanticLabel: 'Aktif Göreve Git',
               normalizedRect: const Rect.fromLTWH(
                 0.8050,
-                0.4780,
-                0.1650,
-                0.0550,
+                0.4700,
+                0.1550,
+                0.0600,
               ),
               callback: onActiveQuest,
+            ),
+            _hotspot(
+              id: 'quest-chain.completion-rewards',
+              semanticLabel: 'Bölüm Tamamlama Ödülü',
+              normalizedRect: const Rect.fromLTWH(
+                0.0450,
+                0.7750,
+                0.9100,
+                0.1200,
+              ),
+              callback: onCompletionRewards,
             ),
             _rootHotspot(
               destination: QuestChainRootDestination.home,
               semanticLabel: 'Ana Dünya',
               normalizedRect: const Rect.fromLTWH(
-                0.0100,
-                0.8870,
-                0.1950,
-                0.0820,
+                0.0200,
+                0.9200,
+                0.1800,
+                0.0750,
               ),
             ),
             _rootHotspot(
@@ -122,19 +136,19 @@ class QuestChainScreen extends StatelessWidget {
               semanticLabel: 'Macera',
               normalizedRect: const Rect.fromLTWH(
                 0.2050,
-                0.8870,
-                0.1980,
-                0.0820,
+                0.9200,
+                0.1800,
+                0.0750,
               ),
             ),
             _rootHotspot(
               destination: QuestChainRootDestination.battle,
               semanticLabel: 'Savaş',
               normalizedRect: const Rect.fromLTWH(
-                0.4030,
-                0.8870,
-                0.1820,
-                0.0820,
+                0.3950,
+                0.9200,
+                0.1800,
+                0.0750,
               ),
             ),
             _rootHotspot(
@@ -142,19 +156,19 @@ class QuestChainScreen extends StatelessWidget {
               semanticLabel: 'Kahraman',
               normalizedRect: const Rect.fromLTWH(
                 0.5850,
-                0.8870,
-                0.2000,
-                0.0820,
+                0.9200,
+                0.1800,
+                0.0750,
               ),
             ),
             _rootHotspot(
               destination: QuestChainRootDestination.profile,
               semanticLabel: 'Profil',
               normalizedRect: const Rect.fromLTWH(
-                0.7850,
-                0.8870,
-                0.1950,
-                0.0820,
+                0.7750,
+                0.9200,
+                0.1800,
+                0.0750,
               ),
             ),
           ],
