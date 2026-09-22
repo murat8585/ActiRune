@@ -22,6 +22,8 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
+    - visual_authority/20260921/current/02_CORE_LOCKED_ANCHORS/VIS_0354__CORE_HOME_ANCHOR.png
+    - visual_authority/20260921/current/01_CANONICAL_FINAL/VIS_0171__P1_HERO_MAIN_FINAL.png
     - visual_authority/20260921/current/01_CANONICAL_FINAL/VIS_0222__P1_PROFILE_FINAL.png
     - visual_authority/20260921/current/02_CORE_LOCKED_ANCHORS/VIS_0231__CORE_ADVENTURE_ANCHOR.png
     - visual_authority/20260921/current/02_CORE_LOCKED_ANCHORS/VIS_0168__CORE_LIVE_BATTLE_ANCHOR.png
