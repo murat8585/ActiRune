@@ -78,6 +78,18 @@ jobs:
       - name: Resolve dependencies
         run: flutter pub get
 
+      - name: Format Home Hero tests for capture
+        run: dart format test/hero_interaction_test.dart test/main_shell_navigation_test.dart
+
+      - name: Capture formatted Home Hero tests
+        uses: actions/upload-artifact@v4
+        with:
+          name: actirune-formatted-home-hero-tests
+          path: |
+            test/hero_interaction_test.dart
+            test/main_shell_navigation_test.dart
+          retention-days: 1
+
       - name: Verify formatting
         run: dart format --output=none --set-exit-if-changed lib test
 
