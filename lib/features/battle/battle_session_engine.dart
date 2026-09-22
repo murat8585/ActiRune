@@ -164,14 +164,17 @@ class BattleSessionEngine extends ChangeNotifier {
     return true;
   }
 
-  /// Records a typed request from an approved artwork control. It deliberately
-  /// does not invent a damage/heal/shield magnitude that product authority has
-  /// not locked yet.
+  /// Records a typed request from an approved artwork control. Form Coach is
+  /// an overlay of the same battle session, so its visible support controls may
+  /// still emit the same typed requests. No damage/heal/shield magnitude is
+  /// applied here because those balance values are not yet authoritative.
   bool requestSupportAction(BattleSupportAction action) {
-    if (_snapshot.phase != BattleSessionPhase.liveBattle ||
-        _snapshot.isPaused) {
-      return false;
-    }
+    final acceptsSupportInput =
+        (_snapshot.phase == BattleSessionPhase.liveBattle &&
+            !_snapshot.isPaused) ||
+        _snapshot.phase == BattleSessionPhase.formCoach;
+    if (!acceptsSupportInput) return false;
+
     _set(
       _snapshot.copyWith(
         supportActionRequestCount: _snapshot.supportActionRequestCount + 1,
