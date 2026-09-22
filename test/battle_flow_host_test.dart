@@ -68,9 +68,7 @@ void main() {
       expect(session.snapshot.phase, BattleSessionPhase.formCoach);
       expect(find.byType(FormCoachScreen), findsOneWidget);
       expect(
-        tester.state(
-          find.byType(LiveBattleScreen, skipOffstage: false),
-        ),
+        tester.state(find.byType(LiveBattleScreen, skipOffstage: false)),
         same(liveState),
         reason: 'Form Coach must not dispose and recreate active combat state.',
       );
@@ -140,30 +138,31 @@ void main() {
     },
   );
 
-  testWidgets('retired phase replaces Battle Prep after leaving the encounter', (
-    tester,
-  ) async {
-    final session = BattleSessionEngine();
-    session.prepare(VerifiedMovementType.plank);
-    var backed = 0;
+  testWidgets(
+    'retired phase replaces Battle Prep after leaving the encounter',
+    (tester) async {
+      final session = BattleSessionEngine();
+      session.prepare(VerifiedMovementType.plank);
+      var backed = 0;
 
-    await tester.pumpWidget(
-      buildSubject(
-        session: session,
-        onBattlePrepBack: () => backed++,
-        retiredBuilder: (_) => const Scaffold(body: Text('RETIRED')),
-      ),
-    );
-    await tester.pump();
+      await tester.pumpWidget(
+        buildSubject(
+          session: session,
+          onBattlePrepBack: () => backed++,
+          retiredBuilder: (_) => const Scaffold(body: Text('RETIRED')),
+        ),
+      );
+      await tester.pump();
 
-    await tester.tap(
-      find.byKey(const ValueKey('artwork-hotspot-battle-prep.back')),
-    );
-    await tester.pump();
+      await tester.tap(
+        find.byKey(const ValueKey('artwork-hotspot-battle-prep.back')),
+      );
+      await tester.pump();
 
-    expect(backed, 1);
-    expect(session.snapshot.phase, BattleSessionPhase.retired);
-    expect(find.text('RETIRED'), findsOneWidget);
-    expect(find.byType(BattlePrepScreen), findsNothing);
-  });
+      expect(backed, 1);
+      expect(session.snapshot.phase, BattleSessionPhase.retired);
+      expect(find.text('RETIRED'), findsOneWidget);
+      expect(find.byType(BattlePrepScreen), findsNothing);
+    },
+  );
 }
