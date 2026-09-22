@@ -6,6 +6,7 @@ import '../features/hero/equipment_screen.dart';
 import '../features/hero/hero_screen.dart';
 import '../features/hero/inventory_screen.dart';
 import '../features/hero/movement_mastery_screen.dart';
+import '../features/home/daily_summary_popup.dart';
 import '../features/home/event_detail_popup.dart';
 import '../features/home/events_screen.dart';
 import '../features/home/home_screen.dart';
@@ -28,12 +29,21 @@ typedef BattleRootBuilder =
     );
 
 class MainShell extends StatefulWidget {
-  const MainShell({super.key, this.battleRootBuilder});
+  const MainShell({
+    super.key,
+    this.battleRootBuilder,
+    this.onDailySummaryDetails,
+  });
 
   /// A battle root is supplied only when a real encounter/session owns it.
   /// Without one, Battle stays visible in canonical artwork navigation but
   /// cannot be selected, avoiding a fabricated idle battle screen.
   final BattleRootBuilder? battleRootBuilder;
+
+  /// The integration branch has no authoritative deeper daily-stats route.
+  /// An owning product layer may supply that destination without fabricating
+  /// one inside the artwork shell.
+  final VoidCallback? onDailySummaryDetails;
 
   @override
   State<MainShell> createState() => _MainShellState();
@@ -77,6 +87,30 @@ class _MainShellState extends State<MainShell> {
     if (next == _ShellDestination.battle && !_battleAvailable) return;
     Navigator.of(routeContext).popUntil((route) => route.isFirst);
     _select(next);
+  }
+
+  Future<void> _openDailySummary(BuildContext context) async {
+    await showGeneralDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      barrierLabel: 'Dünün Özeti',
+      barrierColor: Colors.transparent,
+      transitionDuration: Duration.zero,
+      pageBuilder: (dialogContext, _, _) => DailySummaryPopup(
+        onClose: () => Navigator.of(dialogContext).pop(),
+        onContinueToday: () => Navigator.of(dialogContext).pop(),
+        onAdventureProgress: () {
+          Navigator.of(dialogContext).pop();
+          _select(_ShellDestination.adventure);
+        },
+        onViewDetails: widget.onDailySummaryDetails == null
+            ? null
+            : () {
+                Navigator.of(dialogContext).pop();
+                widget.onDailySummaryDetails!();
+              },
+      ),
+    );
   }
 
   Future<void> _openEventDetail(BuildContext context) async {
@@ -268,6 +302,7 @@ class _MainShellState extends State<MainShell> {
     return [
       HomeScreen(
         onEvents: () => _openEvents(context),
+        onYesterdaySummary: () => _openDailySummary(context),
         onRootNavigate: _selectHomeRoot,
         battleRootEnabled: _battleAvailable,
       ),
