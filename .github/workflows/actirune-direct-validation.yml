@@ -83,6 +83,7 @@ jobs:
       - name: Focused interaction tests
         run: >-
           flutter test --no-pub
+          test/main_shell_navigation_test.dart
           test/adventure_interaction_test.dart
           test/profile_interaction_test.dart
           test/combat_engine_test.dart
