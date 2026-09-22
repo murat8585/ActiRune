@@ -37,6 +37,7 @@ jobs:
           test -f visual_authority/20260921/final_remaining_13/06_CALIBRATION_RESULT_FINAL.png
           test -f visual_authority/20260921/current/01_CANONICAL_FINAL/VIS_0227__P1_DAILY_QUESTS_FINAL.png
           test -f visual_authority/20260921/current/01_CANONICAL_FINAL/VIS_0228__P1_WEEKLY_QUESTS_FINAL.png
+          test -f visual_authority/20260921/current/01_CANONICAL_FINAL/VIS_0174__P1_QUEST_CHAIN_FINAL.png
           test -f visual_authority/20260921/current/01_CANONICAL_FINAL/VIS_0225__P1_RUNE_SHRINE_READY_FINAL.png
           test -f visual_authority/20260921/final_remaining_13/07_RUNE_SHRINE_RESULT_FINAL.png
           test -f visual_authority/20260921/current/02_CORE_LOCKED_ANCHORS/VIS_0354__CORE_HOME_ANCHOR.png
@@ -76,6 +77,7 @@ jobs:
               'visual_authority/20260921/final_remaining_13/06_CALIBRATION_RESULT_FINAL.png': (941, 1672),
               'visual_authority/20260921/current/01_CANONICAL_FINAL/VIS_0227__P1_DAILY_QUESTS_FINAL.png': (941, 1672),
               'visual_authority/20260921/current/01_CANONICAL_FINAL/VIS_0228__P1_WEEKLY_QUESTS_FINAL.png': (941, 1672),
+              'visual_authority/20260921/current/01_CANONICAL_FINAL/VIS_0174__P1_QUEST_CHAIN_FINAL.png': (941, 1672),
               'visual_authority/20260921/current/01_CANONICAL_FINAL/VIS_0225__P1_RUNE_SHRINE_READY_FINAL.png': (941, 1672),
               'visual_authority/20260921/final_remaining_13/07_RUNE_SHRINE_RESULT_FINAL.png': (941, 1672),
               'visual_authority/20260921/current/02_CORE_LOCKED_ANCHORS/VIS_0354__CORE_HOME_ANCHOR.png': (941, 1672),
@@ -139,6 +141,7 @@ jobs:
           test/daily_quests_screen_test.dart
           test/daily_quests_route_integration_test.dart
           test/weekly_quests_screen_test.dart
+          test/quest_chain_screen_test.dart
           test/rune_shrine_ready_screen_test.dart
           test/rune_shrine_result_test.dart
           test/main_shell_navigation_test.dart
