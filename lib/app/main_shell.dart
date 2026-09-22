@@ -4,6 +4,7 @@ import '../features/adventure/adventure_screen.dart';
 import '../features/battle/battle_prep_screen.dart';
 import '../features/hero/equipment_screen.dart';
 import '../features/hero/hero_screen.dart';
+import '../features/hero/inventory_screen.dart';
 import '../features/home/home_screen.dart';
 import '../features/profile/profile_screen.dart';
 
@@ -98,11 +99,52 @@ class _MainShellState extends State<MainShell> {
     });
   }
 
+  void _selectInventoryRoot(InventoryRootDestination next) {
+    _select(switch (next) {
+      InventoryRootDestination.home => _ShellDestination.home,
+      InventoryRootDestination.adventure => _ShellDestination.adventure,
+      InventoryRootDestination.battle => _ShellDestination.battle,
+      InventoryRootDestination.hero => _ShellDestination.hero,
+      InventoryRootDestination.profile => _ShellDestination.profile,
+    });
+  }
+
+  void _closeChildStackAndSelect(
+    BuildContext routeContext,
+    _ShellDestination next,
+  ) {
+    if (next == _ShellDestination.battle && !_battleAvailable) return;
+    Navigator.of(routeContext).popUntil((route) => route.isFirst);
+    _select(next);
+  }
+
+  Future<void> _openInventory(BuildContext context) async {
+    await Navigator.of(context).push<void>(
+      MaterialPageRoute<void>(
+        builder: (routeContext) => InventoryScreen(
+          onBack: () => Navigator.of(routeContext).pop(),
+          onRootNavigate: (next) {
+            final shellDestination = switch (next) {
+              InventoryRootDestination.home => _ShellDestination.home,
+              InventoryRootDestination.adventure => _ShellDestination.adventure,
+              InventoryRootDestination.battle => _ShellDestination.battle,
+              InventoryRootDestination.hero => _ShellDestination.hero,
+              InventoryRootDestination.profile => _ShellDestination.profile,
+            };
+            _closeChildStackAndSelect(routeContext, shellDestination);
+          },
+          battleRootEnabled: _battleAvailable,
+        ),
+      ),
+    );
+  }
+
   Future<void> _openEquipment(BuildContext context) async {
     await Navigator.of(context).push<void>(
       MaterialPageRoute<void>(
         builder: (routeContext) => EquipmentScreen(
           onBack: () => Navigator.of(routeContext).pop(),
+          onInventory: () => _openInventory(routeContext),
           onRootNavigate: (next) {
             if (next == EquipmentRootDestination.battle && !_battleAvailable) {
               return;
