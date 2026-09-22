@@ -1,0 +1,44 @@
+name: ActiRune Event Detail Formatter Capture
+
+on:
+  push:
+    branches:
+      - integration/artwork-interactions-20260921
+    paths:
+      - '.github/workflows/actirune-event-detail-format.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout integration branch
+        uses: actions/checkout@v4
+        with:
+          ref: integration/artwork-interactions-20260921
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Format Event Detail sources
+        run: >-
+          dart format
+          lib/app/main_shell.dart
+          lib/features/home/event_detail_popup.dart
+          test/event_detail_popup_test.dart
+
+      - name: Upload formatted Event Detail sources
+        uses: actions/upload-artifact@v4
+        with:
+          name: actirune-formatted-event-detail
+          path: |
+            lib/app/main_shell.dart
+            lib/features/home/event_detail_popup.dart
+            test/event_detail_popup_test.dart
+          retention-days: 1
