@@ -1,4 +1,4 @@
-name: ActiRune World Progression Format Capture
+name: ActiRune World Progression Format Apply
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
       - '.github/workflows/actirune-world-progression-format.yml'
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   format:
@@ -32,12 +32,15 @@ jobs:
           lib/app/main_shell.dart
           test/world_progression_screen_test.dart
           test/world_progression_route_integration_test.dart
-      - name: Upload formatted files
-        uses: actions/upload-artifact@v4
-        with:
-          name: actirune-world-progression-formatted
-          path: |
-            lib/app/main_shell.dart
-            test/world_progression_screen_test.dart
-            test/world_progression_route_integration_test.dart
-          retention-days: 1
+      - name: Commit canonical formatting
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- lib/app/main_shell.dart test/world_progression_screen_test.dart test/world_progression_route_integration_test.dart; then
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add lib/app/main_shell.dart test/world_progression_screen_test.dart test/world_progression_route_integration_test.dart
+          git commit -m 'Apply World Progression Dart formatting'
+          git push origin HEAD:integration/artwork-interactions-20260921
