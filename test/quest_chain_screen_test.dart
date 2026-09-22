@@ -217,7 +217,7 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         home: MainShell(
-          battleRootBuilder: (_, __) => const Scaffold(
+          battleRootBuilder: (_, _) => const Scaffold(
             body: Center(child: Text('REAL QUEST BATTLE ROOT')),
           ),
         ),
