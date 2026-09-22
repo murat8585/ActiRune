@@ -65,13 +65,6 @@ jobs:
               print(f'ARTWORK_DIMENSION {path} {width}x{height}')
           PY
 
-      - name: Capture Profile shell reference
-        uses: actions/upload-artifact@v4
-        with:
-          name: actirune-profile-shell-reference
-          path: visual_authority/20260921/current/01_CANONICAL_FINAL/VIS_0222__P1_PROFILE_FINAL.png
-          retention-days: 1
-
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
@@ -91,6 +84,7 @@ jobs:
         run: >-
           flutter test --no-pub
           test/adventure_interaction_test.dart
+          test/profile_interaction_test.dart
           test/combat_engine_test.dart
           test/battle_session_engine_test.dart
           test/battle_prep_interaction_test.dart
