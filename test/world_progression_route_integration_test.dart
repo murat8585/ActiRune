@@ -5,6 +5,7 @@ import 'package:actirune/features/home/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+// World Progression is an Adventure child route, not a sixth root destination.
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
