@@ -20,6 +20,7 @@ import '../features/profile/settings_notifications_screen.dart';
 import '../features/profile/settings_permissions_screen.dart';
 import '../features/profile/settings_privacy_screen.dart';
 import '../features/quests/daily_quests_screen.dart';
+import '../features/quests/weekly_quests_screen.dart';
 
 enum _ShellDestination { home, adventure, battle, hero, profile }
 
@@ -34,6 +35,7 @@ class MainShell extends StatefulWidget {
     super.key,
     this.battleRootBuilder,
     this.onDailySummaryDetails,
+    this.onWeeklyQuestChainReward,
   });
 
   /// A battle root is supplied only when a real encounter/session owns it.
@@ -45,6 +47,10 @@ class MainShell extends StatefulWidget {
   /// An owning product layer may supply that destination without fabricating
   /// one inside the artwork shell.
   final VoidCallback? onDailySummaryDetails;
+
+  /// Weekly quest reward mutation stays outside the artwork shell until the
+  /// owning quest engine supplies the real claim behavior.
+  final VoidCallback? onWeeklyQuestChainReward;
 
   @override
   State<MainShell> createState() => _MainShellState();
@@ -130,6 +136,20 @@ class _MainShellState extends State<MainShell> {
     await Navigator.of(context).push<void>(
       MaterialPageRoute<void>(
         builder: (routeContext) => DailyQuestsScreen(
+          onRootNavigate: (next) =>
+              _closeChildStackAndSelect(routeContext, next.name),
+          battleRootEnabled: _battleAvailable,
+        ),
+      ),
+    );
+  }
+
+  Future<void> _openWeeklyQuests(BuildContext context) async {
+    await Navigator.of(context).push<void>(
+      MaterialPageRoute<void>(
+        builder: (routeContext) => WeeklyQuestsScreen(
+          onDailyStreak: () => _openDailyQuests(routeContext),
+          onClaimQuestChainReward: widget.onWeeklyQuestChainReward,
           onRootNavigate: (next) =>
               _closeChildStackAndSelect(routeContext, next.name),
           battleRootEnabled: _battleAvailable,
@@ -315,6 +335,7 @@ class _MainShellState extends State<MainShell> {
     return [
       HomeScreen(
         onDailyStreak: () => _openDailyQuests(context),
+        onQuests: () => _openWeeklyQuests(context),
         onEvents: () => _openEvents(context),
         onYesterdaySummary: () => _openDailySummary(context),
         onRootNavigate: _selectHomeRoot,
