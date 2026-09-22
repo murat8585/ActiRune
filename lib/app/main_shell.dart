@@ -21,10 +21,11 @@ import '../features/profile/settings_privacy_screen.dart';
 
 enum _ShellDestination { home, adventure, battle, hero, profile }
 
-typedef BattleRootBuilder = Widget Function(
-  BuildContext context,
-  ValueChanged<BattlePrepRootDestination> onRootNavigate,
-);
+typedef BattleRootBuilder =
+    Widget Function(
+      BuildContext context,
+      ValueChanged<BattlePrepRootDestination> onRootNavigate,
+    );
 
 class MainShell extends StatefulWidget {
   const MainShell({super.key, this.battleRootBuilder});
