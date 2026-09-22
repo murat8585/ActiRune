@@ -13,7 +13,7 @@ permissions:
 jobs:
   apply:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - name: Checkout integration branch
         uses: actions/checkout@v4
@@ -49,9 +49,15 @@ jobs:
 
           path.write_text(text)
           PY
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - name: Resolve dependencies
+        run: flutter pub get
       - name: Format MainShell
-        run: |
-          dart format lib/app/main_shell.dart
+        run: dart format lib/app/main_shell.dart
       - name: Commit Achievements route
         shell: bash
         run: |
