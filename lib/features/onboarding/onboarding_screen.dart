@@ -5,11 +5,7 @@ import '../../core/design/actirune_theme.dart';
 import 'onboarding_welcome_screen.dart';
 
 class OnboardingScreen extends StatefulWidget {
-  const OnboardingScreen({
-    super.key,
-    this.onLanguage,
-    this.onAccessibility,
-  });
+  const OnboardingScreen({super.key, this.onLanguage, this.onAccessibility});
 
   final VoidCallback? onLanguage;
   final VoidCallback? onAccessibility;
