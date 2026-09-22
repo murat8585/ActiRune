@@ -1,0 +1,40 @@
+name: ActiRune Daily Summary Formatter Capture
+
+on:
+  push:
+    branches:
+      - integration/artwork-interactions-20260921
+    paths:
+      - '.github/workflows/actirune-daily-summary-format.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout integration branch
+        uses: actions/checkout@v4
+        with:
+          ref: integration/artwork-interactions-20260921
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Resolve dependencies
+        run: flutter pub get
+
+      - name: Format Daily Summary test in package context
+        run: dart format test/daily_summary_popup_test.dart
+
+      - name: Upload formatted Daily Summary test
+        uses: actions/upload-artifact@v4
+        with:
+          name: actirune-formatted-daily-summary-test
+          path: test/daily_summary_popup_test.dart
+          retention-days: 1
