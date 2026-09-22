@@ -366,6 +366,7 @@ class _MainShellState extends State<MainShell> {
         onDailyStreak: () => _openDailyQuests(context),
         onQuests: () => _openWeeklyQuests(context),
         onEvents: () => _openEvents(context),
+        onSettings: () => _openSettingsHub(context),
         onYesterdaySummary: () => _openDailySummary(context),
         onRootNavigate: _selectHomeRoot,
         battleRootEnabled: _battleAvailable,
