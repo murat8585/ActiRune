@@ -103,7 +103,9 @@ void main() {
 
       await tester.tap(
         find.byKey(
-          ValueKey('artwork-hotspot-rune-shrine-result.nav-${destination.name}'),
+          ValueKey(
+            'artwork-hotspot-rune-shrine-result.nav-${destination.name}',
+          ),
         ),
       );
       await tester.pump();
