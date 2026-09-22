@@ -69,15 +69,6 @@ jobs:
               print(f'ARTWORK_DIMENSION {path} {width}x{height}')
           PY
 
-      - name: Capture Home and Hero references
-        uses: actions/upload-artifact@v4
-        with:
-          name: actirune-home-hero-authority
-          path: |
-            visual_authority/20260921/current/02_CORE_LOCKED_ANCHORS/VIS_0354__CORE_HOME_ANCHOR.png
-            visual_authority/20260921/current/01_CANONICAL_FINAL/VIS_0171__P1_HERO_MAIN_FINAL.png
-          retention-days: 1
-
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
@@ -97,7 +88,9 @@ jobs:
         run: >-
           flutter test --no-pub
           test/main_shell_navigation_test.dart
+          test/home_interaction_test.dart
           test/adventure_interaction_test.dart
+          test/hero_interaction_test.dart
           test/profile_interaction_test.dart
           test/combat_engine_test.dart
           test/battle_session_engine_test.dart
