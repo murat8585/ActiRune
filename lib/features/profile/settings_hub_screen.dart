@@ -4,7 +4,13 @@ import '../../core/widgets/artwork_interaction_surface.dart';
 
 enum SettingsRootDestination { home, adventure, battle, hero, profile }
 
-enum SettingsSection { account, notifications, privacy, permissions, accessibility }
+enum SettingsSection {
+  account,
+  notifications,
+  privacy,
+  permissions,
+  accessibility,
+}
 
 class SettingsHubScreen extends StatelessWidget {
   const SettingsHubScreen({
