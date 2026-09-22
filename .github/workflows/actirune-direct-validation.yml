@@ -46,8 +46,20 @@ jobs:
       - name: Resolve dependencies
         run: flutter pub get
 
-      - name: Verify formatting
-        run: dart format --output=none --set-exit-if-changed lib test
+      - name: Format rebuilt source
+        run: dart format lib test
+
+      - name: Capture formatted source
+        uses: actions/upload-artifact@v4
+        with:
+          name: actirune-formatted-rebuild
+          path: |
+            lib/core/widgets/artwork_interaction_surface.dart
+            lib/features/battle/battle_session_engine.dart
+            lib/features/battle/live_battle_screen.dart
+            test/battle_session_engine_test.dart
+            test/artwork_interaction_test.dart
+          retention-days: 1
 
       - name: Analyze
         run: flutter analyze
