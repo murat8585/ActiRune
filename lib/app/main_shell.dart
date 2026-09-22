@@ -20,6 +20,7 @@ import '../features/profile/settings_notifications_screen.dart';
 import '../features/profile/settings_permissions_screen.dart';
 import '../features/profile/settings_privacy_screen.dart';
 import '../features/quests/daily_quests_screen.dart';
+import '../features/quests/quest_chain_screen.dart';
 import '../features/quests/weekly_quests_screen.dart';
 
 enum _ShellDestination { home, adventure, battle, hero, profile }
@@ -36,6 +37,8 @@ class MainShell extends StatefulWidget {
     this.battleRootBuilder,
     this.onDailySummaryDetails,
     this.onWeeklyQuestChainReward,
+    this.onQuestChainStreakDetails,
+    this.onQuestChainCompletionRewards,
   });
 
   /// A battle root is supplied only when a real encounter/session owns it.
@@ -51,6 +54,14 @@ class MainShell extends StatefulWidget {
   /// Weekly quest reward mutation stays outside the artwork shell until the
   /// owning quest engine supplies the real claim behavior.
   final VoidCallback? onWeeklyQuestChainReward;
+
+  /// Quest-chain streak details stay caller-owned until the progress engine
+  /// supplies the real destination.
+  final VoidCallback? onQuestChainStreakDetails;
+
+  /// Chapter completion reward inspection stays caller-owned until the quest
+  /// engine supplies the real reward overview behavior.
+  final VoidCallback? onQuestChainCompletionRewards;
 
   @override
   State<MainShell> createState() => _MainShellState();
@@ -150,6 +161,24 @@ class _MainShellState extends State<MainShell> {
         builder: (routeContext) => WeeklyQuestsScreen(
           onDailyStreak: () => _openDailyQuests(routeContext),
           onClaimQuestChainReward: widget.onWeeklyQuestChainReward,
+          onRootNavigate: (next) =>
+              _closeChildStackAndSelect(routeContext, next.name),
+          battleRootEnabled: _battleAvailable,
+        ),
+      ),
+    );
+  }
+
+  Future<void> _openQuestChain(BuildContext context) async {
+    await Navigator.of(context).push<void>(
+      MaterialPageRoute<void>(
+        builder: (routeContext) => QuestChainScreen(
+          onBack: () => Navigator.of(routeContext).pop(),
+          onDailyStreak: widget.onQuestChainStreakDetails,
+          onActiveQuest: _battleAvailable
+              ? () => _closeChildStackAndSelect(routeContext, 'battle')
+              : null,
+          onCompletionRewards: widget.onQuestChainCompletionRewards,
           onRootNavigate: (next) =>
               _closeChildStackAndSelect(routeContext, next.name),
           battleRootEnabled: _battleAvailable,
@@ -342,6 +371,7 @@ class _MainShellState extends State<MainShell> {
         battleRootEnabled: _battleAvailable,
       ),
       AdventureScreen(
+        onQuests: () => _openQuestChain(context),
         onRootNavigate: _selectAdventureRoot,
         battleRootEnabled: _battleAvailable,
       ),
@@ -349,6 +379,7 @@ class _MainShellState extends State<MainShell> {
           const SizedBox.shrink(),
       HeroScreen(
         onEquipment: () => _openEquipment(context),
+        onCharacterStory: () => _openQuestChain(context),
         onMovementMastery: () => _openMovementMastery(context),
         onRootNavigate: _selectHeroRoot,
         battleRootEnabled: _battleAvailable,
