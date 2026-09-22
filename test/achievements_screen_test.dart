@@ -26,28 +26,29 @@ void main() {
     );
   }
 
-  testWidgets('Achievements renders canonical artwork and category hotspots', (
-    tester,
-  ) async {
-    await tester.pumpWidget(buildSubject());
-    await tester.pumpAndSettle();
+  testWidgets(
+    'Achievements renders canonical artwork and category hotspots',
+    (tester) async {
+      await tester.pumpWidget(buildSubject());
+      await tester.pumpAndSettle();
 
-    final surface = tester.widget<ArtworkInteractionSurface>(
-      find.byType(ArtworkInteractionSurface),
-    );
-    expect(surface.assetPath, AchievementsScreen.artworkAsset);
-    expect(surface.sourceSize, AchievementsScreen.artworkSize);
-    expect(AchievementsScreen.artworkSize, const Size(941, 1672));
-
-    for (final filter in AchievementFilter.values) {
-      expect(
-        find.byKey(
-          ValueKey('artwork-hotspot-achievements.filter-${filter.name}'),
-        ),
-        findsOneWidget,
+      final surface = tester.widget<ArtworkInteractionSurface>(
+        find.byType(ArtworkInteractionSurface),
       );
-    }
-  });
+      expect(surface.assetPath, AchievementsScreen.artworkAsset);
+      expect(surface.sourceSize, AchievementsScreen.artworkSize);
+      expect(AchievementsScreen.artworkSize, const Size(941, 1672));
+
+      for (final filter in AchievementFilter.values) {
+        expect(
+          find.byKey(
+            ValueKey('artwork-hotspot-achievements.filter-${filter.name}'),
+          ),
+          findsOneWidget,
+        );
+      }
+    },
+  );
 
   testWidgets('screen filter Savaş is independent from root Savaş', (
     tester,
