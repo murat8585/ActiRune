@@ -36,9 +36,7 @@ void main() {
     );
   }
 
-  testWidgets('Hero renders only the canonical 941x1672 final', (
-    tester,
-  ) async {
+  testWidgets('Hero renders only the canonical 941x1672 final', (tester) async {
     await tester.pumpWidget(buildSubject());
     await tester.pump();
 
