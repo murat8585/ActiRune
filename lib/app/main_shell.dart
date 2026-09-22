@@ -7,7 +7,15 @@ import '../features/hero/hero_screen.dart';
 import '../features/hero/inventory_screen.dart';
 import '../features/hero/movement_mastery_screen.dart';
 import '../features/home/home_screen.dart';
+import '../features/profile/player_level_screen.dart';
+import '../features/profile/profile_history_screen.dart';
 import '../features/profile/profile_screen.dart';
+import '../features/profile/settings_accessibility_screen.dart';
+import '../features/profile/settings_account_screen.dart';
+import '../features/profile/settings_hub_screen.dart';
+import '../features/profile/settings_notifications_screen.dart';
+import '../features/profile/settings_permissions_screen.dart';
+import '../features/profile/settings_privacy_screen.dart';
 
 enum _ShellDestination { home, adventure, battle, hero, profile }
 
@@ -40,90 +48,28 @@ class _MainShellState extends State<MainShell> {
     setState(() => destination = next);
   }
 
-  void _selectHomeRoot(HomeRootDestination next) {
-    _select(switch (next) {
-      HomeRootDestination.home => _ShellDestination.home,
-      HomeRootDestination.adventure => _ShellDestination.adventure,
-      HomeRootDestination.battle => _ShellDestination.battle,
-      HomeRootDestination.hero => _ShellDestination.hero,
-      HomeRootDestination.profile => _ShellDestination.profile,
-    });
+  _ShellDestination _rootByName(String name) {
+    return switch (name) {
+      'home' => _ShellDestination.home,
+      'adventure' => _ShellDestination.adventure,
+      'battle' => _ShellDestination.battle,
+      'hero' => _ShellDestination.hero,
+      'profile' => _ShellDestination.profile,
+      _ => throw ArgumentError.value(name, 'name', 'Unknown root destination'),
+    };
   }
 
-  void _selectAdventureRoot(AdventureRootDestination next) {
-    _select(switch (next) {
-      AdventureRootDestination.home => _ShellDestination.home,
-      AdventureRootDestination.adventure => _ShellDestination.adventure,
-      AdventureRootDestination.battle => _ShellDestination.battle,
-      AdventureRootDestination.hero => _ShellDestination.hero,
-      AdventureRootDestination.profile => _ShellDestination.profile,
-    });
-  }
+  void _selectHomeRoot(HomeRootDestination next) => _select(_rootByName(next.name));
+  void _selectAdventureRoot(AdventureRootDestination next) =>
+      _select(_rootByName(next.name));
+  void _selectBattleRoot(BattlePrepRootDestination next) =>
+      _select(_rootByName(next.name));
+  void _selectHeroRoot(HeroRootDestination next) => _select(_rootByName(next.name));
+  void _selectProfileRoot(ProfileRootDestination next) =>
+      _select(_rootByName(next.name));
 
-  void _selectBattleRoot(BattlePrepRootDestination next) {
-    _select(switch (next) {
-      BattlePrepRootDestination.home => _ShellDestination.home,
-      BattlePrepRootDestination.adventure => _ShellDestination.adventure,
-      BattlePrepRootDestination.battle => _ShellDestination.battle,
-      BattlePrepRootDestination.hero => _ShellDestination.hero,
-      BattlePrepRootDestination.profile => _ShellDestination.profile,
-    });
-  }
-
-  void _selectHeroRoot(HeroRootDestination next) {
-    _select(switch (next) {
-      HeroRootDestination.home => _ShellDestination.home,
-      HeroRootDestination.adventure => _ShellDestination.adventure,
-      HeroRootDestination.battle => _ShellDestination.battle,
-      HeroRootDestination.hero => _ShellDestination.hero,
-      HeroRootDestination.profile => _ShellDestination.profile,
-    });
-  }
-
-  void _selectProfileRoot(ProfileRootDestination next) {
-    _select(switch (next) {
-      ProfileRootDestination.home => _ShellDestination.home,
-      ProfileRootDestination.adventure => _ShellDestination.adventure,
-      ProfileRootDestination.battle => _ShellDestination.battle,
-      ProfileRootDestination.hero => _ShellDestination.hero,
-      ProfileRootDestination.profile => _ShellDestination.profile,
-    });
-  }
-
-  void _selectEquipmentRoot(EquipmentRootDestination next) {
-    _select(switch (next) {
-      EquipmentRootDestination.home => _ShellDestination.home,
-      EquipmentRootDestination.adventure => _ShellDestination.adventure,
-      EquipmentRootDestination.battle => _ShellDestination.battle,
-      EquipmentRootDestination.hero => _ShellDestination.hero,
-      EquipmentRootDestination.profile => _ShellDestination.profile,
-    });
-  }
-
-  void _selectInventoryRoot(InventoryRootDestination next) {
-    _select(switch (next) {
-      InventoryRootDestination.home => _ShellDestination.home,
-      InventoryRootDestination.adventure => _ShellDestination.adventure,
-      InventoryRootDestination.battle => _ShellDestination.battle,
-      InventoryRootDestination.hero => _ShellDestination.hero,
-      InventoryRootDestination.profile => _ShellDestination.profile,
-    });
-  }
-
-  void _selectMasteryRoot(MasteryRootDestination next) {
-    _select(switch (next) {
-      MasteryRootDestination.home => _ShellDestination.home,
-      MasteryRootDestination.adventure => _ShellDestination.adventure,
-      MasteryRootDestination.battle => _ShellDestination.battle,
-      MasteryRootDestination.hero => _ShellDestination.hero,
-      MasteryRootDestination.profile => _ShellDestination.profile,
-    });
-  }
-
-  void _closeChildStackAndSelect(
-    BuildContext routeContext,
-    _ShellDestination next,
-  ) {
+  void _closeChildStackAndSelect(BuildContext routeContext, String rootName) {
+    final next = _rootByName(rootName);
     if (next == _ShellDestination.battle && !_battleAvailable) return;
     Navigator.of(routeContext).popUntil((route) => route.isFirst);
     _select(next);
@@ -134,16 +80,8 @@ class _MainShellState extends State<MainShell> {
       MaterialPageRoute<void>(
         builder: (routeContext) => InventoryScreen(
           onBack: () => Navigator.of(routeContext).pop(),
-          onRootNavigate: (next) {
-            final shellDestination = switch (next) {
-              InventoryRootDestination.home => _ShellDestination.home,
-              InventoryRootDestination.adventure => _ShellDestination.adventure,
-              InventoryRootDestination.battle => _ShellDestination.battle,
-              InventoryRootDestination.hero => _ShellDestination.hero,
-              InventoryRootDestination.profile => _ShellDestination.profile,
-            };
-            _closeChildStackAndSelect(routeContext, shellDestination);
-          },
+          onRootNavigate: (next) =>
+              _closeChildStackAndSelect(routeContext, next.name),
           battleRootEnabled: _battleAvailable,
         ),
       ),
@@ -156,13 +94,8 @@ class _MainShellState extends State<MainShell> {
         builder: (routeContext) => EquipmentScreen(
           onBack: () => Navigator.of(routeContext).pop(),
           onInventory: () => _openInventory(routeContext),
-          onRootNavigate: (next) {
-            if (next == EquipmentRootDestination.battle && !_battleAvailable) {
-              return;
-            }
-            Navigator.of(routeContext).pop();
-            _selectEquipmentRoot(next);
-          },
+          onRootNavigate: (next) =>
+              _closeChildStackAndSelect(routeContext, next.name),
           battleRootEnabled: _battleAvailable,
         ),
       ),
@@ -174,13 +107,126 @@ class _MainShellState extends State<MainShell> {
       MaterialPageRoute<void>(
         builder: (routeContext) => MovementMasteryScreen(
           onBack: () => Navigator.of(routeContext).pop(),
-          onRootNavigate: (next) {
-            if (next == MasteryRootDestination.battle && !_battleAvailable) {
-              return;
+          onRootNavigate: (next) =>
+              _closeChildStackAndSelect(routeContext, next.name),
+          battleRootEnabled: _battleAvailable,
+        ),
+      ),
+    );
+  }
+
+  Future<void> _openPlayerLevel(BuildContext context) async {
+    await Navigator.of(context).push<void>(
+      MaterialPageRoute<void>(
+        builder: (routeContext) => PlayerLevelScreen(
+          onBack: () => Navigator.of(routeContext).pop(),
+          onRootNavigate: (next) =>
+              _closeChildStackAndSelect(routeContext, next.name),
+          battleRootEnabled: _battleAvailable,
+        ),
+      ),
+    );
+  }
+
+  Future<void> _openProfileHistory(BuildContext context) async {
+    await Navigator.of(context).push<void>(
+      MaterialPageRoute<void>(
+        builder: (routeContext) => ProfileHistoryScreen(
+          onBack: () => Navigator.of(routeContext).pop(),
+          onRootNavigate: (next) =>
+              _closeChildStackAndSelect(routeContext, next.name),
+          battleRootEnabled: _battleAvailable,
+        ),
+      ),
+    );
+  }
+
+  Future<void> _openAccount(BuildContext context) async {
+    await Navigator.of(context).push<void>(
+      MaterialPageRoute<void>(
+        builder: (routeContext) => SettingsAccountScreen(
+          onBack: () => Navigator.of(routeContext).pop(),
+          onRootNavigate: (next) =>
+              _closeChildStackAndSelect(routeContext, next.name),
+          battleRootEnabled: _battleAvailable,
+        ),
+      ),
+    );
+  }
+
+  Future<void> _openNotifications(BuildContext context) async {
+    await Navigator.of(context).push<void>(
+      MaterialPageRoute<void>(
+        builder: (routeContext) => SettingsNotificationsScreen(
+          onBack: () => Navigator.of(routeContext).pop(),
+          onRootNavigate: (next) =>
+              _closeChildStackAndSelect(routeContext, next.name),
+          battleRootEnabled: _battleAvailable,
+        ),
+      ),
+    );
+  }
+
+  Future<void> _openPrivacy(BuildContext context) async {
+    await Navigator.of(context).push<void>(
+      MaterialPageRoute<void>(
+        builder: (routeContext) => SettingsPrivacyScreen(
+          onBack: () => Navigator.of(routeContext).pop(),
+          onRootNavigate: (next) =>
+              _closeChildStackAndSelect(routeContext, next.name),
+          battleRootEnabled: _battleAvailable,
+        ),
+      ),
+    );
+  }
+
+  Future<void> _openPermissions(BuildContext context) async {
+    await Navigator.of(context).push<void>(
+      MaterialPageRoute<void>(
+        builder: (routeContext) => SettingsPermissionsScreen(
+          onBack: () => Navigator.of(routeContext).pop(),
+          onRootNavigate: (next) =>
+              _closeChildStackAndSelect(routeContext, next.name),
+          battleRootEnabled: _battleAvailable,
+        ),
+      ),
+    );
+  }
+
+  Future<void> _openAccessibility(BuildContext context) async {
+    await Navigator.of(context).push<void>(
+      MaterialPageRoute<void>(
+        builder: (routeContext) => SettingsAccessibilityScreen(
+          onBack: () => Navigator.of(routeContext).pop(),
+          onRootNavigate: (next) =>
+              _closeChildStackAndSelect(routeContext, next.name),
+          battleRootEnabled: _battleAvailable,
+        ),
+      ),
+    );
+  }
+
+  Future<void> _openSettingsHub(BuildContext context) async {
+    await Navigator.of(context).push<void>(
+      MaterialPageRoute<void>(
+        builder: (routeContext) => SettingsHubScreen(
+          onBack: () => Navigator.of(routeContext).pop(),
+          onSection: (section) {
+            switch (section) {
+              case SettingsSection.account:
+                _openAccount(routeContext);
+              case SettingsSection.notifications:
+                _openNotifications(routeContext);
+              case SettingsSection.privacy:
+                _openPrivacy(routeContext);
+              case SettingsSection.permissions:
+                _openPermissions(routeContext);
+              case SettingsSection.accessibility:
+                _openAccessibility(routeContext);
             }
-            Navigator.of(routeContext).pop();
-            _selectMasteryRoot(next);
           },
+          onRootNavigate: (next) =>
+              _closeChildStackAndSelect(routeContext, next.name),
           battleRootEnabled: _battleAvailable,
         ),
       ),
@@ -206,6 +252,12 @@ class _MainShellState extends State<MainShell> {
         battleRootEnabled: _battleAvailable,
       ),
       ProfileScreen(
+        onProfileDetails: () => _openPlayerLevel(context),
+        onHistory: () => _openProfileHistory(context),
+        onAccountInfo: () => _openAccount(context),
+        onNotifications: () => _openNotifications(context),
+        onPrivacy: () => _openPrivacy(context),
+        onSettings: () => _openSettingsHub(context),
         onRootNavigate: _selectProfileRoot,
         battleRootEnabled: _battleAvailable,
       ),
