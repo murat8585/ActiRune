@@ -35,6 +35,7 @@ class _LiveBattleScreenState extends State<LiveBattleScreen>
     with WidgetsBindingObserver {
   late final CombatEngine _combat;
   PoseCameraController? _poseCamera;
+  bool _cameraStartPending = false;
 
   @override
   void initState() {
@@ -44,22 +45,23 @@ class _LiveBattleScreenState extends State<LiveBattleScreen>
     widget.session.startLiveBattle();
     if (widget.cameraEnabled) {
       _poseCamera = PoseCameraController(onVerifiedRep: _acceptVerifiedRep);
-      unawaited(_poseCamera!.start());
+      _startCameraIfNeeded();
     }
   }
 
   @override
   void didUpdateWidget(covariant LiveBattleScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (!oldWidget.cameraEnabled &&
-        widget.cameraEnabled &&
-        _poseCamera == null) {
-      _poseCamera = PoseCameraController(onVerifiedRep: _acceptVerifiedRep);
-      unawaited(_poseCamera!.start());
+    if (!oldWidget.cameraEnabled && widget.cameraEnabled) {
+      _poseCamera ??= PoseCameraController(onVerifiedRep: _acceptVerifiedRep);
+      _startCameraIfNeeded();
     } else if (oldWidget.cameraEnabled && !widget.cameraEnabled) {
       final camera = _poseCamera;
       _poseCamera = null;
       if (camera != null) unawaited(camera.dispose());
+    } else if (widget.cameraEnabled &&
+        widget.session.snapshot.phase == BattleSessionPhase.liveBattle) {
+      _startCameraIfNeeded();
     }
   }
 
@@ -71,6 +73,19 @@ class _LiveBattleScreenState extends State<LiveBattleScreen>
     if (camera != null) unawaited(camera.dispose());
     _combat.dispose();
     super.dispose();
+  }
+
+  void _startCameraIfNeeded() {
+    if (!widget.cameraEnabled || _cameraStartPending) return;
+    final camera = _poseCamera;
+    if (camera == null || camera.isReady) return;
+
+    _cameraStartPending = true;
+    unawaited(
+      camera.start().whenComplete(() {
+        _cameraStartPending = false;
+      }),
+    );
   }
 
   void _acceptVerifiedRep(VerifiedRep rep) {
@@ -96,9 +111,7 @@ class _LiveBattleScreenState extends State<LiveBattleScreen>
 
   void _continueBattle() {
     widget.session.resumeLiveBattle();
-    if (widget.cameraEnabled && !(_poseCamera?.isReady ?? false)) {
-      unawaited(_poseCamera?.start());
-    }
+    _startCameraIfNeeded();
   }
 
   void _stopCamera() {
@@ -118,9 +131,8 @@ class _LiveBattleScreenState extends State<LiveBattleScreen>
       unawaited(camera.stop());
     } else if (state == AppLifecycleState.resumed &&
         widget.session.snapshot.phase == BattleSessionPhase.liveBattle &&
-        !widget.session.snapshot.isPaused &&
-        !camera.isReady) {
-      unawaited(camera.start());
+        !widget.session.snapshot.isPaused) {
+      _startCameraIfNeeded();
     }
   }
 
