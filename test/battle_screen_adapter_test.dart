@@ -42,7 +42,9 @@ void main() {
       expect(find.byType(CameraPrepScreen), findsOneWidget);
       expect(find.text('Kontrol Ediliyor'), findsNWidgets(5));
       expect(
-        find.byKey(const ValueKey('artwork-overlay-camera-prep.ready-disabled')),
+        find.byKey(
+          const ValueKey('artwork-overlay-camera-prep.ready-disabled'),
+        ),
         findsOneWidget,
       );
 
@@ -86,9 +88,7 @@ void main() {
     tester,
   ) async {
     var exits = 0;
-    await tester.pumpWidget(
-      buildSubject(onExitEncounter: () => exits++),
-    );
+    await tester.pumpWidget(buildSubject(onExitEncounter: () => exits++));
     await tester.pump();
 
     await tester.tap(
