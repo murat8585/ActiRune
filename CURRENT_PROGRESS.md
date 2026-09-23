@@ -4,37 +4,67 @@ Updated: 2026-09-23 (Europe/Istanbul)
 Branch: `integration/artwork-interactions-20260921`
 
 ## Last fully green Direct Validation
-- Run: 239
-- Checked commit: `ff36338aa8bad8e7d04eb920a493484a92d4fb28`
+- Run: 240
+- Checked commit: `26e060538ef8fdd7bc1f3f67c827a690ad130a41`
 - Result: SUCCESS
-- Scope: fail-closed production release identity/signing guard, together with all previously verified Phase-1 UI/gameplay, movement, Dynamic Difficulty, Recovery/Safety, Loot/Crafting, Rewarded Ads and provider-neutral Analytics/Balance systems.
+- Scope: provider-neutral Pro billing and rewarded-ad gateway contracts/coordinator, together with all previously verified Phase-1 UI/gameplay, movement, Dynamic Difficulty, Recovery/Safety, Loot/Crafting, Rewarded Ads policy, Analytics/Balance and Production Release Guard systems.
 - Formatting: PASS.
 - Analyzer: PASS, 0 issues.
 - Existing Direct Validation focused interaction suite: PASS.
 - Full Flutter suite: PASS.
 - Diff hygiene: PASS.
-- Temporary release-guard staging workflow was removed after validation in cleanup-only commit `9d6e6099751ac79d1048bb928dfc2d227a2c02c4`; runtime/test behavior was not changed by cleanup.
+- Temporary provider-contract staging workflow was removed after validation in cleanup-only commit `54d7ab975fb2e3ab481d7016a887eca6a58e392e`; runtime/test behavior was not changed by cleanup.
 
-## Newly completed verified system
-### Production Release Guard
+## Newly completed verified systems
+### Provider-neutral Pro billing gateway
+- Runtime: `lib/features/monetization/pro_billing_gateway.dart`.
+- Regression coverage: `test/monetization_provider_contracts_test.dart`.
+- Defines monthly/annual billing periods without inventing store product ids.
+- Provider/store package id remains opaque to gameplay/UI behavior.
+- Localized price is provider-supplied display data; ActiRune does not calculate or hard-code store pricing in the domain contract.
+- Pro access is granted only when purchase outcome is `purchased` AND entitlement state is `active`; cancelled/failed/inactive results cannot report Pro success.
+- Gateway owns load offerings, current entitlement, purchase and restore boundaries without selecting RevenueCat/StoreKit/Google Play in runtime yet.
+
+### Provider-neutral Rewarded Ad gateway
+- Runtime: `lib/features/monetization/rewarded_ad_gateway.dart`.
+- Regression coverage: `test/monetization_provider_contracts_test.dart`.
+- Locked placements represented as Rune Shrine and PvE defeat retry.
+- External provider results represented as completed/cancelled/failed/unavailable.
+- `RewardedAdDeliveryCoordinator` preserves `RewardedAdPolicy` as product authority.
+- Completed external ad may pass the reward gate; cancelled, failed and unavailable outcomes cannot.
+- Direct Pro grants do not invoke an ad provider.
+- Policy-blocked decisions do not invoke an ad provider.
+- No AdMob SDK, ad-unit id, fake success path or provider network behavior was added.
+
+## Production provider research / recommendation
+- Decision record: `docs/architecture/PRODUCTION_PROVIDER_DECISION_20260923.md`.
+- Decision record commit: `64353a59583f81f13543cfe999ce8e3f89bab7be`.
+- Status: RECOMMENDED / NOT YET LOCKED.
+- Recommended lowest-friction stack for the current Flutter/iOS/Android architecture:
+  - Firebase for backend/Auth/Firestore/Functions/App Check.
+  - RevenueCat for Pro subscription/entitlement management.
+  - Google Mobile Ads / AdMob for rewarded ads.
+  - Firebase Analytics with optional BigQuery export for analytics/warehouse use.
+  - Native Android Health Connect + Apple HealthKit deferred until approved release scope requires them.
+- Supabase is recorded as the credible backend alternative when SQL/Postgres ownership or provider portability outweighs minimum integration surface.
+- No provider SDK was installed because final app identifiers, provider projects/accounts and credentials are not authoritative yet.
+
+## Production Release Guard
 - Runtime guard: `lib/core/release/production_release_guard.dart`.
 - Regression tests: `test/production_release_guard_test.dart`.
 - Repository CLI: `tool/check_production_release_readiness.dart`.
 - Manual release workflow: `.github/workflows/actirune-production-readiness.yml`.
-- Current platform files are parsed directly instead of trusting a handwritten readiness flag.
-- Android application id must exist and must not use the `com.example.*` placeholder namespace.
-- Android release signing must be explicitly configured and must not use debug signing.
-- iOS Runner bundle id must exist and must not use the `com.example.*` placeholder namespace; RunnerTests ids are ignored when selecting the app id.
+- Android application id must exist and must not use `com.example.*`.
+- Android release signing must be configured and must not use debug signing.
+- iOS Runner bundle id must exist and must not use `com.example.*`; RunnerTests ids are ignored when selecting the app id.
 - iOS `DEVELOPMENT_TEAM` must exist.
 - Missing/malformed authority fails closed.
-- The manual Production Readiness workflow intentionally enforces the guard only when invoked; normal development validation is not forced red merely because external production credentials are not available yet.
 
 ## Analytics / Balance provider-neutral contract
 - Runtime: `lib/core/analytics/analytics_event.dart`.
 - Regression test: `test/analytics_event_contract_test.dart`.
 - Required typed families: onboarding, D1/D7/D30 retention, daily/weekly quest completion/reroll/abandon, movement verified/invalid/form score, boss success/retry/rewarded retry, world progression/region exit, economy craft sink/loot source, Rune Shrine impression/opt-in/completion, Pro paywall/trial/paid/renewal/churn and social invite/room/raid completion.
-- Movement analytics reuses the existing `VerifiedMovementType`; economy material events reuse the locked `MaterialFamily` authority.
-- `AnalyticsSink` is an interface only. No analytics provider, network transport, persistence, account identity, backend endpoint, SDK success or production telemetry delivery was fabricated.
+- `AnalyticsSink` remains provider-neutral. No analytics provider, network transport, persistence, account identity, backend endpoint, SDK success or production telemetry delivery was fabricated.
 
 ## Release-gate audit recorded
 - Matrix: `docs/release/PHASE1_RELEASE_GATE_MATRIX_20260923.md`.
@@ -48,13 +78,13 @@ Branch: `integration/artwork-interactions-20260921`
 - Dynamic Difficulty: IMPLEMENTED deterministic policy owner.
 - Recovery/Safety: IMPLEMENTED deterministic policy owner.
 - Loot/Crafting: ADAPTER_ONLY beyond local validation; no real persistence/economy backend owner.
-- Rewarded Ads: ADAPTER_ONLY; product policy exists, real ad provider SDK does not.
-- Pro/Billing: ADAPTER_ONLY at UI/contract level; no billing/IAP provider or SKU owner exists.
+- Rewarded Ads: ADAPTER_ONLY; product policy + provider-neutral gateway are verified, real ad provider SDK/account is absent.
+- Pro/Billing: ADAPTER_ONLY; UI + provider-neutral billing/entitlement gateway are verified, real IAP provider/store products are absent.
 - Analytics/Balance: ADAPTER_ONLY; typed event contract exists, real provider/transport does not.
 - Backend/cloud persistence: ABSENT in current repository evidence.
 - Health Connect/HealthKit: ABSENT in current repository evidence.
-- Android production id/signing: BLOCKED and now automatically detectable; app id remains `com.example.actirune` and release currently uses debug signing.
-- iOS production id/signing: BLOCKED and now automatically detectable; bundle id remains `com.example.actirune` and no `DEVELOPMENT_TEAM` value is present in repository evidence.
+- Android production id/signing: BLOCKED and automatically detectable; app id remains `com.example.actirune` and release currently uses debug signing.
+- iOS production id/signing: BLOCKED and automatically detectable; bundle id remains `com.example.actirune` and no `DEVELOPMENT_TEAM` value is present in repository evidence.
 - ML Kit physical-device release proof: BLOCKED_EXTERNAL_PROOF until real-human labelled physical-device corpus is completed and reviewed.
 
 ## Recently verified policy systems
@@ -86,6 +116,7 @@ Branch: `integration/artwork-interactions-20260921`
 - Loot/Crafting + Rewarded Ads policy: VERIFIED by Direct Validation Run 237.
 - Analytics/Balance typed contract: VERIFIED by Direct Validation Run 238.
 - Production Release Guard: VERIFIED by Direct Validation Run 239.
+- Pro Billing + Rewarded Ad provider-neutral gateways: VERIFIED by Direct Validation Run 240.
 - Mağaza / Shop Revision: VERIFIED by Direct Validation Run 228 successful re-run.
 - Lumi: VERIFIED by Direct Validation Run 224.
 - Crafting / Rün Dövme exact-art shell: VERIFIED by Direct Validation Run 222 successful re-run.
@@ -122,29 +153,33 @@ Branch: `integration/artwork-interactions-20260921`
 - Rune Shrine + PvE Rewarded Ads eligibility/completion policy
 - Provider-neutral required Analytics/Balance event contract
 - Fail-closed production application-id/bundle-id/signing readiness guard
+- Provider-neutral Pro billing/entitlement contract
+- Provider-neutral Rewarded Ad execution contract/coordinator
 
 ## Product authority / safety boundary
 - Master Product Bible Phase 1 requires Core Solo: Home, Adventure, Squat/Lunge/Push-up/Plank infrastructure, Camera Prep, Live Battle, Form Coach, quests, Player/Hero/Lumi/Mastery, loot/crafting, Recovery/Difficulty, Pro base layer and Rewarded Ads.
 - Master Product Bible separately marks Analytics/Balance and camera/pose proof as REQUIRED.
-- Master Product Bible names no Firebase, RevenueCat or AdMob provider; provider selection must not be invented merely to make a dependency list look impressive.
+- Provider research recommends Firebase + RevenueCat + AdMob + Firebase Analytics/BigQuery, but the product Bible still does not itself authorize those provider accounts/configuration.
 - Do not invent gameplay effects, inventory mutations, engine state, rewards, routes, entitlement behavior, purchase behavior, pricing, trial state, personalization output, medical diagnosis, analytics transport/output or ad-provider behavior where product/engine/provider authority is absent.
 - Meaningful gameplay progress remains movement-backed.
 - Pose thresholds stay configuration until labelled-video corpus and real-device ML Kit validation are completed.
 
 ## Current hard boundary
-- Remaining blockers require production-provider decisions/accounts/configuration, signing identity or real physical devices/evidence.
-- No provider is currently authoritative in the product Bible for backend, billing, ads, health or analytics delivery.
+- The remaining production blockers now require provider/account configuration, store product setup, final application identifiers, signing identity or real physical-device evidence.
 - Production credentials/signing secrets must not be invented or committed.
 - Real physical-device ML Kit validation cannot be truthfully replaced by CI or synthetic unit tests.
-- Production release identity/signing mistakes are now automatically detectable rather than being a documentation-only warning.
+- Production release identity/signing mistakes are automatically detectable.
+- Billing and rewarded-ad providers can now be connected behind tested interfaces without allowing provider SDK behavior to become product authority.
 
 ## Next exact actions
-1. Research and rank authoritative backend, billing, rewarded-ad and analytics provider options for the Flutter/iOS/Android ActiRune stack using current official documentation and repository constraints; record the decision evidence without installing an SDK prematurely.
-2. Confirm final Android application id and iOS bundle id before changing store identities.
-3. Configure production signing through protected secret management, never repository plaintext.
-4. Integrate Health Connect/HealthKit only if it remains in approved release scope and permission/consent requirements are fixed.
-5. Execute the labelled real-human physical-device protocol in `docs/release/PHYSICAL_DEVICE_MLKIT_VALIDATION_GATE.md` and record results against an exact release commit/build.
-6. After provider authority and credentials exist, integrate one provider at a time behind the existing policy/contracts and re-run full Direct Validation after each meaningful batch.
+1. Search repository/project history for any already-authoritative ActiRune Android application id, iOS bundle id, Apple team/store identifiers or provider project/account decisions before requesting or creating new identifiers.
+2. If no canonical identities exist, final Android/iOS identifiers remain an external owner decision; do not invent them.
+3. Once identifiers/provider projects are authoritative, bootstrap Firebase development configuration first behind provider-neutral repositories and App Check, without production deployment.
+4. Add RevenueCat behind `ProBillingGateway`; store products/pricing/entitlements must come from real store/provider configuration.
+5. Add Google Mobile Ads behind `RewardedAdGateway`; use test ad units in development and preserve `RewardedAdPolicy` as the reward authority.
+6. Add Firebase Analytics only as an `AnalyticsSink` adapter; do not emit sensitive health/camera/raw-pose data.
+7. Execute the labelled real-human physical-device protocol in `docs/release/PHYSICAL_DEVICE_MLKIT_VALIDATION_GATE.md` against an exact release commit/build.
+8. Run Production Readiness guard and full Direct Validation after each provider/runtime integration; do not call the build production-ready until all applicable gates are proven.
 
 ## Permanent working rule
 After each meaningful green batch, update this file with latest green run/commit, completed scope, blockers and exact next step. This file is the GitHub recovery checkpoint when a chat/tab ends.
