@@ -37,7 +37,9 @@ void main() {
       androidGradle: androidFile.readAsStringSync(),
       iosProject: iosFile.readAsStringSync(),
     );
-    final productionReport = ProductionReleaseGuard.evaluate(productionEvidence);
+    final productionReport = ProductionReleaseGuard.evaluate(
+      productionEvidence,
+    );
 
     ProviderAuthorityLock? authority;
     ProviderAuthorityReport? authorityReport;
