@@ -95,10 +95,7 @@ enum BossAnalyticsAction { succeeded, retried, rewardedRetryUsed }
 
 @immutable
 final class BossAnalyticsEvent extends AnalyticsEvent {
-  const BossAnalyticsEvent({
-    required super.occurredAt,
-    required this.action,
-  });
+  const BossAnalyticsEvent({required super.occurredAt, required this.action});
 
   final BossAnalyticsAction action;
 
@@ -163,10 +160,7 @@ enum ProAnalyticsAction { paywallViewed, trialStarted, paid, renewed, churned }
 
 @immutable
 final class ProAnalyticsEvent extends AnalyticsEvent {
-  const ProAnalyticsEvent({
-    required super.occurredAt,
-    required this.action,
-  });
+  const ProAnalyticsEvent({required super.occurredAt, required this.action});
 
   final ProAnalyticsAction action;
 
@@ -178,10 +172,7 @@ enum SocialAnalyticsAction { inviteSent, roomEntered, raidCompleted }
 
 @immutable
 final class SocialAnalyticsEvent extends AnalyticsEvent {
-  const SocialAnalyticsEvent({
-    required super.occurredAt,
-    required this.action,
-  });
+  const SocialAnalyticsEvent({required super.occurredAt, required this.action});
 
   final SocialAnalyticsAction action;
 

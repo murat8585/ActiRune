@@ -91,22 +91,18 @@ void main() {
         movement: VerifiedMovementType.squat,
         action: MovementAnalyticsAction.invalid,
       ),
-      BossAnalyticsEvent(
-        occurredAt: at,
-        action: BossAnalyticsAction.succeeded,
-      ),
-      BossAnalyticsEvent(
-        occurredAt: at,
-        action: BossAnalyticsAction.retried,
-      ),
+      BossAnalyticsEvent(occurredAt: at, action: BossAnalyticsAction.succeeded),
+      BossAnalyticsEvent(occurredAt: at, action: BossAnalyticsAction.retried),
       BossAnalyticsEvent(
         occurredAt: at,
         action: BossAnalyticsAction.rewardedRetryUsed,
       ),
     ];
 
-    expect(events.whereType<MovementAnalyticsEvent>().first.movement,
-        VerifiedMovementType.plank);
+    expect(
+      events.whereType<MovementAnalyticsEvent>().first.movement,
+      VerifiedMovementType.plank,
+    );
     expect(events.whereType<MovementAnalyticsEvent>().first.formScore, 0.91);
     expect(events.map((event) => event.family).toSet(), {
       AnalyticsEventFamily.quest,
