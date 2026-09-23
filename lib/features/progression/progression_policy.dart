@@ -126,9 +126,6 @@ class ProgressionPolicy {
       return null;
     }
 
-    return MovementMasteryAdvanceAuthorization._(
-      track: track,
-      source: source,
-    );
+    return MovementMasteryAdvanceAuthorization._(track: track, source: source);
   }
 }
