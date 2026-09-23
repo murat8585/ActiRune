@@ -1,6 +1,8 @@
-# ActiRune release authority records
+# ActiRune release authority and evidence records
 
-## Provider authority lock
+This directory stores non-secret, auditable release authority/evidence metadata. It must never become a convenient dumping ground for credentials. Humans have invented password managers for a reason.
+
+## 1. Provider authority lock
 
 `provider_authority.template.json` is deliberately invalid until the product owner has made the production provider and application-identity decisions authoritative.
 
@@ -23,20 +25,81 @@ Then run:
 dart run tool/validate_provider_authority_lock.dart
 ```
 
-The validator fails closed when:
+The validator fails closed when the authority is missing/malformed, provider names remain placeholders, either app id uses `com.example.*`, or locked ids differ from the real Android/iOS platform files.
 
-- the authority file is missing,
-- the schema contains extra/unknown fields,
-- any required value is blank,
-- provider names are still TBD/placeholder values,
-- either app identifier uses `com.example.*`,
-- the locked Android id differs from the real Android platform file,
-- the locked iOS id differs from the real iOS Runner platform file.
+`PROVIDER_AUTHORITY_LOCK_VALID` proves only that provider choice and platform identities are explicit and match repository platform configuration. It does not prove SDK/provider-console configuration.
+
+## 2. Provider configuration evidence
+
+After authority is locked and the real providers are configured, copy:
+
+`provider_configuration.template.json`
+
+to:
+
+`validation/release/provider_configuration.json`
+
+For backend, billing, rewarded ads and analytics, record:
+
+- the exact provider name from the authority lock,
+- a non-secret public/project/app reference suitable for audit,
+- whether configuration is actually complete,
+- one or more verification methods:
+  - `providerConsoleReadback`
+  - `storeConsoleReadback`
+  - `runtimeSmokeTest`
+  - `automatedApiReadback`
+
+The configuration record also repeats the locked Android/iOS application ids and release build. The validator requires provider names and app ids to match authority exactly and every required provider to be explicitly configured.
+
+This evidence must not contain API keys, tokens, client secrets, service-account material, private keys or signing credentials. Unknown fields are rejected.
+
+## 3. Physical-device final review
+
+Raw physical-device evidence lives under `validation/physical_device_mlkit/` as privacy-safe metadata/results. After the real-human corpus is structurally complete and reviewed, copy:
+
+`physical_final_review.template.json`
+
+to:
+
+`validation/release/physical_final_review.json`
+
+The final review record contains:
+
+- `disposition`: must be `passed` for release,
+- `evidenceGitBlobSha`: exact Git blob SHA of the reviewed `evidence.json`,
+- `reviewReference`: auditable review/ticket/change reference,
+- `reviewedBuild`: exact build represented by the physical evidence.
+
+The validator rejects a final pass when the evidence file changes, when the recorded blob SHA is malformed, when evidence contains multiple build ids, or when the reviewed build differs from the physical corpus build. This prevents an old physical approval from quietly hitchhiking onto a different build.
+
+Get the evidence blob SHA with:
+
+```text
+git hash-object validation/physical_device_mlkit/evidence.json
+```
+
+Do not store raw personal video, subject real names or biometric identifiers in this release record.
+
+## 4. Unified Phase-1 production readiness check
+
+Run:
+
+```text
+dart run tool/check_phase1_production_readiness.dart
+```
+
+The checker evaluates all repository-declared release gates together:
+
+- Android/iOS production application identity and signing,
+- provider authority lock,
+- provider configuration evidence,
+- physical-device evidence completeness,
+- physical final review bound to the exact evidence blob/build,
+- aggregate Phase-1 release blockers.
+
+It exits non-zero while any represented gate remains unresolved. A successful result still does not replace Apple/Google store review, credential/signing provenance or provider-console/live-service evidence that exists outside the repository.
 
 ## Secret boundary
 
-Do **not** add API keys, tokens, client secrets, service-account JSON, private keys, signing credentials, ad-unit secrets, RevenueCat keys or Firebase credentials to the authority lock. Unknown fields are rejected partly to make accidental credential stuffing harder.
-
-`PROVIDER_AUTHORITY_LOCK_VALID` proves only that the non-secret provider choice and platform identities are explicit and match the repository platform configuration. It does not prove SDK installation, provider-console configuration, signing, store products, entitlements, ad-unit setup, backend deployment, App Check, analytics delivery or production connectivity.
-
-The Phase-1 aggregate release gate must remain blocked until those separate gates are actually evidenced.
+Never add API keys, tokens, client secrets, service-account JSON, private keys, signing credentials, ad-unit credentials, RevenueCat keys or other private provider credentials to these JSON records. Production secrets belong in protected provider/CI secret stores, not Git history, because Git remembers human mistakes with unsettling enthusiasm.
