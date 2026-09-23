@@ -6,6 +6,13 @@ on:
       - integration/production-evidence-chain-stage-20260923
     paths:
       - '.github/workflows/actirune-production-evidence-chain-stage.yml'
+      - 'lib/core/release/provider_configuration_evidence.dart'
+      - 'lib/features/pose/validation/physical_validation_final_review.dart'
+      - 'tool/check_phase1_production_readiness.dart'
+      - 'tool/phase1_production_readiness_gate_test.dart'
+      - 'test/provider_configuration_evidence_test.dart'
+      - 'test/physical_validation_final_review_test.dart'
+      - 'validation/release/**'
 
 permissions:
   contents: write
@@ -35,6 +42,7 @@ jobs:
           lib/core/release/provider_configuration_evidence.dart
           lib/features/pose/validation/physical_validation_final_review.dart
           tool/check_phase1_production_readiness.dart
+          tool/phase1_production_readiness_gate_test.dart
           test/provider_configuration_evidence_test.dart
           test/physical_validation_final_review_test.dart
 
@@ -81,6 +89,7 @@ jobs:
             lib/core/release/provider_configuration_evidence.dart
             lib/features/pose/validation/physical_validation_final_review.dart
             tool/check_phase1_production_readiness.dart
+            tool/phase1_production_readiness_gate_test.dart
             test/provider_configuration_evidence_test.dart
             test/physical_validation_final_review_test.dart
           )
