@@ -1,0 +1,29 @@
+name: ActiRune Crafting Artwork Capture
+
+on:
+  push:
+    branches:
+      - integration/artwork-interactions-20260921
+    paths:
+      - '.github/workflows/actirune-crafting-artifact.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout integration branch
+        uses: actions/checkout@v4
+        with:
+          ref: integration/artwork-interactions-20260921
+      - name: Guard exact Crafting artwork
+        run: test -f visual_authority/20260921/final_p1/04_P1_CRAFTING_FINAL.png
+      - name: Upload exact Crafting artwork
+        uses: actions/upload-artifact@v4
+        with:
+          name: actirune-crafting-reference
+          path: visual_authority/20260921/final_p1/04_P1_CRAFTING_FINAL.png
+          retention-days: 1
