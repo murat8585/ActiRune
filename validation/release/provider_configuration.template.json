@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "androidApplicationId": "REPLACE_WITH_LOCKED_ANDROID_ID",
+  "iosBundleIdentifier": "REPLACE_WITH_LOCKED_IOS_ID",
+  "releaseBuild": "REPLACE_WITH_RELEASE_BUILD",
+  "backend": {
+    "providerName": "REPLACE_WITH_LOCKED_BACKEND_PROVIDER",
+    "publicReference": "REPLACE_WITH_NON_SECRET_PUBLIC_REFERENCE",
+    "configured": false,
+    "verificationMethods": ["providerConsoleReadback"]
+  },
+  "billing": {
+    "providerName": "REPLACE_WITH_LOCKED_BILLING_PROVIDER",
+    "publicReference": "REPLACE_WITH_NON_SECRET_PUBLIC_REFERENCE",
+    "configured": false,
+    "verificationMethods": ["providerConsoleReadback"]
+  },
+  "rewardedAds": {
+    "providerName": "REPLACE_WITH_LOCKED_REWARDED_ADS_PROVIDER",
+    "publicReference": "REPLACE_WITH_NON_SECRET_PUBLIC_REFERENCE",
+    "configured": false,
+    "verificationMethods": ["providerConsoleReadback"]
+  },
+  "analytics": {
+    "providerName": "REPLACE_WITH_LOCKED_ANALYTICS_PROVIDER",
+    "publicReference": "REPLACE_WITH_NON_SECRET_PUBLIC_REFERENCE",
+    "configured": false,
+    "verificationMethods": ["providerConsoleReadback"]
+  }
+}
