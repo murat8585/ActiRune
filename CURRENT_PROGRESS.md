@@ -4,19 +4,40 @@ Updated: 2026-09-23 (Europe/Istanbul)
 Branch: `integration/artwork-interactions-20260921`
 
 ## Last fully green Direct Validation
-- Run: 240
-- Checked commit: `26e060538ef8fdd7bc1f3f67c827a690ad130a41`
+- Run: 241
+- Checked commit: `58686e9b5337de7a82885b2391911946e2c99cd4`
 - Result: SUCCESS
-- Scope: provider-neutral Pro billing and rewarded-ad gateway contracts/coordinator, together with all previously verified Phase-1 UI/gameplay, movement, Dynamic Difficulty, Recovery/Safety, Loot/Crafting, Rewarded Ads policy, Analytics/Balance and Production Release Guard systems.
+- Scope: machine-readable physical-device ML Kit evidence model/validator plus all previously verified Phase-1 UI/gameplay, movement, Dynamic Difficulty, Recovery/Safety, Loot/Crafting, Rewarded Ads policy, Analytics/Balance, Production Release Guard and provider-neutral billing/ad gateway systems.
 - Formatting: PASS.
 - Analyzer: PASS, 0 issues.
 - Existing Direct Validation focused interaction suite: PASS.
 - Full Flutter suite: PASS.
 - Diff hygiene: PASS.
-- Temporary provider-contract staging workflow was removed after validation in cleanup-only commit `54d7ab975fb2e3ab481d7016a887eca6a58e392e`; runtime/test behavior was not changed by cleanup.
+- Temporary physical-evidence staging workflow was removed after its dedicated green validation; integration commit `58686e9b5337de7a82885b2391911946e2c99cd4` contains only the validated runtime/tool/test/evidence-format changes from that batch.
 
-## Newly completed verified systems
-### Provider-neutral Pro billing gateway
+## Newly completed verified system
+### Physical-device ML Kit evidence infrastructure
+- Runtime evidence model: `lib/features/pose/validation/physical_validation_evidence.dart`.
+- Repository validator CLI: `tool/validate_physical_mlkit_evidence.dart`.
+- Regression tests: `test/physical_validation_evidence_test.dart`.
+- Evidence documentation: `validation/physical_device_mlkit/README.md`.
+- Empty starter template: `validation/physical_device_mlkit/evidence.template.json`.
+- The schema records exact commit/build, ML Kit package version, device/OS, camera/orientation, lighting/framing, anonymous corpus/session ids, movement, labelled expectations, accepted/rejected observations, false positives/negatives, occlusion/duplicate/lifecycle notes, coverage tags and reviewer disposition.
+- Repository evidence explicitly rejects raw personal/biometric media fields such as real subject names, raw video paths/bytes and biometric ids.
+- Required evidence coverage includes valid, incomplete, incorrect-form, speed, confidence/occlusion, framing, duplicate/replay and battle-integration cases for all four Phase-1 movements; plank hold and camera lifecycle have explicit coverage gates.
+- The validator can only report `BLOCKED_EVIDENCE_INCOMPLETE` or `READY_FOR_HUMAN_REVIEW`.
+- `READY_FOR_HUMAN_REVIEW` deliberately does **not** mean release PASS. Real-human physical-device evidence, thresholds, supported-device scope and final disposition remain human-reviewed external proof.
+
+## Production identity audit
+- Audit: `docs/release/CANONICAL_IDENTITY_AUDIT_20260923.md`.
+- Current Android application id remains `com.example.actirune`.
+- Current iOS Runner bundle id remains `com.example.actirune`; no authoritative `DEVELOPMENT_TEAM` is present in repository evidence.
+- Historical `com.example.actirune_canonical_visual_prototype` belongs to the visual prototype APK and is explicitly not production authority.
+- No authoritative historical ActiRune Firebase, RevenueCat, AdMob, Apple Team/App Store Connect, Google Play production package or final iOS bundle-id decision was found.
+- Aile Güvende/Kinola identities must never be reused for ActiRune.
+- Production provider bootstrap remains blocked by identity authority rather than silently registering placeholder ids.
+
+## Provider-neutral Pro billing gateway
 - Runtime: `lib/features/monetization/pro_billing_gateway.dart`.
 - Regression coverage: `test/monetization_provider_contracts_test.dart`.
 - Defines monthly/annual billing periods without inventing store product ids.
@@ -25,7 +46,7 @@ Branch: `integration/artwork-interactions-20260921`
 - Pro access is granted only when purchase outcome is `purchased` AND entitlement state is `active`; cancelled/failed/inactive results cannot report Pro success.
 - Gateway owns load offerings, current entitlement, purchase and restore boundaries without selecting RevenueCat/StoreKit/Google Play in runtime yet.
 
-### Provider-neutral Rewarded Ad gateway
+## Provider-neutral Rewarded Ad gateway
 - Runtime: `lib/features/monetization/rewarded_ad_gateway.dart`.
 - Regression coverage: `test/monetization_provider_contracts_test.dart`.
 - Locked placements represented as Rune Shrine and PvE defeat retry.
@@ -75,6 +96,7 @@ Branch: `integration/artwork-interactions-20260921`
 ### Current release-service classifications
 - Core verified Flutter/gameplay scope: IMPLEMENTED within repository scope.
 - Four movement state machines + VerifiedRep routing: IMPLEMENTED, but physical-device proof still required.
+- Physical evidence schema/validator: IMPLEMENTED and VERIFIED; real corpus remains `BLOCKED_EXTERNAL_PROOF`.
 - Dynamic Difficulty: IMPLEMENTED deterministic policy owner.
 - Recovery/Safety: IMPLEMENTED deterministic policy owner.
 - Loot/Crafting: ADAPTER_ONLY beyond local validation; no real persistence/economy backend owner.
@@ -110,6 +132,7 @@ Branch: `integration/artwork-interactions-20260921`
 - Push-up: VERIFIED by Direct Validation Run 233.
 - Plank: VERIFIED by Direct Validation Run 234.
 - Typed BattleSession/Combat routing: VERIFIED by Direct Validation Run 235.
+- Machine-readable physical-device evidence contract/tooling: VERIFIED by Direct Validation Run 241.
 
 ## Previously verified product/UI systems
 - Dynamic Difficulty + Recovery/Safety: VERIFIED by Direct Validation Run 236.
@@ -155,6 +178,7 @@ Branch: `integration/artwork-interactions-20260921`
 - Fail-closed production application-id/bundle-id/signing readiness guard
 - Provider-neutral Pro billing/entitlement contract
 - Provider-neutral Rewarded Ad execution contract/coordinator
+- Physical-device evidence model/validator with privacy-safe repository boundary
 
 ## Product authority / safety boundary
 - Master Product Bible Phase 1 requires Core Solo: Home, Adventure, Squat/Lunge/Push-up/Plank infrastructure, Camera Prep, Live Battle, Form Coach, quests, Player/Hero/Lumi/Mastery, loot/crafting, Recovery/Difficulty, Pro base layer and Rewarded Ads.
@@ -165,20 +189,21 @@ Branch: `integration/artwork-interactions-20260921`
 - Pose thresholds stay configuration until labelled-video corpus and real-device ML Kit validation are completed.
 
 ## Current hard boundary
-- The remaining production blockers now require provider/account configuration, store product setup, final application identifiers, signing identity or real physical-device evidence.
+- Remaining production blockers require provider/account configuration, store product setup, final application identifiers, signing identity and/or real physical-device evidence.
 - Production credentials/signing secrets must not be invented or committed.
 - Real physical-device ML Kit validation cannot be truthfully replaced by CI or synthetic unit tests.
 - Production release identity/signing mistakes are automatically detectable.
-- Billing and rewarded-ad providers can now be connected behind tested interfaces without allowing provider SDK behavior to become product authority.
+- Billing and rewarded-ad providers can be connected behind tested interfaces without allowing provider SDK behavior to become product authority.
+- Physical evidence can now be recorded and mechanically checked without allowing automation to manufacture a release PASS.
 
 ## Next exact actions
-1. Search repository/project history for any already-authoritative ActiRune Android application id, iOS bundle id, Apple team/store identifiers or provider project/account decisions before requesting or creating new identifiers.
-2. If no canonical identities exist, final Android/iOS identifiers remain an external owner decision; do not invent them.
+1. Build a single fail-closed release-readiness aggregator that combines existing production identity/signing status with provider-configuration status and physical-evidence readiness without turning external proof into a fake PASS.
+2. Keep final Android/iOS identifiers as an external owner decision; do not invent or reuse prototype/other-product ids.
 3. Once identifiers/provider projects are authoritative, bootstrap Firebase development configuration first behind provider-neutral repositories and App Check, without production deployment.
 4. Add RevenueCat behind `ProBillingGateway`; store products/pricing/entitlements must come from real store/provider configuration.
 5. Add Google Mobile Ads behind `RewardedAdGateway`; use test ad units in development and preserve `RewardedAdPolicy` as the reward authority.
 6. Add Firebase Analytics only as an `AnalyticsSink` adapter; do not emit sensitive health/camera/raw-pose data.
-7. Execute the labelled real-human physical-device protocol in `docs/release/PHYSICAL_DEVICE_MLKIT_VALIDATION_GATE.md` against an exact release commit/build.
+7. Execute the labelled real-human physical-device protocol in `docs/release/PHYSICAL_DEVICE_MLKIT_VALIDATION_GATE.md` and record evidence through the verified physical-evidence schema against an exact release commit/build.
 8. Run Production Readiness guard and full Direct Validation after each provider/runtime integration; do not call the build production-ready until all applicable gates are proven.
 
 ## Permanent working rule
