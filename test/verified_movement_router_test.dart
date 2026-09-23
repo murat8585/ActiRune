@@ -21,27 +21,30 @@ void main() {
       ..startLiveBattle();
   }
 
-  test('all four supported detector identities route in matching encounters', () {
-    const cases = <(String, VerifiedMovementType)>[
-      ('squat', VerifiedMovementType.squat),
-      ('lunge', VerifiedMovementType.lunge),
-      ('push_up', VerifiedMovementType.pushUp),
-      ('plank', VerifiedMovementType.plank),
-    ];
+  test(
+    'all four supported detector identities route in matching encounters',
+    () {
+      const cases = <(String, VerifiedMovementType)>[
+        ('squat', VerifiedMovementType.squat),
+        ('lunge', VerifiedMovementType.lunge),
+        ('push_up', VerifiedMovementType.pushUp),
+        ('plank', VerifiedMovementType.plank),
+      ];
 
-    for (var i = 0; i < cases.length; i++) {
-      final current = cases[i];
-      final session = liveSession(current.$2);
-      final combat = CombatEngine(bossMaxHp: 1000, damagePerVerifiedRep: 100);
-      final router = VerifiedMovementRouter(session: session, combat: combat);
+      for (var i = 0; i < cases.length; i++) {
+        final current = cases[i];
+        final session = liveSession(current.$2);
+        final combat = CombatEngine(bossMaxHp: 1000, damagePerVerifiedRep: 100);
+        final router = VerifiedMovementRouter(session: session, combat: combat);
 
-      expect(router.route(rep(current.$1, 100 + i)), isTrue);
-      expect(session.snapshot.lastVerifiedMovement, current.$2);
-      expect(session.snapshot.verifiedActionCount, 1);
-      expect(combat.snapshot.verifiedReps, 1);
-      expect(combat.snapshot.bossHp, 900);
-    }
-  });
+        expect(router.route(rep(current.$1, 100 + i)), isTrue);
+        expect(session.snapshot.lastVerifiedMovement, current.$2);
+        expect(session.snapshot.verifiedActionCount, 1);
+        expect(combat.snapshot.verifiedReps, 1);
+        expect(combat.snapshot.bossHp, 900);
+      }
+    },
+  );
 
   test('mismatched detector identity is rejected without combat mutation', () {
     final session = liveSession(VerifiedMovementType.lunge);

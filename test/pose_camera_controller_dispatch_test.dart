@@ -19,10 +19,7 @@ void main() {
     });
 
     test('plank fails closed without authoritative hold duration', () {
-      expect(
-        () => factory.create(PoseExerciseType.plank),
-        throwsArgumentError,
-      );
+      expect(() => factory.create(PoseExerciseType.plank), throwsArgumentError);
       expect(
         () => factory.create(
           PoseExerciseType.plank,

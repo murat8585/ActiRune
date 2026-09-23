@@ -12,7 +12,10 @@ void main() {
       expect(engine.snapshot.verifiedActionCount, 1);
       expect(engine.snapshot.lastVerifiedMovement, VerifiedMovementType.squat);
 
-      expect(engine.acceptVerifiedMovement(VerifiedMovementType.plank), isFalse);
+      expect(
+        engine.acceptVerifiedMovement(VerifiedMovementType.plank),
+        isFalse,
+      );
       expect(engine.snapshot.verifiedActionCount, 1);
       expect(engine.snapshot.lastVerifiedMovement, VerifiedMovementType.squat);
     });
@@ -20,7 +23,10 @@ void main() {
     test('unprepared live battle rejects verified movement fail closed', () {
       final engine = BattleSessionEngine()..startLiveBattle();
 
-      expect(engine.acceptVerifiedMovement(VerifiedMovementType.squat), isFalse);
+      expect(
+        engine.acceptVerifiedMovement(VerifiedMovementType.squat),
+        isFalse,
+      );
       expect(engine.snapshot.verifiedActionCount, 0);
       expect(engine.snapshot.lastVerifiedMovement, isNull);
     });
