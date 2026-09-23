@@ -163,6 +163,6 @@ jobs:
           set -euo pipefail
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add lib/app/main_shell.dart lib/features/hero/lumi_screen.dart test/lumi_screen_test.dart test/child_route_integration_test.dart pubspec.yaml .github/workflows/actirune-direct-validation.yml
+          git add lib/app/main_shell.dart lib/features/hero/lumi_screen.dart test/lumi_screen_test.dart test/child_route_integration_test.dart pubspec.yaml
           git commit -m 'Wire canonical Lumi screen'
           git push origin HEAD:integration/lumi-stage-20260923
