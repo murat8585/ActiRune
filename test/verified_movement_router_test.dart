@@ -11,7 +11,11 @@ void main() {
     return VerifiedRep(exercise: exercise, at: at, formScore: formScore);
   }
 
-  ({BattleSessionEngine session, CombatEngine combat, VerifiedMovementRouter router})
+  ({
+    BattleSessionEngine session,
+    CombatEngine combat,
+    VerifiedMovementRouter router,
+  })
   liveRouter(VerifiedMovementType movement) {
     final session = BattleSessionEngine()
       ..prepare(movement)
@@ -53,15 +57,21 @@ void main() {
     expect(state.combat.snapshot.bossHp, 1000);
   });
 
-  test('one accepted verified rep creates exactly one session and combat action', () {
-    final state = liveRouter(VerifiedMovementType.lunge);
+  test(
+    'one accepted verified rep creates exactly one session and combat action',
+    () {
+      final state = liveRouter(VerifiedMovementType.lunge);
 
-    expect(state.router.accept(rep('lunge')), isTrue);
-    expect(state.session.snapshot.verifiedActionCount, 1);
-    expect(state.session.snapshot.lastVerifiedMovement, VerifiedMovementType.lunge);
-    expect(state.combat.snapshot.verifiedReps, 1);
-    expect(state.combat.snapshot.bossHp, 900);
-  });
+      expect(state.router.accept(rep('lunge')), isTrue);
+      expect(state.session.snapshot.verifiedActionCount, 1);
+      expect(
+        state.session.snapshot.lastVerifiedMovement,
+        VerifiedMovementType.lunge,
+      );
+      expect(state.combat.snapshot.verifiedReps, 1);
+      expect(state.combat.snapshot.bossHp, 900);
+    },
+  );
 
   test('form score is forwarded once to combat balance owner', () {
     final state = liveRouter(VerifiedMovementType.pushUp);
@@ -73,13 +83,16 @@ void main() {
     expect(state.combat.snapshot.combo, 0);
   });
 
-  test('prepared movement mismatch is rejected before either owner mutates', () {
-    final state = liveRouter(VerifiedMovementType.plank);
+  test(
+    'prepared movement mismatch is rejected before either owner mutates',
+    () {
+      final state = liveRouter(VerifiedMovementType.plank);
 
-    expect(state.router.accept(rep('squat')), isFalse);
-    expect(state.session.snapshot.verifiedActionCount, 0);
-    expect(state.combat.snapshot.verifiedReps, 0);
-  });
+      expect(state.router.accept(rep('squat')), isFalse);
+      expect(state.session.snapshot.verifiedActionCount, 0);
+      expect(state.combat.snapshot.verifiedReps, 0);
+    },
+  );
 
   test('non-live battle rejects a verified event without combat damage', () {
     final session = BattleSessionEngine()..prepare(VerifiedMovementType.squat);
