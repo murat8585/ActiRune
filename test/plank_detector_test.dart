@@ -69,7 +69,10 @@ void main() {
     final result = detector.process(frame(1500));
 
     expect(result, isNull);
-    expect(detector.accumulatedValidDuration, const Duration(milliseconds: 1500));
+    expect(
+      detector.accumulatedValidDuration,
+      const Duration(milliseconds: 1500),
+    );
   });
 
   test('observed body-line failure resets current hold progress', () {

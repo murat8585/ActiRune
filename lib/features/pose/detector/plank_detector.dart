@@ -35,11 +35,7 @@ class PlankDetector {
       return null;
     }
 
-    final bodyLineAngle = jointAngle(
-      points.shoulder,
-      points.hip,
-      points.ankle,
-    );
+    final bodyLineAngle = jointAngle(points.shoulder, points.hip, points.ankle);
     if (bodyLineAngle < minimumBodyLineAngle) {
       _resetHold();
       return null;
