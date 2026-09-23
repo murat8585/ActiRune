@@ -4,37 +4,40 @@ Updated: 2026-09-23 (Europe/Istanbul)
 Branch: `integration/artwork-interactions-20260921`
 
 ## Last fully green Direct Validation
-- Run: 236
-- Checked commit: `fafefde4bc6df54bc8b534a4d88a9098241665cf`
+- Run: 237
+- Checked commit: `2c88746ba2d86b271d464f873a4d5ccd7f92f267`
 - Result: SUCCESS
-- Scope: REQUIRED Dynamic Difficulty directional policy + Recovery/Safety policy contracts, together with all previously verified Phase-1 UI/gameplay and movement systems.
+- Scope: Loot/Crafting ownership contract + Rewarded Ads eligibility/completion policy, together with all previously verified Phase-1 UI/gameplay, movement, Dynamic Difficulty and Recovery/Safety systems.
 - Formatting: PASS.
 - Analyzer: PASS, 0 issues.
-- Focused stage adaptation/safety tests: PASS.
+- Focused stage loot/rewarded tests: PASS.
+- Existing Direct Validation focused interaction suite: PASS.
 - Full Flutter suite: PASS in stage and Direct Validation.
 - Diff hygiene: PASS.
-- Temporary adaptation/safety stage workflow was removed after validation in cleanup-only commit `a2b6a38b7077cfa62ce205acdc62fc51c3e81a09`; runtime/test behavior was not changed by cleanup.
+- Temporary loot/rewarded stage workflow was removed after validation in cleanup-only commit `349616c40b3ce758c6d14131708ac96094552ddb`; runtime/test behavior was not changed by cleanup.
 
 ## Newly completed verified systems
-### Dynamic Difficulty
-- Runtime: `lib/features/adaptation/dynamic_difficulty_engine.dart`.
-- Regression test: `test/dynamic_difficulty_engine_test.dart`.
-- No product-unauthorized numeric thresholds, weights or persistence were invented.
-- The owner receives a caller-classified performance trend plus explicit movement-unsuitable/recovery signals.
-- Consistently comfortable performance produces gradual upward direction only.
-- Balanced performance holds.
-- Struggling performance decreases pressure and offers an alternative movement.
-- A movement marked unsuitable holds escalation and requests an alternative rather than manufacturing a medical conclusion.
-- Recovery/Safety recommendation overrides upward pressure and decreases repetition/duration, encounter, boss-phase and task-density pressure.
+### Loot / Crafting ownership boundary
+- Runtime: `lib/features/economy/loot_crafting_policy.dart`.
+- Regression test: `test/loot_crafting_policy_test.dart`.
+- Locked material families are represented as typed values: Rune Fragment, Ancient Ore, Monster Essence, Spirit Dust, Lumi Essence and Boss Core.
+- Locked material loot-source families are represented as region, boss, quest and chest.
+- Crafting validation accepts only a caller-supplied authoritative recipe id/material-cost map and caller-supplied inventory state.
+- The policy reports exact missing material quantities but never mutates inventory.
+- Empty/invalid recipe authority and invalid inventory state fail closed.
+- No recipe costs, drop rates, loot tables, Gold/Kristal prices, inventory persistence or reward application were invented.
+- Existing exact-art Crafting screen remains callback-only and therefore still cannot silently spend or grant inventory without a real owner.
 
-### Recovery / Safety
-- Runtime: `lib/features/adaptation/recovery_safety_engine.dart`.
-- Regression test: `test/recovery_safety_engine_test.dart`.
-- Two consecutive intense lower-body days trigger the Bible-authorized Recovery Day route.
-- User-reported pain/unsuitability or a movement marked unsuitable requests a lighter alternative; no diagnosis is made.
-- Recovery Day is streak-eligible as required by product authority.
-- Unsafe speed or degraded form makes performance reward ineligible, preventing score incentives for unsafe behavior.
-- Recovery and alternative routing are policy outputs only; no medical inference, backend state or task persistence was fabricated.
+### Rewarded Ads policy boundary
+- Runtime: `lib/features/monetization/rewarded_ad_policy.dart`.
+- Regression test: `test/rewarded_ad_policy_test.dart`.
+- Rune Shrine locked policy is enforced as 4-hour cooldown and maximum 3 successful rewards per day.
+- Eligible non-Pro delivery requires an external ad completion result; cancelled/failed/missing ad outcomes cannot apply a reward.
+- Eligible Pro delivery is represented as direct delivery without requiring an ad, matching the locked Pro rule while leaving the actual reward owner external.
+- Ranked PvP rewarded revive is rejected.
+- PvE rewarded retry is offerable only from the BattleSession defeat phase; Camera Prep, Live Battle, Form Coach and Victory cannot surface this placement through the policy.
+- No ad SDK is currently declared in `pubspec.yaml`; this layer intentionally contains no fake SDK success or network behavior.
+- Important authority resolution: Master Product Bible originally says one PvE revive at ~25–30% HP/checkpoint, but the verified `BattleSessionEngine` contains a later explicit user override: 3 rewarded retries, each successful rewarded ad restarts the same encounter from the beginning. Per the project authority order, the newer user override supersedes that older Bible line. RewardedAdPolicy therefore defers retry count/restart semantics to `BattleSessionEngine` instead of silently reverting them.
 
 ## Verified movement infrastructure
 - Squat: green.
@@ -44,20 +47,14 @@ Branch: `integration/artwork-interactions-20260921`
 - Typed BattleSession/Combat routing: VERIFIED by Direct Validation Run 235.
 
 ## Previously verified product/UI systems
+- Dynamic Difficulty + Recovery/Safety: VERIFIED by Direct Validation Run 236.
 - Mağaza / Shop Revision: VERIFIED by Direct Validation Run 228 successful re-run.
 - Lumi: VERIFIED by Direct Validation Run 224.
-- Crafting / Rün Dövme: VERIFIED by Direct Validation Run 222 successful re-run.
+- Crafting / Rün Dövme exact-art shell: VERIFIED by Direct Validation Run 222 successful re-run.
 - Pro Form Koçu / Long-Term Form Analytics: VERIFIED by Direct Validation Run 221 successful re-run.
 - Kişisel Günlük Macera / Personal Daily Adventure: VERIFIED by Direct Validation Run 220 successful re-run.
 - Pro / Paywall: VERIFIED by Direct Validation Run 219 successful re-run.
 - Profile -> Achievements / Rozetler: VERIFIED by Direct Validation Run 218.
-
-## Active work
-- Phase-1 Core Solo / Loot-Crafting ownership + Rewarded Ads ownership audit.
-- The Crafting screen is already exact-art and callback-only; it intentionally does not mutate inventory or spend currency without an authoritative owner.
-- Rewarded retry state exists inside the battle session flow, but real ad-service ownership and Rune Shrine daily/cooldown policy must be separated from UI callbacks and verified before adding behavior.
-- Product authority: Rune Shrine rewarded ad = once per 4 hours, max 3/day; PvE defeat = at most once per battle for a 25–30% HP/checkpoint continuation; no Ranked PvP revive ad; no ads during Camera/Live Battle/Form Coach.
-- Do not invent ad SDK success, inventory grant, loot tables, recipe costs, SKU state or server persistence.
 
 ## Completed / verified major areas
 - Canonical root navigation: Ana Dünya / Macera / Savaş / Kahraman / Profil
@@ -77,13 +74,21 @@ Branch: `integration/artwork-interactions-20260921`
 - Pro / Paywall
 - Kişisel Günlük Macera / Personal Daily Adventure
 - Pro Form Koçu / Long-Term Form Analytics
-- Crafting / Rün Dövme
+- Crafting / Rün Döme exact-art shell + typed craft validation boundary
 - Lumi
 - Mağaza / Shop Revision
 - Squat / Lunge / Push-up / Plank deterministic movement verification
 - Typed VerifiedRep -> BattleSession/Combat routing
 - Dynamic Difficulty directional policy
 - Recovery/Safety policy
+- Rune Shrine Rewarded Ads eligibility/completion policy
+- PvE Rewarded Ads eligibility/completion policy with BattleSession-owned retry semantics
+
+## Active work
+- Phase-1 Core Solo remaining-gap audit after Loot/Crafting + Rewarded Ads.
+- Master Product Bible marks Analytics/Balance infrastructure REQUIRED and also states real human ML Kit movement validation must be proven on physical devices.
+- The Bible also states real Health Connect/backend/billing/production-signing style services must move from prototype/local adapters to production integration; current repository must be classified carefully rather than calling those production-ready without evidence.
+- Current `pubspec.yaml` still has no ad SDK or billing SDK owner. Do not fabricate provider success, SKU state, credentials, server persistence or production signing.
 
 ## Phase-1 product authority boundary
 - Master Product Bible Phase 1 requires Core Solo: Home, Adventure, Squat/Lunge/Push-up/Plank infrastructure, Camera Prep, Live Battle, Form Coach, quests, Player/Hero/Lumi/Mastery, loot/crafting, Recovery/Difficulty, Pro base layer and Rewarded Ads.
@@ -92,12 +97,12 @@ Branch: `integration/artwork-interactions-20260921`
 - Pose thresholds stay configuration until labelled-video corpus and real-device ML Kit validation are completed.
 
 ## Next exact actions
-1. Audit current inventory/crafting owners and determine whether a pure transaction contract can be added without inventing recipes/costs/loot tables.
-2. Audit Rewarded Ads state and split eligibility/policy from external ad SDK success.
-3. Implement only product-authorized cooldown/count/battle-context rules and require explicit ad-success callback before any reward/continue mutation.
-4. Require formatter + analyzer + focused/full tests + diff hygiene before marking the batch green.
-5. Re-audit remaining Phase-1 gaps after Loot/Crafting + Rewarded Ads.
-6. Physical-device ML Kit labelled-corpus validation remains a mandatory release gate and cannot be replaced by synthetic unit tests.
+1. Re-audit remaining Phase-1 gaps against the Master Product Bible and current runtime instead of assuming Core Solo is release-complete.
+2. Audit REQUIRED Analytics/Balance ownership and add only a typed event contract if the repository has no real analytics owner; do not fabricate a backend/provider.
+3. Classify Health Connect/backend/billing/ad SDK/production signing as implemented, adapter-only or absent with repository evidence.
+4. Preserve the later 3-retry BattleSession user override unless the user explicitly changes it again.
+5. Build the physical-device ML Kit labelled-corpus validation plan/gate; synthetic unit tests cannot replace it.
+6. Only after those release gates are explicit should Phase-1 Core Solo be called implementation-complete.
 
 ## Permanent working rule
 After each meaningful green batch, update this file with latest green run/commit, completed scope, blockers and exact next step. This file is the GitHub recovery checkpoint when a chat/tab ends.
