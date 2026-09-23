@@ -46,6 +46,7 @@ jobs:
           test -f visual_authority/20260921/current/01_CANONICAL_FINAL/VIS_0222__P1_PROFILE_FINAL.png
           test -f visual_authority/20260921/current/01_CANONICAL_FINAL/VIS_0215__P1_ACHIEVEMENTS_FINAL.png
           test -f visual_authority/20260921/current/01_CANONICAL_FINAL/VIS_0216__P1_PRO_PAYWALL_FINAL.png
+          test -f visual_authority/20260921/current/01_CANONICAL_FINAL/VIS_0221__P1_SHOP_REVISION_FINAL.png
           test -f visual_authority/20260921/current/01_CANONICAL_FINAL/VIS_0226__P1_PERSONAL_DAILY_ADVENTURE_FINAL.png
           test -f visual_authority/20260921/current/01_CANONICAL_FINAL/VIS_0219__P1_PRO_FORM_COACH_FINAL.png
           test -f visual_authority/20260921/current/02_CORE_LOCKED_ANCHORS/VIS_0231__CORE_ADVENTURE_ANCHOR.png
@@ -93,6 +94,7 @@ jobs:
               'visual_authority/20260921/current/01_CANONICAL_FINAL/VIS_0222__P1_PROFILE_FINAL.png': (941, 1672),
               'visual_authority/20260921/current/01_CANONICAL_FINAL/VIS_0215__P1_ACHIEVEMENTS_FINAL.png': (941, 1672),
               'visual_authority/20260921/current/01_CANONICAL_FINAL/VIS_0216__P1_PRO_PAYWALL_FINAL.png': (941, 1672),
+              'visual_authority/20260921/current/01_CANONICAL_FINAL/VIS_0221__P1_SHOP_REVISION_FINAL.png': (941, 1672),
               'visual_authority/20260921/current/01_CANONICAL_FINAL/VIS_0226__P1_PERSONAL_DAILY_ADVENTURE_FINAL.png': (941, 1672),
               'visual_authority/20260921/current/01_CANONICAL_FINAL/VIS_0219__P1_PRO_FORM_COACH_FINAL.png': (941, 1672),
               'visual_authority/20260921/current/02_CORE_LOCKED_ANCHORS/VIS_0231__CORE_ADVENTURE_ANCHOR.png': (941, 1672),
@@ -173,6 +175,7 @@ jobs:
           test/profile_interaction_test.dart
           test/achievements_screen_test.dart
           test/pro_paywall_screen_test.dart
+          test/shop_screen_test.dart
           test/personal_daily_adventure_screen_test.dart
           test/pro_form_coach_screen_test.dart
           test/crafting_screen_test.dart
