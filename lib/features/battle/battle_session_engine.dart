@@ -159,11 +159,15 @@ class BattleSessionEngine extends ChangeNotifier {
   }
 
   /// Accepts one already-verified movement and records exactly one combat
-  /// action. Pose detection and movement-specific balance stay outside this
-  /// state machine.
+  /// action. The movement must match the encounter that was prepared before
+  /// entering live battle. Unknown/unprepared or mismatched movement is
+  /// rejected fail-closed so another detector can never power this encounter.
   bool acceptVerifiedMovement(VerifiedMovementType movement) {
+    final preparedMovement = _snapshot.preparedMovement;
     if (_snapshot.phase != BattleSessionPhase.liveBattle ||
-        _snapshot.isPaused) {
+        _snapshot.isPaused ||
+        preparedMovement == null ||
+        movement != preparedMovement) {
       return false;
     }
     _set(
