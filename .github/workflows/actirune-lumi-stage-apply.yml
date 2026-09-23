@@ -60,14 +60,8 @@ jobs:
 
           replace_once(
               'lib/app/main_shell.dart',
-              """      HeroScreen(
-                onEquipment: () => _openEquipment(context),
-                onCharacterStory: () => _openQuestChain(context),""",
-              """      HeroScreen(
-                onEquipment: () => _openEquipment(context),
-                onCompanion: () => _openLumi(context),
-                onCompanionDetails: () => _openLumi(context),
-                onCharacterStory: () => _openQuestChain(context),""",
+              '        onEquipment: () => _openEquipment(context),\n        onCharacterStory: () => _openQuestChain(context),',
+              '        onEquipment: () => _openEquipment(context),\n        onCompanion: () => _openLumi(context),\n        onCompanionDetails: () => _openLumi(context),\n        onCharacterStory: () => _openQuestChain(context),',
           )
 
           replace_once(
@@ -78,9 +72,7 @@ jobs:
 
           replace_once(
               'test/child_route_integration_test.dart',
-              """  testWidgets('Profile opens Player Level and History children', (
-            tester,
-          ) async {""",
+              "  testWidgets('Profile opens Player Level and History children', (\n    tester,\n  ) async {",
               """  testWidgets('Hero companion entries open Lumi exact-art child', (
             tester,
           ) async {
