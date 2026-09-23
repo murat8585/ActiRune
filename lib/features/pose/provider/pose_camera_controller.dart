@@ -28,13 +28,12 @@ class PoseCameraController {
     required PoseRepDetector detector,
     required void Function(VerifiedRep rep) onVerifiedRep,
     MlKitPoseProvider? provider,
-    CameraInputAdapter adapter = const CameraInputAdapter(),
+    this._adapter = const CameraInputAdapter(),
   }) : _dispatcher = PoseRepDispatcher(
          detector: detector,
          onVerifiedRep: onVerifiedRep,
        ),
-       _provider = provider ?? MlKitPoseProvider(),
-       _adapter = adapter;
+       _provider = provider ?? MlKitPoseProvider();
 
   final PoseRepDispatcher _dispatcher;
   final MlKitPoseProvider _provider;
