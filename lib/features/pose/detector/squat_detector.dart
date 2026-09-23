@@ -1,12 +1,13 @@
 import '../provider/pose_models.dart';
 import 'geometry.dart';
+import 'pose_rep_detector.dart';
 import 'verified_rep.dart';
 
 export 'verified_rep.dart';
 
 enum SquatPhase { unknown, standing, descending, bottom, ascending }
 
-class SquatDetector {
+class SquatDetector implements PoseRepDetector {
   SquatDetector({
     this.minimumConfidence = .65,
     this.standingAngle = 160,
@@ -24,6 +25,7 @@ class SquatDetector {
   DateTime? _bottomAt;
   DateTime? _lastRepAt;
 
+  @override
   VerifiedRep? process(PoseFrame frame) {
     final left = _leg(frame, Joint.leftHip, Joint.leftKnee, Joint.leftAnkle);
     final right = _leg(
