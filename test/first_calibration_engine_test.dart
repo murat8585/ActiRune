@@ -56,9 +56,10 @@ void main() {
   });
 
   test('all four core movements need preference and concrete evidence', () {
-    final preferences = Map<CalibrationMovement, CalibrationMovementPreference>.from(
-      _validPreferences(),
-    )..remove(CalibrationMovement.plank);
+    final preferences =
+        Map<CalibrationMovement, CalibrationMovementPreference>.from(
+          _validPreferences(),
+        )..remove(CalibrationMovement.plank);
     final evidence = Map<CalibrationMovement, CalibrationMovementEvidence>.from(
       _validEvidence(),
     )..remove(CalibrationMovement.lunge);
@@ -88,79 +89,90 @@ void main() {
     expect(assessment.readyForStartingProfile, isFalse);
   });
 
-  test('alternative-required movement needs named alternative and matching evidence', () {
-    final preferences = Map<CalibrationMovement, CalibrationMovementPreference>.from(
-      _validPreferences(),
-    )
-      ..[CalibrationMovement.pushUp] = const CalibrationMovementPreference(
-        movement: CalibrationMovement.pushUp,
-        suitability: CalibrationMovementSuitability.alternativeRequired,
-      );
+  test(
+    'alternative-required movement needs named alternative and matching evidence',
+    () {
+      final preferences =
+          Map<CalibrationMovement, CalibrationMovementPreference>.from(
+              _validPreferences(),
+            )
+            ..[CalibrationMovement
+                .pushUp] = const CalibrationMovementPreference(
+              movement: CalibrationMovement.pushUp,
+              suitability: CalibrationMovementSuitability.alternativeRequired,
+            );
 
-    final assessment = engine.evaluate(
-      _validInput(preferences: preferences),
-    );
+      final assessment = engine.evaluate(_validInput(preferences: preferences));
 
-    expect(
-      assessment.blockers,
-      contains(
-        const CalibrationBlocker(
-          code: CalibrationBlockerCode.alternativeMissing,
-          movement: CalibrationMovement.pushUp,
+      expect(
+        assessment.blockers,
+        contains(
+          const CalibrationBlocker(
+            code: CalibrationBlockerCode.alternativeMissing,
+            movement: CalibrationMovement.pushUp,
+          ),
         ),
-      ),
-    );
-    expect(
-      assessment.blockers,
-      contains(
-        const CalibrationBlocker(
-          code: CalibrationBlockerCode.evidencePreferenceMismatch,
-          movement: CalibrationMovement.pushUp,
+      );
+      expect(
+        assessment.blockers,
+        contains(
+          const CalibrationBlocker(
+            code: CalibrationBlockerCode.evidencePreferenceMismatch,
+            movement: CalibrationMovement.pushUp,
+          ),
         ),
-      ),
-    );
-  });
-
-  test('easy Push-up alternative can be accepted without inventing difficulty', () {
-    final preferences = Map<CalibrationMovement, CalibrationMovementPreference>.from(
-      _validPreferences(),
-    )
-      ..[CalibrationMovement.pushUp] = const CalibrationMovementPreference(
-        movement: CalibrationMovement.pushUp,
-        suitability: CalibrationMovementSuitability.alternativeRequired,
-        alternativeKey: 'easy-push-up-variant',
       );
-    final evidence = Map<CalibrationMovement, CalibrationMovementEvidence>.from(
-      _validEvidence(),
-    )
-      ..[CalibrationMovement.pushUp] = const CalibrationMovementEvidence(
-        movement: CalibrationMovement.pushUp,
-        status: CalibrationEvidenceStatus.alternativeVerified,
-        evidenceId: 'attempt-push-up-alt-1',
+    },
+  );
+
+  test(
+    'easy Push-up alternative can be accepted without inventing difficulty',
+    () {
+      final preferences =
+          Map<CalibrationMovement, CalibrationMovementPreference>.from(
+              _validPreferences(),
+            )
+            ..[CalibrationMovement
+                .pushUp] = const CalibrationMovementPreference(
+              movement: CalibrationMovement.pushUp,
+              suitability: CalibrationMovementSuitability.alternativeRequired,
+              alternativeKey: 'easy-push-up-variant',
+            );
+      final evidence =
+          Map<CalibrationMovement, CalibrationMovementEvidence>.from(
+              _validEvidence(),
+            )
+            ..[CalibrationMovement.pushUp] = const CalibrationMovementEvidence(
+              movement: CalibrationMovement.pushUp,
+              status: CalibrationEvidenceStatus.alternativeVerified,
+              evidenceId: 'attempt-push-up-alt-1',
+            );
+
+      final assessment = engine.evaluate(
+        _validInput(preferences: preferences, evidence: evidence),
       );
 
-    final assessment = engine.evaluate(
-      _validInput(preferences: preferences, evidence: evidence),
-    );
-
-    expect(assessment.readyForStartingProfile, isTrue);
-    expect(
-      assessment.startingProfile!
-          .movementPreferences[CalibrationMovement.pushUp]!
-          .alternativeKey,
-      'easy-push-up-variant',
-    );
-  });
+      expect(assessment.readyForStartingProfile, isTrue);
+      expect(
+        assessment
+            .startingProfile!
+            .movementPreferences[CalibrationMovement.pushUp]!
+            .alternativeKey,
+        'easy-push-up-variant',
+      );
+    },
+  );
 
   test('unverified or empty evidence cannot manufacture success', () {
-    final evidence = Map<CalibrationMovement, CalibrationMovementEvidence>.from(
-      _validEvidence(),
-    )
-      ..[CalibrationMovement.squat] = const CalibrationMovementEvidence(
-        movement: CalibrationMovement.squat,
-        status: CalibrationEvidenceStatus.notVerified,
-        evidenceId: '',
-      );
+    final evidence =
+        Map<CalibrationMovement, CalibrationMovementEvidence>.from(
+            _validEvidence(),
+          )
+          ..[CalibrationMovement.squat] = const CalibrationMovementEvidence(
+            movement: CalibrationMovement.squat,
+            status: CalibrationEvidenceStatus.notVerified,
+            evidenceId: '',
+          );
 
     final assessment = engine.evaluate(_validInput(evidence: evidence));
 

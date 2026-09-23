@@ -88,10 +88,7 @@ class FirstCalibrationInput {
 
 @immutable
 class CalibrationBlocker {
-  const CalibrationBlocker({
-    required this.code,
-    this.movement,
-  });
+  const CalibrationBlocker({required this.code, this.movement});
 
   final CalibrationBlockerCode code;
   final CalibrationMovement? movement;
@@ -113,14 +110,14 @@ class StartingCalibrationProfile {
     required this.preferredSessionMinutes,
     required this.experienceKey,
     required Map<CalibrationMovement, CalibrationMovementPreference>
-        movementPreferences,
+    movementPreferences,
   }) : movementPreferences = Map.unmodifiable(movementPreferences);
 
   final String goalKey;
   final int preferredSessionMinutes;
   final String experienceKey;
   final Map<CalibrationMovement, CalibrationMovementPreference>
-      movementPreferences;
+  movementPreferences;
 }
 
 @immutable
@@ -164,7 +161,9 @@ class FirstCalibrationEngine {
     }
     if (profile.experienceKey.trim().isEmpty) {
       blockers.add(
-        const CalibrationBlocker(code: CalibrationBlockerCode.experienceMissing),
+        const CalibrationBlocker(
+          code: CalibrationBlockerCode.experienceMissing,
+        ),
       );
     }
     if (!input.cameraPoseIntroCompleted) {
