@@ -3,23 +3,33 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('BattleSessionEngine', () {
-    test('one verified movement produces exactly one combat action', () {
-      final engine = BattleSessionEngine();
-      engine.startLiveBattle();
+    test('prepared movement accepts matching action and rejects mismatch', () {
+      final engine = BattleSessionEngine()
+        ..prepare(VerifiedMovementType.squat)
+        ..startLiveBattle();
 
       expect(engine.acceptVerifiedMovement(VerifiedMovementType.squat), isTrue);
       expect(engine.snapshot.verifiedActionCount, 1);
       expect(engine.snapshot.lastVerifiedMovement, VerifiedMovementType.squat);
 
-      expect(engine.acceptVerifiedMovement(VerifiedMovementType.plank), isTrue);
-      expect(engine.snapshot.verifiedActionCount, 2);
-      expect(engine.snapshot.lastVerifiedMovement, VerifiedMovementType.plank);
+      expect(engine.acceptVerifiedMovement(VerifiedMovementType.plank), isFalse);
+      expect(engine.snapshot.verifiedActionCount, 1);
+      expect(engine.snapshot.lastVerifiedMovement, VerifiedMovementType.squat);
+    });
+
+    test('unprepared live battle rejects verified movement fail closed', () {
+      final engine = BattleSessionEngine()..startLiveBattle();
+
+      expect(engine.acceptVerifiedMovement(VerifiedMovementType.squat), isFalse);
+      expect(engine.snapshot.verifiedActionCount, 0);
+      expect(engine.snapshot.lastVerifiedMovement, isNull);
     });
 
     test('paused battle rejects movement and support actions', () {
-      final engine = BattleSessionEngine();
-      engine.startLiveBattle();
-      engine.pause();
+      final engine = BattleSessionEngine()
+        ..prepare(VerifiedMovementType.pushUp)
+        ..startLiveBattle()
+        ..pause();
 
       expect(engine.snapshot.isPaused, isTrue);
       expect(
@@ -48,9 +58,10 @@ void main() {
     });
 
     test('Form Coach preserves the session and resumes live battle', () {
-      final engine = BattleSessionEngine();
-      engine.startLiveBattle();
-      engine.acceptVerifiedMovement(VerifiedMovementType.lunge);
+      final engine = BattleSessionEngine()
+        ..prepare(VerifiedMovementType.lunge)
+        ..startLiveBattle();
+      expect(engine.acceptVerifiedMovement(VerifiedMovementType.lunge), isTrue);
 
       engine.openFormCoach();
       expect(engine.snapshot.phase, BattleSessionPhase.formCoach);
@@ -66,8 +77,9 @@ void main() {
     test(
       'support artwork controls create typed requests without fake balance',
       () {
-        final engine = BattleSessionEngine();
-        engine.startLiveBattle();
+        final engine = BattleSessionEngine()
+          ..prepare(VerifiedMovementType.squat)
+          ..startLiveBattle();
 
         expect(
           engine.requestSupportAction(BattleSupportAction.runePower),
@@ -102,7 +114,7 @@ void main() {
     );
 
     test('successful PvE rewarded retries consume exactly 3 then stop', () {
-      final engine = BattleSessionEngine();
+      final engine = BattleSessionEngine()..prepare(VerifiedMovementType.plank);
 
       for (var remaining = 3; remaining > 0; remaining--) {
         engine.markDefeat();
@@ -110,6 +122,7 @@ void main() {
         expect(engine.restartAfterSuccessfulRewardedAd(), isTrue);
         expect(engine.snapshot.phase, BattleSessionPhase.cameraPrep);
         expect(engine.snapshot.rewardedRetriesRemaining, remaining - 1);
+        expect(engine.snapshot.preparedMovement, VerifiedMovementType.plank);
       }
 
       engine.markDefeat();
