@@ -52,41 +52,47 @@ void main() {
     ]);
   });
 
-  test('configured provider state without an authority report remains blocked', () {
-    final report = Phase1ReleaseReadiness.evaluate(
-      Phase1ReleaseReadinessEvidence(
-        productionRelease: _readyProductionReport(),
-        providerState: ProviderReleaseState.configured,
-        physicalEvidence: _completePhysicalSummary(),
-        physicalFinalReview: PhysicalValidationFinalReview.passed,
-      ),
-    );
+  test(
+    'configured provider state without an authority report remains blocked',
+    () {
+      final report = Phase1ReleaseReadiness.evaluate(
+        Phase1ReleaseReadinessEvidence(
+          productionRelease: _readyProductionReport(),
+          providerState: ProviderReleaseState.configured,
+          physicalEvidence: _completePhysicalSummary(),
+          physicalFinalReview: PhysicalValidationFinalReview.passed,
+        ),
+      );
 
-    expect(report.allDeclaredGatesSatisfied, isFalse);
-    expect(report.blockers, [Phase1ReleaseBlocker.providerAuthorityInvalid]);
-  });
+      expect(report.allDeclaredGatesSatisfied, isFalse);
+      expect(report.blockers, [Phase1ReleaseBlocker.providerAuthorityInvalid]);
+    },
+  );
 
-  test('configured provider state with mismatched authority remains blocked', () {
-    final report = Phase1ReleaseReadiness.evaluate(
-      Phase1ReleaseReadinessEvidence(
-        productionRelease: _readyProductionReport(),
-        providerState: ProviderReleaseState.configured,
-        providerAuthority: _mismatchedProviderAuthorityReport(),
-        physicalEvidence: _completePhysicalSummary(),
-        physicalFinalReview: PhysicalValidationFinalReview.passed,
-      ),
-    );
+  test(
+    'configured provider state with mismatched authority remains blocked',
+    () {
+      final report = Phase1ReleaseReadiness.evaluate(
+        Phase1ReleaseReadinessEvidence(
+          productionRelease: _readyProductionReport(),
+          providerState: ProviderReleaseState.configured,
+          providerAuthority: _mismatchedProviderAuthorityReport(),
+          physicalEvidence: _completePhysicalSummary(),
+          physicalFinalReview: PhysicalValidationFinalReview.passed,
+        ),
+      );
 
-    expect(report.allDeclaredGatesSatisfied, isFalse);
-    expect(report.blockers, [Phase1ReleaseBlocker.providerAuthorityInvalid]);
-    expect(
-      report.providerAuthorityIssues,
-      containsAll(<ProviderAuthorityIssue>[
-        ProviderAuthorityIssue.androidApplicationIdMismatch,
-        ProviderAuthorityIssue.iosBundleIdentifierMismatch,
-      ]),
-    );
-  });
+      expect(report.allDeclaredGatesSatisfied, isFalse);
+      expect(report.blockers, [Phase1ReleaseBlocker.providerAuthorityInvalid]);
+      expect(
+        report.providerAuthorityIssues,
+        containsAll(<ProviderAuthorityIssue>[
+          ProviderAuthorityIssue.androidApplicationIdMismatch,
+          ProviderAuthorityIssue.iosBundleIdentifierMismatch,
+        ]),
+      );
+    },
+  );
 
   test('physical evidence must be structurally complete before final pass', () {
     final incompleteSummary = PhysicalValidationEvidenceSummary.fromRecords([
