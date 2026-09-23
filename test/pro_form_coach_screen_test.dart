@@ -112,7 +112,10 @@ void main() {
     );
     await tester.pump();
 
-    expect(selected, [ProFormTrendRange.sevenDays, ProFormTrendRange.thirtyDays]);
+    expect(selected, [
+      ProFormTrendRange.sevenDays,
+      ProFormTrendRange.thirtyDays,
+    ]);
   });
 
   testWidgets('top actions remain independent callbacks', (tester) async {
