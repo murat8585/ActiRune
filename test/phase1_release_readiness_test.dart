@@ -1,5 +1,6 @@
 import 'package:actirune/core/release/phase1_release_readiness.dart';
 import 'package:actirune/core/release/production_release_guard.dart';
+import 'package:actirune/core/release/provider_authority_lock.dart';
 import 'package:actirune/features/battle/battle_session_engine.dart';
 import 'package:actirune/features/pose/validation/physical_validation_evidence.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -39,6 +40,7 @@ void main() {
       Phase1ReleaseReadinessEvidence(
         productionRelease: _readyProductionReport(),
         providerState: ProviderReleaseState.lockedNotConfigured,
+        providerAuthority: _validProviderAuthorityReport(),
         physicalEvidence: _completePhysicalSummary(),
         physicalFinalReview: PhysicalValidationFinalReview.passed,
       ),
@@ -50,6 +52,42 @@ void main() {
     ]);
   });
 
+  test('configured provider state without an authority report remains blocked', () {
+    final report = Phase1ReleaseReadiness.evaluate(
+      Phase1ReleaseReadinessEvidence(
+        productionRelease: _readyProductionReport(),
+        providerState: ProviderReleaseState.configured,
+        physicalEvidence: _completePhysicalSummary(),
+        physicalFinalReview: PhysicalValidationFinalReview.passed,
+      ),
+    );
+
+    expect(report.allDeclaredGatesSatisfied, isFalse);
+    expect(report.blockers, [Phase1ReleaseBlocker.providerAuthorityInvalid]);
+  });
+
+  test('configured provider state with mismatched authority remains blocked', () {
+    final report = Phase1ReleaseReadiness.evaluate(
+      Phase1ReleaseReadinessEvidence(
+        productionRelease: _readyProductionReport(),
+        providerState: ProviderReleaseState.configured,
+        providerAuthority: _mismatchedProviderAuthorityReport(),
+        physicalEvidence: _completePhysicalSummary(),
+        physicalFinalReview: PhysicalValidationFinalReview.passed,
+      ),
+    );
+
+    expect(report.allDeclaredGatesSatisfied, isFalse);
+    expect(report.blockers, [Phase1ReleaseBlocker.providerAuthorityInvalid]);
+    expect(
+      report.providerAuthorityIssues,
+      containsAll(<ProviderAuthorityIssue>[
+        ProviderAuthorityIssue.androidApplicationIdMismatch,
+        ProviderAuthorityIssue.iosBundleIdentifierMismatch,
+      ]),
+    );
+  });
+
   test('physical evidence must be structurally complete before final pass', () {
     final incompleteSummary = PhysicalValidationEvidenceSummary.fromRecords([
       _record(VerifiedMovementType.squat),
@@ -59,6 +97,7 @@ void main() {
       Phase1ReleaseReadinessEvidence(
         productionRelease: _readyProductionReport(),
         providerState: ProviderReleaseState.configured,
+        providerAuthority: _validProviderAuthorityReport(),
         physicalEvidence: incompleteSummary,
         physicalFinalReview: PhysicalValidationFinalReview.passed,
       ),
@@ -83,6 +122,7 @@ void main() {
       Phase1ReleaseReadinessEvidence(
         productionRelease: _readyProductionReport(),
         providerState: ProviderReleaseState.configured,
+        providerAuthority: _validProviderAuthorityReport(),
         physicalEvidence: summary,
         physicalFinalReview: PhysicalValidationFinalReview.passed,
       ),
@@ -107,6 +147,7 @@ void main() {
       Phase1ReleaseReadinessEvidence(
         productionRelease: _readyProductionReport(),
         providerState: ProviderReleaseState.configured,
+        providerAuthority: _validProviderAuthorityReport(),
         physicalEvidence: summary,
         physicalFinalReview: PhysicalValidationFinalReview.passed,
       ),
@@ -129,6 +170,7 @@ void main() {
         Phase1ReleaseReadinessEvidence(
           productionRelease: _readyProductionReport(),
           providerState: ProviderReleaseState.configured,
+          providerAuthority: _validProviderAuthorityReport(),
           physicalEvidence: _completePhysicalSummary(),
           physicalFinalReview: PhysicalValidationFinalReview.passed,
         ),
@@ -136,20 +178,49 @@ void main() {
 
       expect(report.blockers, isEmpty);
       expect(report.productionIssues, isEmpty);
+      expect(report.providerAuthorityIssues, isEmpty);
       expect(report.allDeclaredGatesSatisfied, isTrue);
     },
   );
 }
 
+const _readyProductionEvidence = ProductionReleaseEvidence(
+  androidApplicationId: 'com.actirune.app',
+  androidReleaseSigningConfigured: true,
+  androidUsesDebugSigning: false,
+  iosBundleIdentifier: 'com.actirune.app',
+  iosDevelopmentTeam: 'TEAM123456',
+);
+
 ProductionReleaseReport _readyProductionReport() {
-  return ProductionReleaseGuard.evaluate(
-    const ProductionReleaseEvidence(
+  return ProductionReleaseGuard.evaluate(_readyProductionEvidence);
+}
+
+ProviderAuthorityReport _validProviderAuthorityReport() {
+  return ProviderAuthorityValidator.evaluate(
+    authority: const ProviderAuthorityLock(
       androidApplicationId: 'com.actirune.app',
-      androidReleaseSigningConfigured: true,
-      androidUsesDebugSigning: false,
       iosBundleIdentifier: 'com.actirune.app',
-      iosDevelopmentTeam: 'TEAM123456',
+      backendProvider: 'Firebase',
+      billingProvider: 'RevenueCat',
+      rewardedAdsProvider: 'Google Mobile Ads',
+      analyticsProvider: 'Firebase Analytics',
     ),
+    productionEvidence: _readyProductionEvidence,
+  );
+}
+
+ProviderAuthorityReport _mismatchedProviderAuthorityReport() {
+  return ProviderAuthorityValidator.evaluate(
+    authority: const ProviderAuthorityLock(
+      androidApplicationId: 'com.actirune.wrong.android',
+      iosBundleIdentifier: 'com.actirune.wrong.ios',
+      backendProvider: 'Firebase',
+      billingProvider: 'RevenueCat',
+      rewardedAdsProvider: 'Google Mobile Ads',
+      analyticsProvider: 'Firebase Analytics',
+    ),
+    productionEvidence: _readyProductionEvidence,
   );
 }
 
