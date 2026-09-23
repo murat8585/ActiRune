@@ -6,45 +6,48 @@ void main() {
   const policy = RewardedAdPolicy();
   final now = DateTime.utc(2026, 9, 23, 12);
 
-  test('Rune Shrine uses locked four-hour cooldown and three-per-day limit', () {
-    expect(RewardedAdPolicy.runeShrineCooldown, const Duration(hours: 4));
-    expect(RewardedAdPolicy.runeShrineDailyLimit, 3);
+  test(
+    'Rune Shrine uses locked four-hour cooldown and three-per-day limit',
+    () {
+      expect(RewardedAdPolicy.runeShrineCooldown, const Duration(hours: 4));
+      expect(RewardedAdPolicy.runeShrineDailyLimit, 3);
 
-    final first = policy.evaluateRuneShrine(
-      now: now,
-      lastSuccessfulRewardAt: null,
-      successfulRewardsToday: 0,
-      isPro: false,
-    );
-    expect(first.deliveryMode, RewardDeliveryMode.watchAd);
+      final first = policy.evaluateRuneShrine(
+        now: now,
+        lastSuccessfulRewardAt: null,
+        successfulRewardsToday: 0,
+        isPro: false,
+      );
+      expect(first.deliveryMode, RewardDeliveryMode.watchAd);
 
-    final coolingDown = policy.evaluateRuneShrine(
-      now: now,
-      lastSuccessfulRewardAt: now.subtract(const Duration(hours: 3)),
-      successfulRewardsToday: 1,
-      isPro: false,
-    );
-    expect(coolingDown.eligible, isFalse);
-    expect(coolingDown.blockReason, RewardedAdBlockReason.cooldown);
-    expect(coolingDown.remainingCooldown, const Duration(hours: 1));
+      final coolingDown = policy.evaluateRuneShrine(
+        now: now,
+        lastSuccessfulRewardAt: now.subtract(const Duration(hours: 3)),
+        successfulRewardsToday: 1,
+        isPro: false,
+      );
+      expect(coolingDown.eligible, isFalse);
+      expect(coolingDown.blockReason, RewardedAdBlockReason.cooldown);
+      expect(coolingDown.remainingCooldown, const Duration(hours: 1));
 
-    final exactlyFourHours = policy.evaluateRuneShrine(
-      now: now,
-      lastSuccessfulRewardAt: now.subtract(const Duration(hours: 4)),
-      successfulRewardsToday: 2,
-      isPro: false,
-    );
-    expect(exactlyFourHours.deliveryMode, RewardDeliveryMode.watchAd);
+      final exactlyFourHours = policy.evaluateRuneShrine(
+        now: now,
+        lastSuccessfulRewardAt: now.subtract(const Duration(hours: 4)),
+        successfulRewardsToday: 2,
+        isPro: false,
+      );
+      expect(exactlyFourHours.deliveryMode, RewardDeliveryMode.watchAd);
 
-    final dailyLimit = policy.evaluateRuneShrine(
-      now: now,
-      lastSuccessfulRewardAt: now.subtract(const Duration(hours: 8)),
-      successfulRewardsToday: 3,
-      isPro: false,
-    );
-    expect(dailyLimit.eligible, isFalse);
-    expect(dailyLimit.blockReason, RewardedAdBlockReason.dailyLimit);
-  });
+      final dailyLimit = policy.evaluateRuneShrine(
+        now: now,
+        lastSuccessfulRewardAt: now.subtract(const Duration(hours: 8)),
+        successfulRewardsToday: 3,
+        isPro: false,
+      );
+      expect(dailyLimit.eligible, isFalse);
+      expect(dailyLimit.blockReason, RewardedAdBlockReason.dailyLimit);
+    },
+  );
 
   test('eligible Pro Rune Shrine reward is direct and does not require ad', () {
     final decision = policy.evaluateRuneShrine(

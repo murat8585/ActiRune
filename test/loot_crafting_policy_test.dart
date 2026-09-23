@@ -67,9 +67,7 @@ void main() {
 
     expect(decision.allowed, isFalse);
     expect(decision.reason, CraftingDecisionReason.missingMaterials);
-    expect(decision.missingMaterials, {
-      MaterialFamily.monsterEssence: 3,
-    });
+    expect(decision.missingMaterials, {MaterialFamily.monsterEssence: 3});
     expect(inventory, {
       MaterialFamily.monsterEssence: 1,
       MaterialFamily.spiritDust: 2,
@@ -78,35 +76,41 @@ void main() {
 
   test('empty id non-positive costs and negative inventory are rejected', () {
     expect(
-      policy.evaluateCraft(
-        plan: const CraftingPlan(
-          recipeId: '',
-          materialCosts: {MaterialFamily.runeFragment: 1},
-        ),
-        inventory: const {},
-      ).reason,
+      policy
+          .evaluateCraft(
+            plan: const CraftingPlan(
+              recipeId: '',
+              materialCosts: {MaterialFamily.runeFragment: 1},
+            ),
+            inventory: const {},
+          )
+          .reason,
       CraftingDecisionReason.invalidPlan,
     );
 
     expect(
-      policy.evaluateCraft(
-        plan: const CraftingPlan(
-          recipeId: 'bad-cost',
-          materialCosts: {MaterialFamily.runeFragment: 0},
-        ),
-        inventory: const {},
-      ).reason,
+      policy
+          .evaluateCraft(
+            plan: const CraftingPlan(
+              recipeId: 'bad-cost',
+              materialCosts: {MaterialFamily.runeFragment: 0},
+            ),
+            inventory: const {},
+          )
+          .reason,
       CraftingDecisionReason.invalidPlan,
     );
 
     expect(
-      policy.evaluateCraft(
-        plan: const CraftingPlan(
-          recipeId: 'negative-inventory',
-          materialCosts: {MaterialFamily.runeFragment: 1},
-        ),
-        inventory: const {MaterialFamily.runeFragment: -1},
-      ).reason,
+      policy
+          .evaluateCraft(
+            plan: const CraftingPlan(
+              recipeId: 'negative-inventory',
+              materialCosts: {MaterialFamily.runeFragment: 1},
+            ),
+            inventory: const {MaterialFamily.runeFragment: -1},
+          )
+          .reason,
       CraftingDecisionReason.invalidPlan,
     );
   });

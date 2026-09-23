@@ -24,9 +24,7 @@ class RewardedAdDecision {
   });
 
   factory RewardedAdDecision.watchAd() {
-    return const RewardedAdDecision._(
-      deliveryMode: RewardDeliveryMode.watchAd,
-    );
+    return const RewardedAdDecision._(deliveryMode: RewardDeliveryMode.watchAd);
   }
 
   factory RewardedAdDecision.directProGrant() {
@@ -72,14 +70,10 @@ class RewardedAdPolicy {
     required bool isPro,
   }) {
     if (successfulRewardsToday < 0) {
-      return RewardedAdDecision.unavailable(
-        RewardedAdBlockReason.invalidState,
-      );
+      return RewardedAdDecision.unavailable(RewardedAdBlockReason.invalidState);
     }
     if (successfulRewardsToday >= runeShrineDailyLimit) {
-      return RewardedAdDecision.unavailable(
-        RewardedAdBlockReason.dailyLimit,
-      );
+      return RewardedAdDecision.unavailable(RewardedAdBlockReason.dailyLimit);
     }
 
     if (lastSuccessfulRewardAt != null) {
@@ -103,9 +97,7 @@ class RewardedAdPolicy {
     required bool isPro,
   }) {
     if (isRankedPvp) {
-      return RewardedAdDecision.unavailable(
-        RewardedAdBlockReason.rankedPvp,
-      );
+      return RewardedAdDecision.unavailable(RewardedAdBlockReason.rankedPvp);
     }
     if (session.phase != BattleSessionPhase.defeat) {
       return RewardedAdDecision.unavailable(
