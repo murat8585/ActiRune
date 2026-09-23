@@ -15,30 +15,47 @@ void main() {
     );
   }
 
-  test('all four supported detector identities route exactly once', () {
-    final session = BattleSessionEngine()..startLiveBattle();
-    final combat = CombatEngine(bossMaxHp: 1000, damagePerVerifiedRep: 100);
+  BattleSessionEngine liveSession(VerifiedMovementType movement) {
+    return BattleSessionEngine()
+      ..prepare(movement)
+      ..startLiveBattle();
+  }
+
+  test('all four supported detector identities route in matching encounters', () {
+    const cases = <(String, VerifiedMovementType)>[
+      ('squat', VerifiedMovementType.squat),
+      ('lunge', VerifiedMovementType.lunge),
+      ('push_up', VerifiedMovementType.pushUp),
+      ('plank', VerifiedMovementType.plank),
+    ];
+
+    for (var i = 0; i < cases.length; i++) {
+      final current = cases[i];
+      final session = liveSession(current.$2);
+      final combat = CombatEngine(bossMaxHp: 1000, damagePerVerifiedRep: 100);
+      final router = VerifiedMovementRouter(session: session, combat: combat);
+
+      expect(router.route(rep(current.$1, 100 + i)), isTrue);
+      expect(session.snapshot.lastVerifiedMovement, current.$2);
+      expect(session.snapshot.verifiedActionCount, 1);
+      expect(combat.snapshot.verifiedReps, 1);
+      expect(combat.snapshot.bossHp, 900);
+    }
+  });
+
+  test('mismatched detector identity is rejected without combat mutation', () {
+    final session = liveSession(VerifiedMovementType.lunge);
+    final combat = CombatEngine();
     final router = VerifiedMovementRouter(session: session, combat: combat);
 
-    expect(router.route(rep('squat', 100)), isTrue);
-    expect(session.snapshot.lastVerifiedMovement, VerifiedMovementType.squat);
-
-    expect(router.route(rep('lunge', 200)), isTrue);
-    expect(session.snapshot.lastVerifiedMovement, VerifiedMovementType.lunge);
-
-    expect(router.route(rep('push_up', 300)), isTrue);
-    expect(session.snapshot.lastVerifiedMovement, VerifiedMovementType.pushUp);
-
-    expect(router.route(rep('plank', 400)), isTrue);
-    expect(session.snapshot.lastVerifiedMovement, VerifiedMovementType.plank);
-
-    expect(session.snapshot.verifiedActionCount, 4);
-    expect(combat.snapshot.verifiedReps, 4);
-    expect(combat.snapshot.bossHp, 600);
+    expect(router.route(rep('squat', 100)), isFalse);
+    expect(session.snapshot.verifiedActionCount, 0);
+    expect(session.snapshot.lastVerifiedMovement, isNull);
+    expect(combat.snapshot.verifiedReps, 0);
   });
 
   test('unknown exercise is rejected without battle or combat mutation', () {
-    final session = BattleSessionEngine()..startLiveBattle();
+    final session = liveSession(VerifiedMovementType.squat);
     final combat = CombatEngine();
     final router = VerifiedMovementRouter(session: session, combat: combat);
 
@@ -50,7 +67,7 @@ void main() {
   });
 
   test('non-live battle rejection cannot mutate combat', () {
-    final session = BattleSessionEngine();
+    final session = BattleSessionEngine()..prepare(VerifiedMovementType.squat);
     final combat = CombatEngine();
     final router = VerifiedMovementRouter(session: session, combat: combat);
 
@@ -60,9 +77,7 @@ void main() {
   });
 
   test('paused battle rejection cannot mutate combat', () {
-    final session = BattleSessionEngine()
-      ..startLiveBattle()
-      ..pause();
+    final session = liveSession(VerifiedMovementType.lunge)..pause();
     final combat = CombatEngine();
     final router = VerifiedMovementRouter(session: session, combat: combat);
 
@@ -72,7 +87,7 @@ void main() {
   });
 
   test('same verified event cannot be replayed after phase recovery', () {
-    final session = BattleSessionEngine();
+    final session = BattleSessionEngine()..prepare(VerifiedMovementType.pushUp);
     final combat = CombatEngine();
     final router = VerifiedMovementRouter(session: session, combat: combat);
     final event = rep('push_up', 100);
@@ -86,7 +101,7 @@ void main() {
   });
 
   test('duplicate accepted event cannot double-count', () {
-    final session = BattleSessionEngine()..startLiveBattle();
+    final session = liveSession(VerifiedMovementType.plank);
     final combat = CombatEngine();
     final router = VerifiedMovementRouter(session: session, combat: combat);
     final event = rep('plank', 100);
@@ -99,7 +114,7 @@ void main() {
   });
 
   test('same movement at a new timestamp remains a new verified event', () {
-    final session = BattleSessionEngine()..startLiveBattle();
+    final session = liveSession(VerifiedMovementType.squat);
     final combat = CombatEngine();
     final router = VerifiedMovementRouter(session: session, combat: combat);
 
@@ -111,7 +126,7 @@ void main() {
   });
 
   test('router passes form score to existing CombatEngine semantics', () {
-    final session = BattleSessionEngine()..startLiveBattle();
+    final session = liveSession(VerifiedMovementType.lunge);
     final combat = CombatEngine(bossMaxHp: 1000, damagePerVerifiedRep: 100);
     final router = VerifiedMovementRouter(session: session, combat: combat);
 
