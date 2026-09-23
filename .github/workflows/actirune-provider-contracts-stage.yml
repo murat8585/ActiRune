@@ -1,0 +1,67 @@
+name: ActiRune Provider Contracts Stage
+
+on:
+  push:
+    branches:
+      - integration/provider-contracts-stage-20260923
+    paths:
+      - '.github/workflows/actirune-provider-contracts-stage.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  validate-and-format:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout provider contracts stage
+        uses: actions/checkout@v4
+        with:
+          ref: integration/provider-contracts-stage-20260923
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Resolve dependencies
+        run: flutter pub get
+
+      - name: Apply canonical Dart format
+        run: >-
+          dart format
+          lib/features/monetization/pro_billing_gateway.dart
+          lib/features/monetization/rewarded_ad_gateway.dart
+          test/monetization_provider_contracts_test.dart
+
+      - name: Analyze
+        run: flutter analyze
+
+      - name: Focused provider contract tests
+        run: >-
+          flutter test --no-pub
+          test/monetization_provider_contracts_test.dart
+          test/rewarded_ad_policy_test.dart
+          test/pro_paywall_screen_test.dart
+
+      - name: Full Flutter tests
+        run: flutter test --no-pub
+
+      - name: Diff hygiene
+        run: git diff --check
+
+      - name: Commit canonical formatting
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- lib/features/monetization/pro_billing_gateway.dart lib/features/monetization/rewarded_ad_gateway.dart test/monetization_provider_contracts_test.dart; then
+            echo 'No formatting change required.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add lib/features/monetization/pro_billing_gateway.dart lib/features/monetization/rewarded_ad_gateway.dart test/monetization_provider_contracts_test.dart
+          git commit -m 'Apply canonical monetization provider contract formatting'
+          git push origin HEAD:integration/provider-contracts-stage-20260923
