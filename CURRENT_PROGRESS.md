@@ -4,15 +4,27 @@ Updated: 2026-09-23 (Europe/Istanbul)
 Branch: `integration/artwork-interactions-20260921`
 
 ## Last fully green behavioral Direct Validation
-- Run: **245**
-- Checked commit: `0cd0f041160621c5e8632634b62441528bb081ad`
+- Run: **248**
+- Checked commit: `7f72b8ab44aa38b5eb54f097e7de5b83f1335d56`
 - Result: **SUCCESS**
-- Scope: production-evidence chain + all previously verified Phase-1 UI/gameplay, movement, battle routing, Dynamic Difficulty, Recovery/Safety, Loot/Crafting, Rewarded Ads policy, Analytics/Balance, provider-neutral billing/ad gateways, production release guard, physical-evidence infrastructure, aggregate release readiness and provider-authority enforcement.
+- Scope: four-movement camera -> detector -> VerifiedRep -> BattleSession/Combat integration, prepared-movement fail-closed guard, authoritative plank-hold injection, plus all previously verified Phase-1 UI/gameplay, movement, battle routing, Dynamic Difficulty, Recovery/Safety, Loot/Crafting, Rewarded Ads policy, Analytics/Balance, provider-neutral billing/ad gateways, production release guard, physical-evidence infrastructure, aggregate release readiness and provider-authority enforcement.
 - Formatting: PASS.
 - Analyzer: PASS.
+- Focused interaction tests: PASS.
 - Full Flutter suite: PASS.
+- Diff hygiene: PASS.
 - Canonical artwork presence/dimension guards: PASS.
-- The temporary production-evidence staging workflow was removed before the integration checkpoint; `0cd0f041160621c5e8632634b62441528bb081ad` contains only the intended persistent release/runtime/test/documentation files.
+- The temporary four-movement staging workflow was removed before the integration checkpoint; `7f72b8ab44aa38b5eb54f097e7de5b83f1335d56` contains only the intended persistent runtime/test files.
+
+## Run 248 — Four-movement camera and battle closure
+- `PoseCameraController` no longer owns a hard-coded Squat detector; the authoritative caller supplies a `PoseRepDetector`.
+- Squat, Lunge and Push-up implement the shared detector contract; Plank uses the same contract with a caller-owned hold duration.
+- `MovementDetectorFactory` and `BattlePoseDetectorFactory` map only the four locked movement types.
+- Plank remains fail-closed when an authoritative positive hold duration is absent; no synthetic duration is invented by UI/camera code.
+- `LiveBattleScreen` no longer converts every verified rep into Squat. Detector events route through `VerifiedMovementRouter`.
+- `BattleSessionEngine.acceptVerifiedMovement` now requires the incoming verified movement to match the encounter's `preparedMovement` while live and unpaused.
+- Mismatched, unprepared, paused, duplicate, stale and unknown movement events cannot mutate battle/combat state.
+- Focused regressions cover detector dispatch, all four movement mappings, battle-session guards and VerifiedRep routing.
 
 ## Latest verified release-safety batches
 
@@ -95,12 +107,15 @@ Verified by Run 241.
 - Provider Authority Lock: Run 243.
 - Provider authority aggregate hardening: Run 244.
 - Production Evidence Chain: Run 245.
+- Daily/Weekly Quest Engine: Run 246.
+- Typed fail-closed First Calibration: Run 247.
+- Four-movement camera + prepared-movement battle integration: Run 248.
 
 ## Verified product/UI scope
 Major previously verified scope includes:
 - Root navigation: Ana Dünya / Macera / Savaş / Kahraman / Profil.
 - Home, Adventure, Hero, Profile and child routes.
-- Onboarding and calibration shells with false-success protection.
+- Onboarding and typed calibration flow with false-success protection.
 - Daily/Weekly Quests, Quest Chain, Events, Daily Summary, Weekly League Result.
 - Battle Prep, Camera Prep, Live Battle, Form Coach, Victory, Defeat and BattleFlowHost.
 - Rewarded retry state 3/3 -> 2/3 -> 1/3 -> 0/3.
@@ -108,6 +123,16 @@ Major previously verified scope includes:
 - Pro Paywall, Personal Daily Adventure, Pro Form Coach / long-term form analytics UI.
 - Equipment, Inventory, Crafting / Rune Forge, Lumi, Shop Revision and settings family.
 - Canonical approved artwork remains runtime authority; replacement art must not be invented.
+
+## Internal product-authority audit after Run 248
+- Production `/app` still constructs `MainShell` without a `battleRootBuilder`; Battle therefore remains intentionally fail-closed.
+- This is not safe to solve by hard-coding Squat or fabricating an encounter. The locked product contract says the movement is selected by the encounter and story battles must not add a second movement-selection step.
+- No repository-owned story/encounter engine currently provides an authoritative unlocked encounter with movement/target/duration/reward content.
+- `DynamicDifficultyEngine` supplies adaptation direction only; it does not own encounters or numeric balance.
+- Daily/Weekly `QuestEngine` owns quest plans, not story encounters.
+- World Progression and Personal Daily Adventure remain caller-owned UI shells for encounter/reward actions.
+- Existing `MainShell.battleRootBuilder` is the correct fail-closed injection seam until an authoritative encounter owner/content source exists.
+- Do not enable production Battle by inventing an enemy, movement, target, reward, unlock threshold or plank duration.
 
 ## Production identity audit
 Audit: `docs/release/CANONICAL_IDENTITY_AUDIT_20260923.md`.
@@ -148,24 +173,26 @@ This recommendation is not permission to invent provider projects, credentials, 
 10. Real-human physical-device ML Kit corpus is absent/incomplete as release proof.
 11. `physical_final_review.json` cannot legitimately PASS until that exact corpus/build is reviewed.
 12. Store review and protected signing/credential provenance remain external release responsibilities.
+13. Production story Battle root has no authoritative unlocked-encounter content owner yet; it must remain fail-closed rather than inventing encounter data.
 
 ## Current readiness truth
-- Repository-internal Phase-1 architecture/policy/guard scaffolding is highly mature and CI-green through Run 245.
+- Repository-internal Phase-1 architecture/policy/guard scaffolding is highly mature and CI-green through Run 248.
 - Current production readiness is **BLOCKED**, intentionally and correctly.
 - Do not describe the build as production-ready while any blocker above remains unresolved.
-- Do not turn missing external proof into synthetic CI success.
+- Do not turn missing external proof or missing product authority into synthetic CI success.
 - Do not commit production secrets or signing credentials to Git history.
 
 ## Next exact actions
-1. Re-audit the Master Product Bible/release matrix for any remaining Phase-1 feature that can still be completed without inventing external identities/providers.
-2. If no internal product gap remains, stop internal feature fabrication at the hard boundary rather than creating fake work.
-3. When the owner makes final Android/iOS identities and provider choices authoritative, create `provider_authority.json` from the verified template and validate it against real platform files.
-4. Configure production signing only through protected secret/signing management.
-5. Integrate one real provider at a time behind the already verified provider-neutral interfaces; after each batch run full Direct Validation.
-6. Record provider configuration with non-secret audit evidence only after real console/runtime verification.
-7. Execute the labelled real-human physical-device protocol in `docs/release/PHYSICAL_DEVICE_MLKIT_VALIDATION_GATE.md` against an exact build and record it through the verified evidence schema.
-8. Bind the final physical human review to the exact evidence Git blob SHA and exact reviewed build.
-9. Run the manual Production Readiness workflow. Only an evidence-backed green result may advance release readiness.
+1. Continue the Master Product Bible audit for internal Phase-1 domain owners that can be completed without inventing numeric balance or external identities; next focus is Player/Hero/Lumi/Movement Mastery progression semantics.
+2. Keep production Battle fail-closed until authoritative encounter content exists; when it does, inject it through the existing typed Battle root boundary instead of adding a second movement picker.
+3. If no further internal product gap remains, stop internal feature fabrication at the hard boundary rather than creating fake work.
+4. When the owner makes final Android/iOS identities and provider choices authoritative, create `provider_authority.json` from the verified template and validate it against real platform files.
+5. Configure production signing only through protected secret/signing management.
+6. Integrate one real provider at a time behind the already verified provider-neutral interfaces; after each batch run full Direct Validation.
+7. Record provider configuration with non-secret audit evidence only after real console/runtime verification.
+8. Execute the labelled real-human physical-device protocol in `docs/release/PHYSICAL_DEVICE_MLKIT_VALIDATION_GATE.md` against an exact build and record it through the verified evidence schema.
+9. Bind the final physical human review to the exact evidence Git blob SHA and exact reviewed build.
+10. Run the manual Production Readiness workflow. Only an evidence-backed green result may advance release readiness.
 
 ## Permanent working rule
 After each meaningful green behavioral batch, update this file with the latest verified run/commit, completed scope, blockers and next exact action. Documentation-only checkpoint commits do not redefine the last behavioral validation run. This file is the GitHub recovery checkpoint when a chat/tab ends.
