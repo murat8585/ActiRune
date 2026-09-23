@@ -12,9 +12,8 @@ class FlexibleActivityWindow {
   final List<ActivityDayState> days;
   final int activeDayGoal;
 
-  int get activeDayCount => days
-      .where((day) => day != ActivityDayState.inactive)
-      .length;
+  int get activeDayCount =>
+      days.where((day) => day != ActivityDayState.inactive).length;
 
   int get inactiveDayCount => days.length - activeDayCount;
 
