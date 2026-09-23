@@ -4,7 +4,6 @@ import 'package:actirune/features/pose/detector/plank_detector.dart';
 import 'package:actirune/features/pose/detector/pose_rep_detector.dart';
 import 'package:actirune/features/pose/detector/push_up_detector.dart';
 import 'package:actirune/features/pose/detector/squat_detector.dart';
-import 'package:actirune/features/pose/detector/verified_rep.dart';
 import 'package:actirune/features/pose/provider/pose_camera_controller.dart';
 import 'package:actirune/features/pose/provider/pose_models.dart';
 import 'package:flutter_test/flutter_test.dart';
