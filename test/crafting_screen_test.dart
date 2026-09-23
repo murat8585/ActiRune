@@ -126,9 +126,7 @@ void main() {
       ('gold', CraftingMaterial.gold),
     ]) {
       await tester.tap(
-        find.byKey(
-          ValueKey('artwork-hotspot-crafting.material-${entry.$1}'),
-        ),
+        find.byKey(ValueKey('artwork-hotspot-crafting.material-${entry.$1}')),
       );
       await tester.pump();
     }
