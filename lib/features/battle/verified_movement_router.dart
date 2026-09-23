@@ -9,14 +9,10 @@ import 'combat/combat_engine.dart';
 /// this router. Events rejected because the battle is not live are not replayed
 /// later, preventing stale/ghost movement actions after pause or phase changes.
 class VerifiedMovementRouter {
-  VerifiedMovementRouter({
-    required BattleSessionEngine session,
-    required CombatEngine combat,
-  }) : _session = session,
-       _combat = combat;
+  VerifiedMovementRouter({required this.session, required this.combat});
 
-  final BattleSessionEngine _session;
-  final CombatEngine _combat;
+  final BattleSessionEngine session;
+  final CombatEngine combat;
   final Set<({String exercise, int atMicros})> _consumed = {};
 
   bool route(VerifiedRep rep) {
@@ -29,9 +25,9 @@ class VerifiedMovementRouter {
     );
     if (!_consumed.add(identity)) return false;
 
-    if (!_session.acceptVerifiedMovement(movement)) return false;
+    if (!session.acceptVerifiedMovement(movement)) return false;
 
-    _combat.acceptVerifiedRep(formScore: rep.formScore);
+    combat.acceptVerifiedRep(formScore: rep.formScore);
     return true;
   }
 
