@@ -4,28 +4,29 @@ Updated: 2026-09-23 (Europe/Istanbul)
 Branch: `integration/artwork-interactions-20260921`
 
 ## Last fully green Direct Validation
-- Run: 232 (successful re-run)
-- Checked commit: `883fba4b3c5f8f0f0b32d03024422284d4f80b0f`
+- Run: 233
+- Checked commit: `84ffeabc09b4337c1d21208932f4421594430d04`
 - Result: SUCCESS
-- Scope: Lunge deterministic detector/state-machine coverage plus all previously verified Phase-1 UI/gameplay shells.
-- Formatting: 104 files checked, 0 changed.
-- Analyzer: 0 issues.
-- Focused interaction suite: 155 tests PASS.
-- Full Flutter suite: 172 tests PASS.
+- Scope: Push-up / Şınav deterministic detector + regression coverage, together with the complete previously verified Phase-1 UI/gameplay suite.
+- Formatting: PASS.
+- Analyzer: PASS, 0 issues.
+- Focused interaction suite: PASS.
+- Full Flutter suite: PASS.
 - Diff hygiene: PASS.
-- Lunge regression coverage includes left/right reps, shallow reps, low-confidence freeze, full return requirement, missing-landmark ghost-rep prevention, cooldown and locked lead-side behavior.
-- Temporary Lunge formatter workflow was removed after validation; cleanup-only commit does not alter the validated runtime/test implementation.
+- Temporary Push-up stage workflow was removed after validation; cleanup-only commit does not alter validated runtime/test behavior.
 
 ## Newly completed verified system
-- System: Lunge movement verification
-- Runtime: `lib/features/pose/detector/lunge_detector.dart`
-- Shared verified event: `lib/features/pose/detector/verified_rep.dart`
-- Regression test: `test/lunge_detector_test.dart`
-- Detector thresholds remain configurable until labelled-video and physical-device corpus validation; they are not claimed as biomechanical truth.
-- No movement event is emitted without a valid bottom phase, return to standing and cooldown gate.
-- Missing/low-confidence pose data cannot fabricate a rep.
+- System: Push-up / Şınav movement verification
+- Runtime: `lib/features/pose/detector/push_up_detector.dart`
+- Regression test: `test/push_up_detector_test.dart`
+- Coverage includes full rep, shallow rep rejection, body-line invalidation, low-confidence freeze, missing-landmark ghost-rep prevention, return-to-top requirement, cooldown and valid-start requirement.
+- Thresholds are deliberately configurable until labelled-video and physical-device ML Kit validation are complete; the unit tests verify deterministic state-machine behavior, not clinical/biomechanical correctness.
 
-## Previously verified immediately before this system
+## Previously verified movement systems
+- Squat: detector + regression tests green in the full suite.
+- Lunge: VERIFIED by Direct Validation Run 232 successful re-run.
+
+## Previously verified product/UI systems
 - Mağaza / Shop Revision: VERIFIED by Direct Validation Run 228 successful re-run.
 - Lumi: VERIFIED by Direct Validation Run 224.
 - Crafting / Rün Dövme: VERIFIED by Direct Validation Run 222 successful re-run.
@@ -36,10 +37,11 @@ Branch: `integration/artwork-interactions-20260921`
 
 ## Active work
 - Phase-1 Core Solo four-movement infrastructure.
-- Squat: detector + tests already present and green in full suite.
-- Lunge: detector + tests now green.
-- Next exact functional gap: Push-up / Şınav detector + deterministic regression coverage.
-- After Push-up: Plank hold verifier, then typed detector-to-BattleSession integration boundary.
+- Squat: green.
+- Lunge: green.
+- Push-up: green.
+- Next exact functional gap: Plank duration/form verifier.
+- After Plank: typed movement-verification router into BattleSession/Combat boundary without UI fabricating movement events.
 
 ## Completed / verified major areas
 - Canonical root navigation: Ana Dünya / Macera / Savaş / Kahraman / Profil
@@ -64,6 +66,7 @@ Branch: `integration/artwork-interactions-20260921`
 - Mağaza / Shop Revision
 - Squat movement verification
 - Lunge movement verification
+- Push-up movement verification
 
 ## Phase-1 product authority boundary
 - Master Product Bible Phase 1 requires Core Solo: Home, Adventure, Squat/Lunge/Push-up/Plank infrastructure, Camera Prep, Live Battle, Form Coach, quests, Player/Hero/Lumi/Mastery, loot/crafting, Recovery/Difficulty, Pro base layer and Rewarded Ads.
@@ -74,11 +77,11 @@ Branch: `integration/artwork-interactions-20260921`
 - Pose thresholds stay configuration until labelled-video corpus and real-device ML Kit validation are completed.
 
 ## Next exact actions
-1. Implement Push-up / Şınav deterministic state machine using only available pose landmarks and configurable thresholds.
-2. Add positive/negative tests: full rep, shallow rep, body-line failure, confidence loss, missing landmarks, return-to-start and cooldown.
-3. Require formatter + analyzer + focused/full tests + diff hygiene before marking Push-up green.
-4. Implement Plank duration/form verifier with dropout-safe hold reset/freeze semantics.
-5. Add a typed movement-verification router so Squat/Lunge/Push-up/Plank feed BattleSession as already-verified events without UI fabricating movement.
+1. Implement Plank form/hold verifier using shoulder-hip-ankle alignment, confidence gating and configurable hold duration.
+2. Add tests for valid hold, insufficient duration, body-line break, confidence loss, missing landmarks and duplicate-event prevention.
+3. Require formatter + analyzer + movement tests + full Flutter suite + diff hygiene before marking Plank green.
+4. Add typed movement-verification router so Squat/Lunge/Push-up/Plank produce a common verified movement event for BattleSession.
+5. Prove exactly one accepted verified movement produces exactly one battle/combat action.
 6. Re-audit Dynamic Difficulty, Recovery/Safety, loot/crafting ownership and Rewarded Ads ownership.
 7. Physical-device ML Kit corpus validation remains a mandatory release gate and cannot be replaced by synthetic unit tests.
 
