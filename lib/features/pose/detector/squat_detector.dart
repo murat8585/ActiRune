@@ -1,18 +1,10 @@
 import '../provider/pose_models.dart';
 import 'geometry.dart';
+import 'verified_rep.dart';
+
+export 'verified_rep.dart';
 
 enum SquatPhase { unknown, standing, descending, bottom, ascending }
-
-class VerifiedRep {
-  const VerifiedRep({
-    required this.exercise,
-    required this.at,
-    required this.formScore,
-  });
-  final String exercise;
-  final DateTime at;
-  final double formScore;
-}
 
 class SquatDetector {
   SquatDetector({
