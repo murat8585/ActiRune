@@ -6,6 +6,8 @@ enum PhysicalFinalReviewIssue {
   dispositionFailed,
   invalidEvidenceGitBlobSha,
   evidenceGitBlobMismatch,
+  evidenceBuildSetInvalid,
+  reviewedBuildMismatch,
 }
 
 @immutable
@@ -71,6 +73,7 @@ abstract final class PhysicalValidationFinalReviewValidator {
   static PhysicalValidationFinalReviewReport evaluate({
     required PhysicalValidationFinalReviewRecord record,
     required String actualEvidenceGitBlobSha,
+    required Set<String> evidenceBuilds,
   }) {
     final issues = <PhysicalFinalReviewIssue>[];
 
@@ -83,6 +86,16 @@ abstract final class PhysicalValidationFinalReviewValidator {
     } else if (record.evidenceGitBlobSha.toLowerCase() !=
         actualEvidenceGitBlobSha.trim().toLowerCase()) {
       issues.add(PhysicalFinalReviewIssue.evidenceGitBlobMismatch);
+    }
+
+    final normalizedBuilds = evidenceBuilds
+        .map((value) => value.trim())
+        .where((value) => value.isNotEmpty)
+        .toSet();
+    if (normalizedBuilds.length != 1) {
+      issues.add(PhysicalFinalReviewIssue.evidenceBuildSetInvalid);
+    } else if (!normalizedBuilds.contains(record.reviewedBuild.trim())) {
+      issues.add(PhysicalFinalReviewIssue.reviewedBuildMismatch);
     }
 
     return PhysicalValidationFinalReviewReport(
