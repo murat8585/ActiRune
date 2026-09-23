@@ -1,4 +1,5 @@
 import 'package:actirune/features/onboarding/calibration_result_screen.dart';
+import 'package:actirune/features/onboarding/first_calibration_engine.dart';
 import 'package:actirune/features/onboarding/first_calibration_screen.dart';
 import 'package:actirune/features/onboarding/onboarding_screen.dart';
 import 'package:actirune/features/onboarding/onboarding_welcome_screen.dart';
@@ -47,14 +48,16 @@ void main() {
     expect(find.byType(CalibrationResultScreen), findsNothing);
   });
 
-  testWidgets('Failed calibration stays on First Calibration', (tester) async {
+  testWidgets('Blocked calibration assessment stays on First Calibration', (
+    tester,
+  ) async {
     var attempts = 0;
     await tester.pumpWidget(
       MaterialApp(
         home: OnboardingScreen(
           onRunCalibration: () async {
             attempts++;
-            return false;
+            return _calibrationAssessment(cameraPoseIntroCompleted: false);
           },
         ),
       ),
@@ -72,11 +75,49 @@ void main() {
     expect(find.byType(CalibrationResultScreen), findsNothing);
   });
 
-  testWidgets('Successful calibration exposes result and recalibrate returns', (
+  testWidgets(
+    'Successful typed calibration exposes result and recalibrate returns',
+    (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: OnboardingScreen(
+            onRunCalibration: () async => _calibrationAssessment(),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await startWelcome(tester);
+
+      await tester.tap(
+        find.byKey(const ValueKey('artwork-hotspot-first-calibration.start')),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byType(CalibrationResultScreen), findsOneWidget);
+
+      await tester.tap(
+        find.byKey(
+          const ValueKey('artwork-hotspot-calibration-result.recalibrate'),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byType(FirstCalibrationScreen), findsOneWidget);
+      expect(find.byType(CalibrationResultScreen), findsNothing);
+    },
+  );
+
+  testWidgets('Ready calibration exposes the starting profile exactly once', (
     tester,
   ) async {
+    final profiles = <StartingCalibrationProfile>[];
     await tester.pumpWidget(
-      MaterialApp(home: OnboardingScreen(onRunCalibration: () async => true)),
+      MaterialApp(
+        home: OnboardingScreen(
+          onRunCalibration: () async => _calibrationAssessment(),
+          onCalibrationReady: profiles.add,
+        ),
+      ),
     );
     await tester.pumpAndSettle();
     await startWelcome(tester);
@@ -86,17 +127,10 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.byType(CalibrationResultScreen), findsOneWidget);
-
-    await tester.tap(
-      find.byKey(
-        const ValueKey('artwork-hotspot-calibration-result.recalibrate'),
-      ),
-    );
-    await tester.pumpAndSettle();
-
-    expect(find.byType(FirstCalibrationScreen), findsOneWidget);
-    expect(find.byType(CalibrationResultScreen), findsNothing);
+    expect(profiles, hasLength(1));
+    expect(profiles.single.goalKey, 'general-fitness');
+    expect(profiles.single.preferredSessionMinutes, 20);
+    expect(profiles.single.experienceKey, 'starter');
   });
 
   testWidgets(
@@ -106,7 +140,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: OnboardingScreen(
-            onRunCalibration: () async => true,
+            onRunCalibration: () async => _calibrationAssessment(),
             onEnterApp: () => enteredApp++,
           ),
         ),
@@ -134,7 +168,11 @@ void main() {
     tester,
   ) async {
     await tester.pumpWidget(
-      MaterialApp(home: OnboardingScreen(onRunCalibration: () async => true)),
+      MaterialApp(
+        home: OnboardingScreen(
+          onRunCalibration: () async => _calibrationAssessment(),
+        ),
+      ),
     );
     await tester.pumpAndSettle();
     await startWelcome(tester);
@@ -152,4 +190,35 @@ void main() {
       expect(find.byKey(ValueKey('artwork-hotspot-$id')), findsNothing);
     }
   });
+}
+
+FirstCalibrationAssessment _calibrationAssessment({
+  bool cameraPoseIntroCompleted = true,
+}) {
+  const engine = FirstCalibrationEngine();
+  return engine.evaluate(
+    FirstCalibrationInput(
+      profile: const CalibrationProfileInput(
+        goalKey: 'general-fitness',
+        preferredSessionMinutes: 20,
+        experienceKey: 'starter',
+      ),
+      cameraPoseIntroCompleted: cameraPoseIntroCompleted,
+      preferences: {
+        for (final movement in CalibrationMovement.values)
+          movement: CalibrationMovementPreference(
+            movement: movement,
+            suitability: CalibrationMovementSuitability.standard,
+          ),
+      },
+      evidence: {
+        for (final movement in CalibrationMovement.values)
+          movement: CalibrationMovementEvidence(
+            movement: movement,
+            status: CalibrationEvidenceStatus.standardVerified,
+            evidenceId: 'test-${movement.name}',
+          ),
+      },
+    ),
+  );
 }
