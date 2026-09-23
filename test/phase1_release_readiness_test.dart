@@ -45,10 +45,9 @@ void main() {
     );
 
     expect(report.allDeclaredGatesSatisfied, isFalse);
-    expect(
-      report.blockers,
-      [Phase1ReleaseBlocker.providerConfigurationIncomplete],
-    );
+    expect(report.blockers, [
+      Phase1ReleaseBlocker.providerConfigurationIncomplete,
+    ]);
   });
 
   test('physical evidence must be structurally complete before final pass', () {
@@ -123,20 +122,23 @@ void main() {
     );
   });
 
-  test('all declared gates must be explicitly satisfied for aggregate green', () {
-    final report = Phase1ReleaseReadiness.evaluate(
-      Phase1ReleaseReadinessEvidence(
-        productionRelease: _readyProductionReport(),
-        providerState: ProviderReleaseState.configured,
-        physicalEvidence: _completePhysicalSummary(),
-        physicalFinalReview: PhysicalValidationFinalReview.passed,
-      ),
-    );
+  test(
+    'all declared gates must be explicitly satisfied for aggregate green',
+    () {
+      final report = Phase1ReleaseReadiness.evaluate(
+        Phase1ReleaseReadinessEvidence(
+          productionRelease: _readyProductionReport(),
+          providerState: ProviderReleaseState.configured,
+          physicalEvidence: _completePhysicalSummary(),
+          physicalFinalReview: PhysicalValidationFinalReview.passed,
+        ),
+      );
 
-    expect(report.blockers, isEmpty);
-    expect(report.productionIssues, isEmpty);
-    expect(report.allDeclaredGatesSatisfied, isTrue);
-  });
+      expect(report.blockers, isEmpty);
+      expect(report.productionIssues, isEmpty);
+      expect(report.allDeclaredGatesSatisfied, isTrue);
+    },
+  );
 }
 
 ProductionReleaseReport _readyProductionReport() {
@@ -188,7 +190,8 @@ PhysicalValidationEvidenceSummary _completePhysicalSummary({
 
 PhysicalValidationRecord _record(
   VerifiedMovementType movement, {
-  PhysicalValidationDisposition disposition = PhysicalValidationDisposition.pass,
+  PhysicalValidationDisposition disposition =
+      PhysicalValidationDisposition.pass,
   Set<PhysicalValidationCoverage> extraCoverage = const {},
   String lighting = 'normal indoor',
   String framing = 'full body',

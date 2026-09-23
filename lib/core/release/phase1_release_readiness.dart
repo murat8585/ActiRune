@@ -3,11 +3,7 @@ import 'package:flutter/foundation.dart';
 import '../../features/pose/validation/physical_validation_evidence.dart';
 import 'production_release_guard.dart';
 
-enum ProviderReleaseState {
-  undecided,
-  lockedNotConfigured,
-  configured,
-}
+enum ProviderReleaseState { undecided, lockedNotConfigured, configured }
 
 enum PhysicalValidationFinalReview { pending, passed, failed }
 
@@ -89,9 +85,7 @@ abstract final class Phase1ReleaseReadiness {
         blockers.add(Phase1ReleaseBlocker.physicalEvidenceHasFailedRecords);
       }
       if (physicalEvidence.thresholdReviewRecords > 0) {
-        blockers.add(
-          Phase1ReleaseBlocker.physicalThresholdReviewOutstanding,
-        );
+        blockers.add(Phase1ReleaseBlocker.physicalThresholdReviewOutstanding);
       }
     }
 
