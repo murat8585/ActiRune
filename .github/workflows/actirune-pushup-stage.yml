@@ -1,0 +1,57 @@
+name: ActiRune Push-up Stage
+
+on:
+  push:
+    branches:
+      - integration/pushup-stage-20260923
+    paths:
+      - '.github/workflows/actirune-pushup-stage.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  validate-and-format:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout Push-up stage
+        uses: actions/checkout@v4
+        with:
+          ref: integration/pushup-stage-20260923
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - name: Resolve dependencies
+        run: flutter pub get
+      - name: Apply canonical Dart format
+        run: dart format lib/features/pose/detector/push_up_detector.dart test/push_up_detector_test.dart
+      - name: Analyze
+        run: flutter analyze
+      - name: Movement regression tests
+        run: >-
+          flutter test --no-pub
+          test/squat_detector_test.dart
+          test/lunge_detector_test.dart
+          test/push_up_detector_test.dart
+          test/combat_engine_test.dart
+          test/battle_session_engine_test.dart
+      - name: Full Flutter tests
+        run: flutter test --no-pub
+      - name: Diff hygiene
+        run: git diff --check
+      - name: Commit canonical Push-up formatting
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- lib/features/pose/detector/push_up_detector.dart test/push_up_detector_test.dart; then
+            echo 'No formatting change required.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add lib/features/pose/detector/push_up_detector.dart test/push_up_detector_test.dart
+          git commit -m 'Apply canonical Push-up formatting'
+          git push origin HEAD:integration/pushup-stage-20260923
