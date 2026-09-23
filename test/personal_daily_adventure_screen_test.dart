@@ -28,36 +28,37 @@ void main() {
     );
   }
 
-  testWidgets('Personal Daily Adventure renders canonical exact artwork shell', (
-    tester,
-  ) async {
-    await tester.pumpWidget(buildSubject());
-    await tester.pumpAndSettle();
+  testWidgets(
+    'Personal Daily Adventure renders canonical exact artwork shell',
+    (tester) async {
+      await tester.pumpWidget(buildSubject());
+      await tester.pumpAndSettle();
 
-    final surface = tester.widget<ArtworkInteractionSurface>(
-      find.byType(ArtworkInteractionSurface),
-    );
-    expect(surface.assetPath, PersonalDailyAdventureScreen.artworkAsset);
-    expect(surface.sourceSize, PersonalDailyAdventureScreen.artworkSize);
-    expect(PersonalDailyAdventureScreen.artworkSize, const Size(941, 1672));
+      final surface = tester.widget<ArtworkInteractionSurface>(
+        find.byType(ArtworkInteractionSurface),
+      );
+      expect(surface.assetPath, PersonalDailyAdventureScreen.artworkAsset);
+      expect(surface.sourceSize, PersonalDailyAdventureScreen.artworkSize);
+      expect(PersonalDailyAdventureScreen.artworkSize, const Size(941, 1672));
 
-    for (final id in [
-      'personal-daily.notifications',
-      'personal-daily.settings',
-      'personal-daily.duration-quick15',
-      'personal-daily.duration-standard30',
-      'personal-daily.duration-deep45',
-      'personal-daily.start',
-      'personal-daily.view-plan',
-      'personal-daily.nav-home',
-      'personal-daily.nav-adventure',
-      'personal-daily.nav-battle',
-      'personal-daily.nav-hero',
-      'personal-daily.nav-profile',
-    ]) {
-      expect(find.byKey(ValueKey('artwork-hotspot-$id')), findsOneWidget);
-    }
-  });
+      for (final id in [
+        'personal-daily.notifications',
+        'personal-daily.settings',
+        'personal-daily.duration-quick15',
+        'personal-daily.duration-standard30',
+        'personal-daily.duration-deep45',
+        'personal-daily.start',
+        'personal-daily.view-plan',
+        'personal-daily.nav-home',
+        'personal-daily.nav-adventure',
+        'personal-daily.nav-battle',
+        'personal-daily.nav-hero',
+        'personal-daily.nav-profile',
+      ]) {
+        expect(find.byKey(ValueKey('artwork-hotspot-$id')), findsOneWidget);
+      }
+    },
+  );
 
   testWidgets('duration choices dispatch only to the owning engine', (
     tester,
@@ -143,7 +144,9 @@ void main() {
     );
     await tester.pump();
     await tester.tap(
-      find.byKey(const ValueKey('artwork-hotspot-personal-daily.nav-adventure')),
+      find.byKey(
+        const ValueKey('artwork-hotspot-personal-daily.nav-adventure'),
+      ),
     );
     await tester.pump();
 
