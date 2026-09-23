@@ -89,7 +89,8 @@ abstract final class ProviderAuthorityValidator {
         authority.androidApplicationId) {
       issues.add(ProviderAuthorityIssue.androidApplicationIdMismatch);
     }
-    if (productionEvidence.iosBundleIdentifier != authority.iosBundleIdentifier) {
+    if (productionEvidence.iosBundleIdentifier !=
+        authority.iosBundleIdentifier) {
       issues.add(ProviderAuthorityIssue.iosBundleIdentifierMismatch);
     }
 
