@@ -30,16 +30,8 @@ void main() {
     double rightKneeAngle, {
     double confidence = 1,
   }) {
-    final left = leg(
-      leftKneeAngle,
-      xOffset: -2,
-      confidence: confidence,
-    );
-    final right = leg(
-      rightKneeAngle,
-      xOffset: 2,
-      confidence: confidence,
-    );
+    final left = leg(leftKneeAngle, xOffset: -2, confidence: confidence);
+    final right = leg(rightKneeAngle, xOffset: 2, confidence: confidence);
     return PoseFrame(
       timestamp: base.add(Duration(milliseconds: milliseconds)),
       joints: {
