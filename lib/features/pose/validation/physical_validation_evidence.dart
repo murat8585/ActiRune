@@ -163,8 +163,8 @@ final class PhysicalValidationCorpus {
 
   factory PhysicalValidationCorpus.fromJson(Map<String, Object?> json) {
     final schemaVersion = json['schemaVersion'];
-    if (schemaVersion != 1) {
-      throw const FormatException('schemaVersion must be 1.');
+    if (schemaVersion is! int || schemaVersion != 1) {
+      throw const FormatException('schemaVersion must be integer 1.');
     }
 
     final rawRecords = json['records'];
