@@ -14,6 +14,7 @@ class BattleFlowHost extends StatelessWidget {
     required this.session,
     required this.cameraReadiness,
     this.cameraEnabled = true,
+    this.requiredPlankHoldDuration,
     this.onBattlePrepBack,
     this.onBattlePrepInfo,
     this.onEquipment,
@@ -43,6 +44,7 @@ class BattleFlowHost extends StatelessWidget {
   final BattleSessionEngine session;
   final CameraPrepReadiness cameraReadiness;
   final bool cameraEnabled;
+  final Duration? requiredPlankHoldDuration;
 
   final VoidCallback? onBattlePrepBack;
   final VoidCallback? onBattlePrepInfo;
@@ -111,6 +113,7 @@ class BattleFlowHost extends StatelessWidget {
                 key: const ValueKey('battle-flow.live-battle'),
                 session: session,
                 cameraEnabled: cameraEnabled,
+                requiredPlankHoldDuration: requiredPlankHoldDuration,
                 onOpenFormCoach: onFormCoachOpened ?? _noop,
                 onVictory: onVictoryReached ?? _noop,
               ),
