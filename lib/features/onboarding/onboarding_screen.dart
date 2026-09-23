@@ -55,7 +55,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     if (runner == null || _calibrationInFlight) return;
 
     setState(() => _calibrationInFlight = true);
-    FirstCalibrationAssessment? assessment;
+    late final FirstCalibrationAssessment assessment;
     try {
       assessment = await runner();
     } finally {
@@ -64,16 +64,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       }
     }
 
-    if (!mounted ||
-        assessment == null ||
-        !assessment.readyForStartingProfile) {
-      return;
-    }
+    if (!mounted || !assessment.readyForStartingProfile) return;
 
     final startingProfile = assessment.startingProfile;
     if (startingProfile == null) return;
 
     widget.onCalibrationReady?.call(startingProfile);
+    if (!mounted) return;
     setState(() => _phase = _OnboardingPhase.calibrationResult);
   }
 
