@@ -6,6 +6,7 @@ import '../features/battle/battle_prep_screen.dart';
 import '../features/hero/equipment_screen.dart';
 import '../features/hero/hero_screen.dart';
 import '../features/hero/inventory_screen.dart';
+import '../features/hero/lumi_screen.dart';
 import '../features/hero/movement_mastery_screen.dart';
 import '../features/home/daily_summary_popup.dart';
 import '../features/home/event_detail_popup.dart';
@@ -231,6 +232,18 @@ class _MainShellState extends State<MainShell> {
     );
   }
 
+  Future<void> _openLumi(BuildContext context) async {
+    await Navigator.of(context).push<void>(
+      MaterialPageRoute<void>(
+        builder: (routeContext) => LumiScreen(
+          onRootNavigate: (next) =>
+              _closeChildStackAndSelect(routeContext, next.name),
+          battleRootEnabled: _battleAvailable,
+        ),
+      ),
+    );
+  }
+
   Future<void> _openMovementMastery(BuildContext context) async {
     await Navigator.of(context).push<void>(
       MaterialPageRoute<void>(
@@ -401,6 +414,8 @@ class _MainShellState extends State<MainShell> {
           const SizedBox.shrink(),
       HeroScreen(
         onEquipment: () => _openEquipment(context),
+        onCompanion: () => _openLumi(context),
+        onCompanionDetails: () => _openLumi(context),
         onCharacterStory: () => _openQuestChain(context),
         onMovementMastery: () => _openMovementMastery(context),
         onRootNavigate: _selectHeroRoot,

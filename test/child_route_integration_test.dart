@@ -1,6 +1,7 @@
 import 'package:actirune/app/main_shell.dart';
 import 'package:actirune/features/hero/equipment_screen.dart';
 import 'package:actirune/features/hero/inventory_screen.dart';
+import 'package:actirune/features/hero/lumi_screen.dart';
 import 'package:actirune/features/hero/movement_mastery_screen.dart';
 import 'package:actirune/features/profile/player_level_screen.dart';
 import 'package:actirune/features/profile/profile_history_screen.dart';
@@ -94,6 +95,31 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byType(MovementMasteryScreen), findsOneWidget);
+  });
+
+  testWidgets('Hero companion entries open Lumi exact-art child', (
+    tester,
+  ) async {
+    await tester.pumpWidget(const MaterialApp(home: MainShell()));
+    await tester.pumpAndSettle();
+    await openHero(tester);
+
+    await tester.tap(
+      find.byKey(const ValueKey('artwork-hotspot-hero.companion')),
+    );
+    await tester.pumpAndSettle();
+    expect(find.byType(LumiScreen), findsOneWidget);
+
+    await tester.tap(
+      find.byKey(const ValueKey('artwork-hotspot-lumi.nav-hero')),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(
+      find.byKey(const ValueKey('artwork-hotspot-hero.companion-details')),
+    );
+    await tester.pumpAndSettle();
+    expect(find.byType(LumiScreen), findsOneWidget);
   });
 
   testWidgets('Profile opens Player Level and History children', (
