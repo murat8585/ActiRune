@@ -83,9 +83,7 @@ void main() {
   testWidgets('Shop categories dispatch only to their owner', (tester) async {
     final categories = <ShopCategory>[];
 
-    await tester.pumpWidget(
-      buildSubject(onCategorySelected: categories.add),
-    );
+    await tester.pumpWidget(buildSubject(onCategorySelected: categories.add));
     await tester.pumpAndSettle();
 
     for (final entry in [
@@ -114,12 +112,12 @@ void main() {
     ]);
   });
 
-  testWidgets('Shop product cards only dispatch product intent', (tester) async {
+  testWidgets('Shop product cards only dispatch product intent', (
+    tester,
+  ) async {
     final products = <ShopProduct>[];
 
-    await tester.pumpWidget(
-      buildSubject(onProductSelected: products.add),
-    );
+    await tester.pumpWidget(buildSubject(onProductSelected: products.add));
     await tester.pumpAndSettle();
 
     for (final entry in [

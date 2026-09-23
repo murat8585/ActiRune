@@ -2,15 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../core/widgets/artwork_interaction_surface.dart';
 
-enum ShopCategory {
-  featured,
-  hero,
-  lumi,
-  effects,
-  runeThemes,
-  crystals,
-  pro,
-}
+enum ShopCategory { featured, hero, lumi, effects, runeThemes, crystals, pro }
 
 enum ShopProduct {
   starTravelerCloak,
