@@ -4,29 +4,29 @@ Updated: 2026-09-23 (Europe/Istanbul)
 Branch: `integration/artwork-interactions-20260921`
 
 ## Last fully green Direct Validation
-- Run: 228 (successful re-run)
-- Checked commit: `1f21db2b9054e5f68406b271a36ea1f02eb74778`
+- Run: 232 (successful re-run)
+- Checked commit: `883fba4b3c5f8f0f0b32d03024422284d4f80b0f`
 - Result: SUCCESS
-- Scope: Mağaza / Shop Revision exact-art shell, canonical artwork presence + 941x1672 dimension guard, canonical formatting, analyzer, focused interaction suite, full Flutter suite and diff hygiene.
-- Focused suite: 155 tests PASS.
-- Full Flutter suite: 164 tests PASS.
+- Scope: Lunge deterministic detector/state-machine coverage plus all previously verified Phase-1 UI/gameplay shells.
+- Formatting: 104 files checked, 0 changed.
 - Analyzer: 0 issues.
-- Formatting: 101 files checked, 0 changed.
-- Temporary Shop capture/formatter workflows were removed after validation; those cleanup-only commits do not alter the validated runtime/test implementation.
+- Focused interaction suite: 155 tests PASS.
+- Full Flutter suite: 172 tests PASS.
+- Diff hygiene: PASS.
+- Lunge regression coverage includes left/right reps, shallow reps, low-confidence freeze, full return requirement, missing-landmark ghost-rep prevention, cooldown and locked lead-side behavior.
+- Temporary Lunge formatter workflow was removed after validation; cleanup-only commit does not alter the validated runtime/test implementation.
 
-## Completed verified screen
-- Screen: Mağaza / Shop Revision
-- Status: VERIFIED by Direct Validation Run 228 successful re-run.
-- Canonical artwork: `visual_authority/20260921/current/01_CANONICAL_FINAL/VIS_0221__P1_SHOP_REVISION_FINAL.png`.
-- Runtime shell: `lib/features/shop/shop_screen.dart`.
-- Regression test: `test/shop_screen_test.dart`.
-- The old placeholder Shop UI was replaced with the approved exact-art shell.
-- Shop categories, featured collection, product cards, Rune Themes, Crystal Packs and Pro actions are callback-only.
-- No price, SKU, billing result, entitlement, purchase completion, currency grant or pay-to-win effect was invented.
-- The Shop canonical artwork is registered in `pubspec.yaml` and enforced by Direct Validation presence and 941x1672 geometry checks.
-- No synthetic parent entry was added: current approved Home/Hero/Profile shells do not expose an authoritative visible Shop entry, so parent routing remains intentionally unwired until product/UI authority exists.
+## Newly completed verified system
+- System: Lunge movement verification
+- Runtime: `lib/features/pose/detector/lunge_detector.dart`
+- Shared verified event: `lib/features/pose/detector/verified_rep.dart`
+- Regression test: `test/lunge_detector_test.dart`
+- Detector thresholds remain configurable until labelled-video and physical-device corpus validation; they are not claimed as biomechanical truth.
+- No movement event is emitted without a valid bottom phase, return to standing and cooldown gate.
+- Missing/low-confidence pose data cannot fabricate a rep.
 
-## Previously verified immediately before this screen
+## Previously verified immediately before this system
+- Mağaza / Shop Revision: VERIFIED by Direct Validation Run 228 successful re-run.
 - Lumi: VERIFIED by Direct Validation Run 224.
 - Crafting / Rün Dövme: VERIFIED by Direct Validation Run 222 successful re-run.
 - Pro Form Koçu / Long-Term Form Analytics: VERIFIED by Direct Validation Run 221 successful re-run.
@@ -35,10 +35,11 @@ Branch: `integration/artwork-interactions-20260921`
 - Profile -> Achievements / Rozetler: VERIFIED by Direct Validation Run 218.
 
 ## Active work
-- Phase-1 Core Solo runtime/system audit.
-- Approved Phase-1 screen/artwork closure is complete for the currently authoritative canonical sets.
-- The next work item must come from a real Phase-1 functional gap, not from inventing another screen.
-- Audit movement infrastructure, Dynamic Difficulty, Recovery/Safety, loot/crafting ownership, Rewarded Ads ownership and other Phase-1 engine requirements against the Master Product Bible and current runtime.
+- Phase-1 Core Solo four-movement infrastructure.
+- Squat: detector + tests already present and green in full suite.
+- Lunge: detector + tests now green.
+- Next exact functional gap: Push-up / Şınav detector + deterministic regression coverage.
+- After Push-up: Plank hold verifier, then typed detector-to-BattleSession integration boundary.
 
 ## Completed / verified major areas
 - Canonical root navigation: Ana Dünya / Macera / Savaş / Kahraman / Profil
@@ -61,21 +62,25 @@ Branch: `integration/artwork-interactions-20260921`
 - Crafting / Rün Dövme
 - Lumi
 - Mağaza / Shop Revision
+- Squat movement verification
+- Lunge movement verification
 
 ## Phase-1 product authority boundary
-- Master Product Bible Phase 1 requires Core Solo: Home, Adventure, four-movement infrastructure, Camera Prep, Live Battle, Form Coach, quests, Player/Hero/Lumi/Mastery, loot/crafting, Recovery/Difficulty, Pro base layer and Rewarded Ads.
+- Master Product Bible Phase 1 requires Core Solo: Home, Adventure, Squat/Lunge/Push-up/Plank infrastructure, Camera Prep, Live Battle, Form Coach, quests, Player/Hero/Lumi/Mastery, loot/crafting, Recovery/Difficulty, Pro base layer and Rewarded Ads.
 - Phase 2 social features such as two-person Live Boss Raid and Ghost Duel must not be pulled forward merely because a placeholder social screen exists.
 - Do not invent gameplay effects, inventory mutations, engine state, rewards, routes, entitlement behavior, purchase behavior, pricing, trial state, personalization output, recovery state, analytics output or ad behavior where product/engine authority is absent.
 - Approved canonical artwork must be used as-is; do not generate replacement art in runtime implementation.
 - Meaningful gameplay progress remains movement-backed under the Master Product Bible.
+- Pose thresholds stay configuration until labelled-video corpus and real-device ML Kit validation are completed.
 
 ## Next exact actions
-1. Re-audit Phase-1 Core Solo requirements against the integration branch.
-2. Confirm which of Squat / Lunge / Push-up / Plank have real detector/state-machine coverage and tests.
-3. Inspect Dynamic Difficulty and Recovery/Safety ownership and persistence boundaries.
-4. Inspect loot/crafting and Rewarded Ads owners without fabricating missing backend/billing/ad state.
-5. Select the smallest evidence-backed Phase-1 functional gap as the next implementation batch.
-6. Require analyzer + focused tests + full Flutter suite + diff hygiene before calling that batch green.
+1. Implement Push-up / Şınav deterministic state machine using only available pose landmarks and configurable thresholds.
+2. Add positive/negative tests: full rep, shallow rep, body-line failure, confidence loss, missing landmarks, return-to-start and cooldown.
+3. Require formatter + analyzer + focused/full tests + diff hygiene before marking Push-up green.
+4. Implement Plank duration/form verifier with dropout-safe hold reset/freeze semantics.
+5. Add a typed movement-verification router so Squat/Lunge/Push-up/Plank feed BattleSession as already-verified events without UI fabricating movement.
+6. Re-audit Dynamic Difficulty, Recovery/Safety, loot/crafting ownership and Rewarded Ads ownership.
+7. Physical-device ML Kit corpus validation remains a mandatory release gate and cannot be replaced by synthetic unit tests.
 
 ## Permanent working rule
-After each meaningful green batch, update this file with latest green commit, Actions run, completed scope, blockers and exact next step. This file is the GitHub recovery checkpoint when a chat/tab ends.
+After each meaningful green batch, update this file with latest green run/commit, completed scope, blockers and exact next step. This file is the GitHub recovery checkpoint when a chat/tab ends.
