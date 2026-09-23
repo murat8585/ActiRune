@@ -4,31 +4,39 @@ Updated: 2026-09-23 (Europe/Istanbul)
 Branch: `integration/artwork-interactions-20260921`
 
 ## Last fully green Direct Validation
-- Run: 235
-- Checked commit: `8e4b559ac61a4997ffe037455e39630e0103da79`
+- Run: 236
+- Checked commit: `fafefde4bc6df54bc8b534a4d88a9098241665cf`
 - Result: SUCCESS
-- Scope: typed detector `VerifiedRep` -> BattleSession/Combat routing plus all previously verified Phase-1 UI/gameplay and four-movement systems.
+- Scope: REQUIRED Dynamic Difficulty directional policy + Recovery/Safety policy contracts, together with all previously verified Phase-1 UI/gameplay and movement systems.
 - Formatting: PASS.
 - Analyzer: PASS, 0 issues.
-- Focused interaction tests: PASS.
-- Full Flutter suite: PASS.
+- Focused stage adaptation/safety tests: PASS.
+- Full Flutter suite: PASS in stage and Direct Validation.
 - Diff hygiene: PASS.
-- Temporary movement-router stage workflow was removed after validation in cleanup-only commit `42ce7bf42387749cb97e7687b129b59ef6cb3395`; runtime/test behavior was not changed by cleanup.
+- Temporary adaptation/safety stage workflow was removed after validation in cleanup-only commit `a2b6a38b7077cfa62ce205acdc62fc51c3e81a09`; runtime/test behavior was not changed by cleanup.
 
-## Newly completed verified system
-- System: typed verified-movement routing.
-- Runtime: `lib/features/battle/verified_movement_router.dart`.
-- Regression test: `test/verified_movement_router_test.dart`.
-- Direct Validation now includes the movement-router regression test in the focused suite.
-- Exact supported detector identities are `squat`, `lunge`, `push_up`, and `plank`, mapped to the existing `VerifiedMovementType` values.
-- Unknown exercise names are rejected without BattleSession or CombatEngine mutation.
-- Non-live and paused sessions are rejected by the existing BattleSession owner and do not mutate combat.
-- A supported event identity is consumed at most once, preventing duplicate accepted reps and stale replay after an invalid battle phase.
-- A new timestamp remains a new verified event.
-- Existing `formScore` is passed to `CombatEngine.acceptVerifiedRep`; no new damage, combo, threshold, prepared-movement or balance values were introduced.
-- Architecture invariant remains: one accepted `VerifiedRep` creates at most one BattleSession verified action and one CombatEngine damage event.
+## Newly completed verified systems
+### Dynamic Difficulty
+- Runtime: `lib/features/adaptation/dynamic_difficulty_engine.dart`.
+- Regression test: `test/dynamic_difficulty_engine_test.dart`.
+- No product-unauthorized numeric thresholds, weights or persistence were invented.
+- The owner receives a caller-classified performance trend plus explicit movement-unsuitable/recovery signals.
+- Consistently comfortable performance produces gradual upward direction only.
+- Balanced performance holds.
+- Struggling performance decreases pressure and offers an alternative movement.
+- A movement marked unsuitable holds escalation and requests an alternative rather than manufacturing a medical conclusion.
+- Recovery/Safety recommendation overrides upward pressure and decreases repetition/duration, encounter, boss-phase and task-density pressure.
 
-## Verified four-movement infrastructure
+### Recovery / Safety
+- Runtime: `lib/features/adaptation/recovery_safety_engine.dart`.
+- Regression test: `test/recovery_safety_engine_test.dart`.
+- Two consecutive intense lower-body days trigger the Bible-authorized Recovery Day route.
+- User-reported pain/unsuitability or a movement marked unsuitable requests a lighter alternative; no diagnosis is made.
+- Recovery Day is streak-eligible as required by product authority.
+- Unsafe speed or degraded form makes performance reward ineligible, preventing score incentives for unsafe behavior.
+- Recovery and alternative routing are policy outputs only; no medical inference, backend state or task persistence was fabricated.
+
+## Verified movement infrastructure
 - Squat: green.
 - Lunge: VERIFIED by Direct Validation Run 232 successful re-run.
 - Push-up: VERIFIED by Direct Validation Run 233.
@@ -45,14 +53,11 @@ Branch: `integration/artwork-interactions-20260921`
 - Profile -> Achievements / Rozetler: VERIFIED by Direct Validation Run 218.
 
 ## Active work
-- Phase-1 Core Solo / Dynamic Difficulty + Recovery/Safety authority and runtime gap closure.
-- Product Bible marks both systems REQUIRED.
-- Dynamic Difficulty inputs are Player Level, recent 7/28-day movement/task performance, form scores and movement-specific Movement Mastery, task completion/failure patterns, preferred duration/goal/user capacity, and movements the user struggles with or marks unsuitable.
-- Dynamic Difficulty outputs are repetition/duration, encounter difficulty, boss phase, task density and alternative movement; direction is gradual increase when consistently easy and decrease/alternative/recovery when struggling.
-- Recovery/Safety must distribute tasks using muscle-group and movement history, allow lighter alternatives/recovery routes after intense lower-body work, allow easier movement variants, and offer an alternative when the user reports pain/unsuitability without diagnosing.
-- Recovery Day must count as a valuable active day without breaking streak.
-- Unsafe speed or form degradation must not be rewarded for a higher score.
-- Current repository audit found no dedicated Dynamic Difficulty or Recovery runtime owner by path, so implementation must begin as pure typed policy/decision contracts and deterministic owner logic rather than fabricating persistence, medical inference, thresholds or backend state.
+- Phase-1 Core Solo / Loot-Crafting ownership + Rewarded Ads ownership audit.
+- The Crafting screen is already exact-art and callback-only; it intentionally does not mutate inventory or spend currency without an authoritative owner.
+- Rewarded retry state exists inside the battle session flow, but real ad-service ownership and Rune Shrine daily/cooldown policy must be separated from UI callbacks and verified before adding behavior.
+- Product authority: Rune Shrine rewarded ad = once per 4 hours, max 3/day; PvE defeat = at most once per battle for a 25–30% HP/checkpoint continuation; no Ranked PvP revive ad; no ads during Camera/Live Battle/Form Coach.
+- Do not invent ad SDK success, inventory grant, loot tables, recipe costs, SKU state or server persistence.
 
 ## Completed / verified major areas
 - Canonical root navigation: Ana Dünya / Macera / Savaş / Kahraman / Profil
@@ -77,6 +82,8 @@ Branch: `integration/artwork-interactions-20260921`
 - Mağaza / Shop Revision
 - Squat / Lunge / Push-up / Plank deterministic movement verification
 - Typed VerifiedRep -> BattleSession/Combat routing
+- Dynamic Difficulty directional policy
+- Recovery/Safety policy
 
 ## Phase-1 product authority boundary
 - Master Product Bible Phase 1 requires Core Solo: Home, Adventure, Squat/Lunge/Push-up/Plank infrastructure, Camera Prep, Live Battle, Form Coach, quests, Player/Hero/Lumi/Mastery, loot/crafting, Recovery/Difficulty, Pro base layer and Rewarded Ads.
@@ -85,11 +92,11 @@ Branch: `integration/artwork-interactions-20260921`
 - Pose thresholds stay configuration until labelled-video corpus and real-device ML Kit validation are completed.
 
 ## Next exact actions
-1. Implement evidence-backed Dynamic Difficulty and Recovery/Safety typed policy owners without inventing numeric thresholds or persistence.
-2. Prove recovery overrides upward difficulty pressure when explicit pain/unsuitability or recovery routing requires it.
-3. Prove Recovery Day remains streak-eligible and unsafe form/speed cannot be rewarded.
+1. Audit current inventory/crafting owners and determine whether a pure transaction contract can be added without inventing recipes/costs/loot tables.
+2. Audit Rewarded Ads state and split eligibility/policy from external ad SDK success.
+3. Implement only product-authorized cooldown/count/battle-context rules and require explicit ad-success callback before any reward/continue mutation.
 4. Require formatter + analyzer + focused/full tests + diff hygiene before marking the batch green.
-5. Re-audit loot/crafting ownership and Rewarded Ads ownership after Recovery/Difficulty is green.
+5. Re-audit remaining Phase-1 gaps after Loot/Crafting + Rewarded Ads.
 6. Physical-device ML Kit labelled-corpus validation remains a mandatory release gate and cannot be replaced by synthetic unit tests.
 
 ## Permanent working rule
