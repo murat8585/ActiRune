@@ -1,5 +1,6 @@
 import '../provider/pose_models.dart';
 import 'geometry.dart';
+import 'pose_rep_detector.dart';
 import 'verified_rep.dart';
 
 /// Deterministic plank hold verifier.
@@ -10,7 +11,7 @@ import 'verified_rep.dart';
 ///
 /// Missing or low-confidence landmarks freeze elapsed progress and never count
 /// hidden time. An observed body-line failure resets the current hold.
-class PlankDetector {
+class PlankDetector implements PoseRepDetector {
   PlankDetector({
     required this.requiredHoldDuration,
     this.minimumConfidence = .65,
@@ -28,6 +29,7 @@ class PlankDetector {
   Duration get accumulatedValidDuration => _accumulatedValidDuration;
   bool get completedCurrentHold => _emittedCurrentHold;
 
+  @override
   VerifiedRep? process(PoseFrame frame) {
     final points = _bodySide(frame);
     if (points == null) {
