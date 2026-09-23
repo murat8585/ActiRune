@@ -1,0 +1,70 @@
+name: ActiRune Loot Rewarded Policy Stage
+
+on:
+  push:
+    branches:
+      - integration/loot-rewarded-policy-stage-20260923
+    paths:
+      - '.github/workflows/actirune-loot-rewarded-policy-stage.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  validate-and-format:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout loot rewarded stage
+        uses: actions/checkout@v4
+        with:
+          ref: integration/loot-rewarded-policy-stage-20260923
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Resolve dependencies
+        run: flutter pub get
+
+      - name: Apply canonical Dart format
+        run: >-
+          dart format
+          lib/features/economy/loot_crafting_policy.dart
+          lib/features/monetization/rewarded_ad_policy.dart
+          test/loot_crafting_policy_test.dart
+          test/rewarded_ad_policy_test.dart
+
+      - name: Analyze
+        run: flutter analyze
+
+      - name: Focused loot rewarded tests
+        run: >-
+          flutter test --no-pub
+          test/loot_crafting_policy_test.dart
+          test/rewarded_ad_policy_test.dart
+          test/crafting_screen_test.dart
+          test/rune_shrine_result_test.dart
+          test/battle_session_engine_test.dart
+
+      - name: Full Flutter tests
+        run: flutter test --no-pub
+
+      - name: Diff hygiene
+        run: git diff --check
+
+      - name: Commit canonical formatting
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- lib/features/economy lib/features/monetization test/loot_crafting_policy_test.dart test/rewarded_ad_policy_test.dart; then
+            echo 'No formatting change required.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add lib/features/economy lib/features/monetization test/loot_crafting_policy_test.dart test/rewarded_ad_policy_test.dart
+          git commit -m 'Apply canonical loot rewarded policy formatting'
+          git push origin HEAD:integration/loot-rewarded-policy-stage-20260923
