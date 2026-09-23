@@ -183,7 +183,7 @@ class LumiScreen extends StatelessWidget {
             _hotspot(
               id: 'lumi.customize',
               semanticLabel: 'Lumi Görünümünü Özelleştir',
-              normalizedRect: const Rect.fromLTWH(0.710, 0.903, 0.225, 0.045),
+              normalizedRect: const Rect.fromLTWH(0.710, 0.882, 0.225, 0.035),
               callback: onCustomize,
             ),
             _rootHotspot(
