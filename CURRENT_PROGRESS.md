@@ -4,18 +4,29 @@ Updated: 2026-09-23 (Europe/Istanbul)
 Branch: `integration/artwork-interactions-20260921`
 
 ## Last fully green Direct Validation
-- Run: 241
-- Checked commit: `58686e9b5337de7a82885b2391911946e2c99cd4`
+- Run: 242
+- Checked commit: `f3379da95326632c9f7ad848918fd42f9e5416c7`
 - Result: SUCCESS
-- Scope: machine-readable physical-device ML Kit evidence model/validator plus all previously verified Phase-1 UI/gameplay, movement, Dynamic Difficulty, Recovery/Safety, Loot/Crafting, Rewarded Ads policy, Analytics/Balance, Production Release Guard and provider-neutral billing/ad gateway systems.
+- Scope: fail-closed Phase-1 release-readiness aggregator plus machine-readable physical-device ML Kit evidence infrastructure and all previously verified Phase-1 UI/gameplay, movement, Dynamic Difficulty, Recovery/Safety, Loot/Crafting, Rewarded Ads policy, Analytics/Balance, Production Release Guard and provider-neutral billing/ad gateway systems.
 - Formatting: PASS.
 - Analyzer: PASS, 0 issues.
 - Existing Direct Validation focused interaction suite: PASS.
 - Full Flutter suite: PASS.
 - Diff hygiene: PASS.
-- Temporary physical-evidence staging workflow was removed after its dedicated green validation; integration commit `58686e9b5337de7a82885b2391911946e2c99cd4` contains only the validated runtime/tool/test/evidence-format changes from that batch.
+- Temporary release-readiness staging workflow was removed after dedicated green validation; integration commit `f3379da95326632c9f7ad848918fd42f9e5416c7` contains the validated aggregator/test batch without the temporary workflow.
 
 ## Newly completed verified system
+### Phase-1 release-readiness aggregator
+- Runtime: `lib/core/release/phase1_release_readiness.dart`.
+- Regression tests: `test/phase1_release_readiness_test.dart`.
+- Production application identity/signing, provider authority/configuration and physical-device evidence/human review are separate release gates.
+- Placeholder/missing production identity or signing remains blocking through `ProductionReleaseGuard`.
+- Provider state is explicitly `undecided`, `lockedNotConfigured` or `configured`; an undecided or incomplete provider state cannot produce aggregate green.
+- Missing or structurally incomplete physical evidence cannot produce aggregate green.
+- Any physical record marked FAIL or NEEDS_THRESHOLD_REVIEW blocks aggregate green.
+- A claimed physical final PASS is rejected unless the evidence is structurally ready and has no outstanding failed/threshold-review records.
+- `allDeclaredGatesSatisfied` means only the gates represented by supplied verified evidence are satisfied; it explicitly does not replace store review, credential/signing provenance, provider-console verification or other external evidence.
+
 ### Physical-device ML Kit evidence infrastructure
 - Runtime evidence model: `lib/features/pose/validation/physical_validation_evidence.dart`.
 - Repository validator CLI: `tool/validate_physical_mlkit_evidence.dart`.
@@ -97,6 +108,7 @@ Branch: `integration/artwork-interactions-20260921`
 - Core verified Flutter/gameplay scope: IMPLEMENTED within repository scope.
 - Four movement state machines + VerifiedRep routing: IMPLEMENTED, but physical-device proof still required.
 - Physical evidence schema/validator: IMPLEMENTED and VERIFIED; real corpus remains `BLOCKED_EXTERNAL_PROOF`.
+- Aggregate release gate: IMPLEMENTED and VERIFIED; current real-world state remains blocked by identity/provider/external-proof inputs.
 - Dynamic Difficulty: IMPLEMENTED deterministic policy owner.
 - Recovery/Safety: IMPLEMENTED deterministic policy owner.
 - Loot/Crafting: ADAPTER_ONLY beyond local validation; no real persistence/economy backend owner.
@@ -140,6 +152,8 @@ Branch: `integration/artwork-interactions-20260921`
 - Analytics/Balance typed contract: VERIFIED by Direct Validation Run 238.
 - Production Release Guard: VERIFIED by Direct Validation Run 239.
 - Pro Billing + Rewarded Ad provider-neutral gateways: VERIFIED by Direct Validation Run 240.
+- Physical-device evidence infrastructure: VERIFIED by Direct Validation Run 241.
+- Phase-1 release-readiness aggregator: VERIFIED by Direct Validation Run 242.
 - Mağaza / Shop Revision: VERIFIED by Direct Validation Run 228 successful re-run.
 - Lumi: VERIFIED by Direct Validation Run 224.
 - Crafting / Rün Dövme exact-art shell: VERIFIED by Direct Validation Run 222 successful re-run.
@@ -179,6 +193,7 @@ Branch: `integration/artwork-interactions-20260921`
 - Provider-neutral Pro billing/entitlement contract
 - Provider-neutral Rewarded Ad execution contract/coordinator
 - Physical-device evidence model/validator with privacy-safe repository boundary
+- Fail-closed aggregate Phase-1 release-readiness report
 
 ## Product authority / safety boundary
 - Master Product Bible Phase 1 requires Core Solo: Home, Adventure, Squat/Lunge/Push-up/Plank infrastructure, Camera Prep, Live Battle, Form Coach, quests, Player/Hero/Lumi/Mastery, loot/crafting, Recovery/Difficulty, Pro base layer and Rewarded Ads.
@@ -195,9 +210,10 @@ Branch: `integration/artwork-interactions-20260921`
 - Production release identity/signing mistakes are automatically detectable.
 - Billing and rewarded-ad providers can be connected behind tested interfaces without allowing provider SDK behavior to become product authority.
 - Physical evidence can now be recorded and mechanically checked without allowing automation to manufacture a release PASS.
+- Aggregate readiness cannot become green while provider authority is undecided or physical review/evidence is unresolved.
 
 ## Next exact actions
-1. Build a single fail-closed release-readiness aggregator that combines existing production identity/signing status with provider-configuration status and physical-evidence readiness without turning external proof into a fake PASS.
+1. Define a provider-authority lock record/template and fail-closed validator so provider names and final Android/iOS identities can be made authoritative later without committing credentials or allowing placeholder ids.
 2. Keep final Android/iOS identifiers as an external owner decision; do not invent or reuse prototype/other-product ids.
 3. Once identifiers/provider projects are authoritative, bootstrap Firebase development configuration first behind provider-neutral repositories and App Check, without production deployment.
 4. Add RevenueCat behind `ProBillingGateway`; store products/pricing/entitlements must come from real store/provider configuration.
