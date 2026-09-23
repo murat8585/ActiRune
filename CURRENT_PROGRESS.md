@@ -4,32 +4,43 @@ Updated: 2026-09-23 (Europe/Istanbul)
 Branch: `integration/artwork-interactions-20260921`
 
 ## Last fully green Direct Validation
-- Run: 238
-- Checked commit: `13cc2b4915d0cfc6f2f933f79bbca1431d0fe97b`
+- Run: 239
+- Checked commit: `ff36338aa8bad8e7d04eb920a493484a92d4fb28`
 - Result: SUCCESS
-- Scope: provider-neutral Analytics/Balance event contract, together with all previously verified Phase-1 UI/gameplay, movement, Dynamic Difficulty, Recovery/Safety, Loot/Crafting and Rewarded Ads policy systems.
+- Scope: fail-closed production release identity/signing guard, together with all previously verified Phase-1 UI/gameplay, movement, Dynamic Difficulty, Recovery/Safety, Loot/Crafting, Rewarded Ads and provider-neutral Analytics/Balance systems.
 - Formatting: PASS.
 - Analyzer: PASS, 0 issues.
-- Analytics stage focused tests: PASS.
 - Existing Direct Validation focused interaction suite: PASS.
-- Full Flutter suite: PASS in stage and Direct Validation.
+- Full Flutter suite: PASS.
 - Diff hygiene: PASS.
-- Temporary analytics stage workflow was removed after validation in cleanup-only commit `a1ecb59915cf4d2b306035fc4aab3028e647bcdc`; runtime/test behavior was not changed by cleanup.
+- Temporary release-guard staging workflow was removed after validation in cleanup-only commit `9d6e6099751ac79d1048bb928dfc2d227a2c02c4`; runtime/test behavior was not changed by cleanup.
 
 ## Newly completed verified system
-### Analytics / Balance provider-neutral contract
+### Production Release Guard
+- Runtime guard: `lib/core/release/production_release_guard.dart`.
+- Regression tests: `test/production_release_guard_test.dart`.
+- Repository CLI: `tool/check_production_release_readiness.dart`.
+- Manual release workflow: `.github/workflows/actirune-production-readiness.yml`.
+- Current platform files are parsed directly instead of trusting a handwritten readiness flag.
+- Android application id must exist and must not use the `com.example.*` placeholder namespace.
+- Android release signing must be explicitly configured and must not use debug signing.
+- iOS Runner bundle id must exist and must not use the `com.example.*` placeholder namespace; RunnerTests ids are ignored when selecting the app id.
+- iOS `DEVELOPMENT_TEAM` must exist.
+- Missing/malformed authority fails closed.
+- The manual Production Readiness workflow intentionally enforces the guard only when invoked; normal development validation is not forced red merely because external production credentials are not available yet.
+
+## Analytics / Balance provider-neutral contract
 - Runtime: `lib/core/analytics/analytics_event.dart`.
 - Regression test: `test/analytics_event_contract_test.dart`.
 - Required typed families: onboarding, D1/D7/D30 retention, daily/weekly quest completion/reroll/abandon, movement verified/invalid/form score, boss success/retry/rewarded retry, world progression/region exit, economy craft sink/loot source, Rune Shrine impression/opt-in/completion, Pro paywall/trial/paid/renewal/churn and social invite/room/raid completion.
 - Movement analytics reuses the existing `VerifiedMovementType`; economy material events reuse the locked `MaterialFamily` authority.
 - `AnalyticsSink` is an interface only. No analytics provider, network transport, persistence, account identity, backend endpoint, SDK success or production telemetry delivery was fabricated.
 
-## Release-gate audit now recorded
+## Release-gate audit recorded
 - Matrix: `docs/release/PHASE1_RELEASE_GATE_MATRIX_20260923.md`.
 - Physical ML Kit gate: `docs/release/PHYSICAL_DEVICE_MLKIT_VALIDATION_GATE.md`.
 - Release matrix commit: `e514eed8dae43cdfbf6a2c04f46bd4161854c7c1`.
 - Physical-device validation protocol commit: `d45a74115ef94e91965788e76511faaca57750b5`.
-- These are documentation-only changes after the last fully green runtime commit; they do not alter tested runtime behavior.
 
 ### Current release-service classifications
 - Core verified Flutter/gameplay scope: IMPLEMENTED within repository scope.
@@ -42,8 +53,8 @@ Branch: `integration/artwork-interactions-20260921`
 - Analytics/Balance: ADAPTER_ONLY; typed event contract exists, real provider/transport does not.
 - Backend/cloud persistence: ABSENT in current repository evidence.
 - Health Connect/HealthKit: ABSENT in current repository evidence.
-- Android production id/signing: ABSENT/not production-ready; app id remains `com.example.actirune` and release currently uses debug signing.
-- iOS production id/signing: ABSENT/not production-ready; bundle id remains `com.example.actirune` and no `DEVELOPMENT_TEAM` value is present in repository evidence.
+- Android production id/signing: BLOCKED and now automatically detectable; app id remains `com.example.actirune` and release currently uses debug signing.
+- iOS production id/signing: BLOCKED and now automatically detectable; bundle id remains `com.example.actirune` and no `DEVELOPMENT_TEAM` value is present in repository evidence.
 - ML Kit physical-device release proof: BLOCKED_EXTERNAL_PROOF until real-human labelled physical-device corpus is completed and reviewed.
 
 ## Recently verified policy systems
@@ -73,6 +84,8 @@ Branch: `integration/artwork-interactions-20260921`
 ## Previously verified product/UI systems
 - Dynamic Difficulty + Recovery/Safety: VERIFIED by Direct Validation Run 236.
 - Loot/Crafting + Rewarded Ads policy: VERIFIED by Direct Validation Run 237.
+- Analytics/Balance typed contract: VERIFIED by Direct Validation Run 238.
+- Production Release Guard: VERIFIED by Direct Validation Run 239.
 - Mağaza / Shop Revision: VERIFIED by Direct Validation Run 228 successful re-run.
 - Lumi: VERIFIED by Direct Validation Run 224.
 - Crafting / Rün Dövme exact-art shell: VERIFIED by Direct Validation Run 222 successful re-run.
@@ -108,6 +121,7 @@ Branch: `integration/artwork-interactions-20260921`
 - Recovery/Safety policy
 - Rune Shrine + PvE Rewarded Ads eligibility/completion policy
 - Provider-neutral required Analytics/Balance event contract
+- Fail-closed production application-id/bundle-id/signing readiness guard
 
 ## Product authority / safety boundary
 - Master Product Bible Phase 1 requires Core Solo: Home, Adventure, Squat/Lunge/Push-up/Plank infrastructure, Camera Prep, Live Battle, Form Coach, quests, Player/Hero/Lumi/Mastery, loot/crafting, Recovery/Difficulty, Pro base layer and Rewarded Ads.
@@ -118,18 +132,19 @@ Branch: `integration/artwork-interactions-20260921`
 - Pose thresholds stay configuration until labelled-video corpus and real-device ML Kit validation are completed.
 
 ## Current hard boundary
-- The remaining blockers are no longer ordinary local UI/state-machine gaps. They require production-provider decisions/accounts/configuration, signing identity or real physical devices/evidence.
+- Remaining blockers require production-provider decisions/accounts/configuration, signing identity or real physical devices/evidence.
 - No provider is currently authoritative in the product Bible for backend, billing, ads, health or analytics delivery.
 - Production credentials/signing secrets must not be invented or committed.
 - Real physical-device ML Kit validation cannot be truthfully replaced by CI or synthetic unit tests.
+- Production release identity/signing mistakes are now automatically detectable rather than being a documentation-only warning.
 
-## Next exact actions when external authority/evidence is available
-1. Select/confirm authoritative backend, billing, ad and analytics providers before adding provider SDKs.
-2. Confirm final Android application id and iOS bundle id before production signing work.
+## Next exact actions
+1. Research and rank authoritative backend, billing, rewarded-ad and analytics provider options for the Flutter/iOS/Android ActiRune stack using current official documentation and repository constraints; record the decision evidence without installing an SDK prematurely.
+2. Confirm final Android application id and iOS bundle id before changing store identities.
 3. Configure production signing through protected secret management, never repository plaintext.
-4. Integrate Health Connect/HealthKit only if it remains in the approved release scope and permission/consent requirements are fixed.
+4. Integrate Health Connect/HealthKit only if it remains in approved release scope and permission/consent requirements are fixed.
 5. Execute the labelled real-human physical-device protocol in `docs/release/PHYSICAL_DEVICE_MLKIT_VALIDATION_GATE.md` and record results against an exact release commit/build.
-6. Re-run full Direct Validation after any runtime/provider integration and do not call the build production-ready until all applicable release gates are proven.
+6. After provider authority and credentials exist, integrate one provider at a time behind the existing policy/contracts and re-run full Direct Validation after each meaningful batch.
 
 ## Permanent working rule
 After each meaningful green batch, update this file with latest green run/commit, completed scope, blockers and exact next step. This file is the GitHub recovery checkpoint when a chat/tab ends.
