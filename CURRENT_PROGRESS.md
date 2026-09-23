@@ -4,38 +4,37 @@ Updated: 2026-09-23 (Europe/Istanbul)
 Branch: `integration/artwork-interactions-20260921`
 
 ## Last fully green Direct Validation
-- Run: 220 (successful re-run attempt)
+- Run: 221 (successful re-run attempt)
 - Result: SUCCESS
-- Scope: Kişisel Günlük Macera / Personal Daily Adventure exact-art shell, canonical asset guard/dimensions, canonical formatting, analyzer, focused interaction tests, full Flutter suite and diff hygiene.
-- Canonical formatter commit: `6e11dbf008eacd2b37b8781c8c4b58c7f6fd576a`.
+- Scope: Pro Form Koçu / Long-Term Form Analytics exact-art shell, canonical asset guard/dimensions, canonical formatting, analyzer, focused interaction tests, full Flutter suite and diff hygiene.
+- Canonical formatter commit: `d5fff830c1fa31be4601127d14ed2dcf86827a59`.
 
 ## Completed verified screen
-- Screen: Kişisel Günlük Macera / Personal Daily Adventure
-- Status: VERIFIED by Direct Validation Run 220 successful re-run.
-- Canonical artwork: `visual_authority/20260921/current/01_CANONICAL_FINAL/VIS_0226__P1_PERSONAL_DAILY_ADVENTURE_FINAL.png`.
-- Runtime shell: `lib/features/adventure/personal_daily_adventure_screen.dart`.
-- Regression test: `test/personal_daily_adventure_screen_test.dart`.
-- The screen preserves the canonical 941x1672 artwork and exposes only owner callbacks for duration selection, start, plan view, top actions and root navigation.
-- No personalized targets, recovery state, encounter/reward values or battle ownership were invented because the current runtime does not expose an authoritative personalization owner.
-- Initial Run 220 failed only at canonical formatting of `test/personal_daily_adventure_screen_test.dart`; formatter workflow committed exact Dart output as `6e11dbf008eacd2b37b8781c8c4b58c7f6fd576a`, after which the re-run passed every validation gate.
+- Screen: Pro Form Koçu / Long-Term Form Analytics
+- Status: VERIFIED by Direct Validation Run 221 successful re-run.
+- Canonical artwork: `visual_authority/20260921/current/01_CANONICAL_FINAL/VIS_0219__P1_PRO_FORM_COACH_FINAL.png`.
+- Runtime shell: `lib/features/profile/pro_form_coach_screen.dart`.
+- Regression test: `test/pro_form_coach_screen_test.dart`.
+- The existing Free real-time `lib/features/battle/form_coach_screen.dart` was preserved and not repurposed.
+- The Pro screen exposes movement and 7/30-day range selections only through callbacks; no analytics values, medical diagnosis, entitlement state or purchase behavior were fabricated.
+- Initial Run 221 failed only at canonical formatting of `test/pro_form_coach_screen_test.dart`; formatter workflow committed exact Dart output, after which the re-run passed every validation gate.
 
 ## Previously verified immediately before this screen
+- Kişisel Günlük Macera / Personal Daily Adventure: VERIFIED by Direct Validation Run 220 successful re-run.
 - Pro / Paywall: VERIFIED by Direct Validation Run 219 successful re-run.
-- Canonical artwork: `visual_authority/20260921/current/01_CANONICAL_FINAL/VIS_0216__P1_PRO_PAYWALL_FINAL.png`.
-- Runtime shell: `lib/features/shop/pro_paywall_screen.dart`.
-- No billing, trial, entitlement, pricing or purchase-success state was invented.
+- Profile -> Achievements / Rozetler: VERIFIED by Direct Validation Run 218.
 
 ## Active screen
-- Screen: Pro Form Koçu / Long-Term Form Analytics
-- Canonical artwork exists: `visual_authority/20260921/current/01_CANONICAL_FINAL/VIS_0219__P1_PRO_FORM_COACH_FINAL.png`.
-- Existing `lib/features/battle/form_coach_screen.dart` is the basic real-time Free form-feedback surface and must not be replaced or repurposed.
-- Product rule: basic real-time form feedback remains Free; this new screen is the Pro long-term analysis layer.
-- Before wiring routes or analytics state, inspect current product/runtime ownership and canonical artwork; do not synthesize analytics data or entitlement behavior.
+- Screen: Crafting / Rün Dövme
+- Repository audit confirms no `crafting_screen.dart` runtime implementation currently exists.
+- Approved final artwork exists: `visual_authority/20260921/final_p1/04_P1_CRAFTING_FINAL.png`.
+- Product rule: crafting must show recipe/result, required materials owned/needed, Gold cost, upgrade benefit, `ÜRET` action, and missing-material source explanation, while feeling like fantasy rune-forging rather than a database form.
+- Before wiring any mutation or route, inspect the canonical artwork and current Hero/runtime owner. Do not invent crafting inventory mutations, costs, rewards, drop sources or navigation when no authoritative owner exists.
 
 ## Completed / verified major areas
 - Canonical root navigation: Ana Dünya / Macera / Savaş / Kahraman / Profil
 - Home, Adventure, Hero and Profile artwork shells
-- Battle Prep, Camera Prep, Live Battle, basic Form Coach, Victory, Defeat
+- Battle Prep, Camera Prep, Live Battle, Free real-time Form Coach, Victory, Defeat
 - BattleFlowHost and canonical BattleScreen adapter
 - Rewarded retry state 3/3 -> 2/3 -> 1/3 -> 0/3
 - Events + Event Detail popup
@@ -49,18 +48,24 @@ Branch: `integration/artwork-interactions-20260921`
 - Profile -> Achievements / Rozetler
 - Pro / Paywall
 - Kişisel Günlük Macera / Personal Daily Adventure
+- Pro Form Koçu / Long-Term Form Analytics
+
+## Known remaining Phase-1 runtime gaps from current repository audit
+- Crafting / Rün Dövme: canonical final exists, runtime screen missing.
+- Lumi: canonical final exists, runtime screen missing.
+- Mağaza / Shop Revision: canonical final exists, current `shop_screen.dart` is still a placeholder and not the approved exact-art implementation.
 
 ## Product/evidence boundary
-- Do not invent gameplay effects, engine state, rewards, routes, entitlement behavior, purchase behavior, pricing, trial state, personalization output, recovery state, analytics output or ad behavior where product/engine authority is absent.
+- Do not invent gameplay effects, inventory mutations, engine state, rewards, routes, entitlement behavior, purchase behavior, pricing, trial state, personalization output, recovery state, analytics output or ad behavior where product/engine authority is absent.
 - Approved canonical artwork must be used as-is; do not generate replacement art in runtime implementation.
 - Meaningful gameplay progress remains movement-backed under the Master Product Bible.
 
 ## Next exact actions
-1. Inspect Pro Form Koçu canonical artwork and product/runtime authority.
-2. Implement the exact-art long-term analytics shell without modifying the basic real-time Free Form Coach.
-3. Add strict canonical asset/dimension guards and focused regression coverage.
+1. Inspect the Crafting canonical artwork and current Hero/runtime ownership.
+2. Implement the exact-art Crafting shell with callback-only actions unless a real crafting owner is evidenced.
+3. Add canonical asset/dimension guards and focused regression coverage.
 4. Run the full Direct Validation chain and make only evidence-backed corrections.
-5. After green, record the exact result here and audit the next genuinely unimplemented Phase-1 canonical screen instead of blindly following already-completed queue items.
+5. After green, record the exact result here, then continue to the next confirmed missing Phase-1 runtime screen.
 
 ## Permanent working rule
 After each meaningful green batch, update this file with latest green run/commit, completed scope, blockers and exact next step. This file is the GitHub recovery checkpoint when a chat/tab ends.
