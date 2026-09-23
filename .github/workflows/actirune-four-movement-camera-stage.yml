@@ -13,7 +13,16 @@ on:
       - 'lib/features/pose/detector/push_up_detector.dart'
       - 'lib/features/pose/detector/plank_detector.dart'
       - 'lib/features/pose/provider/pose_camera_controller.dart'
+      - 'lib/features/battle/battle_pose_detector_factory.dart'
+      - 'lib/features/battle/battle_session_engine.dart'
+      - 'lib/features/battle/battle_screen.dart'
+      - 'lib/features/battle/battle_flow_host.dart'
+      - 'lib/features/battle/live_battle_screen.dart'
+      - 'lib/features/battle/verified_movement_router.dart'
       - 'test/pose_camera_controller_dispatch_test.dart'
+      - 'test/battle_pose_detector_factory_test.dart'
+      - 'test/battle_session_engine_test.dart'
+      - 'test/verified_movement_router_test.dart'
 
 permissions:
   contents: write
@@ -47,21 +56,34 @@ jobs:
           lib/features/pose/detector/push_up_detector.dart
           lib/features/pose/detector/plank_detector.dart
           lib/features/pose/provider/pose_camera_controller.dart
+          lib/features/battle/battle_pose_detector_factory.dart
+          lib/features/battle/battle_session_engine.dart
+          lib/features/battle/battle_screen.dart
+          lib/features/battle/battle_flow_host.dart
+          lib/features/battle/live_battle_screen.dart
+          lib/features/battle/verified_movement_router.dart
           test/pose_camera_controller_dispatch_test.dart
+          test/battle_pose_detector_factory_test.dart
+          test/battle_session_engine_test.dart
+          test/verified_movement_router_test.dart
 
       - name: Analyze
         run: flutter analyze
 
-      - name: Focused camera and detector tests
+      - name: Focused camera and battle movement tests
         run: >-
           flutter test --no-pub
           test/pose_camera_controller_dispatch_test.dart
+          test/battle_pose_detector_factory_test.dart
           test/squat_detector_test.dart
           test/lunge_detector_test.dart
           test/push_up_detector_test.dart
           test/plank_detector_test.dart
           test/mlkit_pose_provider_test.dart
+          test/battle_session_engine_test.dart
           test/verified_movement_router_test.dart
+          test/battle_flow_host_test.dart
+          test/battle_screen_adapter_test.dart
 
       - name: Full Flutter tests
         run: flutter test --no-pub
@@ -81,7 +103,16 @@ jobs:
             lib/features/pose/detector/push_up_detector.dart
             lib/features/pose/detector/plank_detector.dart
             lib/features/pose/provider/pose_camera_controller.dart
+            lib/features/battle/battle_pose_detector_factory.dart
+            lib/features/battle/battle_session_engine.dart
+            lib/features/battle/battle_screen.dart
+            lib/features/battle/battle_flow_host.dart
+            lib/features/battle/live_battle_screen.dart
+            lib/features/battle/verified_movement_router.dart
             test/pose_camera_controller_dispatch_test.dart
+            test/battle_pose_detector_factory_test.dart
+            test/battle_session_engine_test.dart
+            test/verified_movement_router_test.dart
           )
           if git diff --quiet -- "${paths[@]}"; then
             echo 'No formatting change required.'
