@@ -182,6 +182,7 @@ jobs:
           test/lumi_screen_test.dart
           test/combat_engine_test.dart
           test/battle_session_engine_test.dart
+          test/verified_movement_router_test.dart
           test/battle_prep_interaction_test.dart
           test/camera_prep_interaction_test.dart
           test/artwork_interaction_test.dart
