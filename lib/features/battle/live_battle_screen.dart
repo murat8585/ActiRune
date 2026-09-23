@@ -3,10 +3,12 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import '../../core/widgets/artwork_interaction_surface.dart';
-import '../pose/detector/squat_detector.dart';
+import '../pose/detector/verified_rep.dart';
 import '../pose/provider/pose_camera_controller.dart';
+import 'battle_pose_detector_factory.dart';
 import 'battle_session_engine.dart';
 import 'combat/combat_engine.dart';
+import 'verified_movement_router.dart';
 
 class LiveBattleScreen extends StatefulWidget {
   const LiveBattleScreen({
@@ -15,6 +17,7 @@ class LiveBattleScreen extends StatefulWidget {
     required this.onOpenFormCoach,
     required this.onVictory,
     this.cameraEnabled = true,
+    this.requiredPlankHoldDuration,
   });
 
   static const artworkAsset =
@@ -27,6 +30,10 @@ class LiveBattleScreen extends StatefulWidget {
   final VoidCallback onVictory;
   final bool cameraEnabled;
 
+  /// Authoritative encounter/task hold target for plank. A plank encounter
+  /// remains camera-fail-closed when this value is absent or non-positive.
+  final Duration? requiredPlankHoldDuration;
+
   @override
   State<LiveBattleScreen> createState() => _LiveBattleScreenState();
 }
@@ -34,6 +41,7 @@ class LiveBattleScreen extends StatefulWidget {
 class _LiveBattleScreenState extends State<LiveBattleScreen>
     with WidgetsBindingObserver {
   late final CombatEngine _combat;
+  late final VerifiedMovementRouter _movementRouter;
   PoseCameraController? _poseCamera;
   bool _cameraStartPending = false;
 
@@ -42,11 +50,15 @@ class _LiveBattleScreenState extends State<LiveBattleScreen>
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     _combat = CombatEngine();
+    _movementRouter = VerifiedMovementRouter(
+      session: widget.session,
+      combat: _combat,
+    );
     if (widget.session.snapshot.phase != BattleSessionPhase.liveBattle) {
       widget.session.startLiveBattle();
     }
     if (widget.cameraEnabled) {
-      _poseCamera = PoseCameraController(onVerifiedRep: _acceptVerifiedRep);
+      _ensurePoseCamera();
       _startCameraIfNeeded();
     }
   }
@@ -55,7 +67,7 @@ class _LiveBattleScreenState extends State<LiveBattleScreen>
   void didUpdateWidget(covariant LiveBattleScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (!oldWidget.cameraEnabled && widget.cameraEnabled) {
-      _poseCamera ??= PoseCameraController(onVerifiedRep: _acceptVerifiedRep);
+      _ensurePoseCamera();
       _startCameraIfNeeded();
     } else if (oldWidget.cameraEnabled && !widget.cameraEnabled) {
       final camera = _poseCamera;
@@ -63,6 +75,7 @@ class _LiveBattleScreenState extends State<LiveBattleScreen>
       if (camera != null) unawaited(camera.dispose());
     } else if (widget.cameraEnabled &&
         widget.session.snapshot.phase == BattleSessionPhase.liveBattle) {
+      _ensurePoseCamera();
       _startCameraIfNeeded();
     }
   }
@@ -75,6 +88,21 @@ class _LiveBattleScreenState extends State<LiveBattleScreen>
     if (camera != null) unawaited(camera.dispose());
     _combat.dispose();
     super.dispose();
+  }
+
+  void _ensurePoseCamera() {
+    if (_poseCamera != null) return;
+
+    final detector = const BattlePoseDetectorFactory().tryCreate(
+      preparedMovement: widget.session.snapshot.preparedMovement,
+      requiredPlankHoldDuration: widget.requiredPlankHoldDuration,
+    );
+    if (detector == null) return;
+
+    _poseCamera = PoseCameraController(
+      detector: detector,
+      onVerifiedRep: _acceptVerifiedRep,
+    );
   }
 
   void _startCameraIfNeeded() {
@@ -91,13 +119,8 @@ class _LiveBattleScreenState extends State<LiveBattleScreen>
   }
 
   void _acceptVerifiedRep(VerifiedRep rep) {
-    if (!mounted) return;
-    final accepted = widget.session.acceptVerifiedMovement(
-      VerifiedMovementType.squat,
-    );
-    if (!accepted) return;
+    if (!mounted || !_movementRouter.route(rep)) return;
 
-    _combat.acceptVerifiedRep(formScore: rep.formScore);
     if (_combat.snapshot.bossHp <= 0) {
       widget.session.markVictory();
       _stopCamera();
