@@ -3,24 +3,44 @@ import 'dart:io';
 
 import 'package:camera/camera.dart';
 
-import '../detector/squat_detector.dart';
+import '../detector/pose_rep_detector.dart';
+import '../detector/verified_rep.dart';
 import 'camera_input_adapter.dart';
 import 'mlkit_pose_provider.dart';
+import 'pose_models.dart';
+
+/// Pure frame-dispatch boundary between normalized ML Kit pose frames and the
+/// movement detector selected by the authoritative encounter/task owner.
+class PoseRepDispatcher {
+  PoseRepDispatcher({required this.detector, required this.onVerifiedRep});
+
+  final PoseRepDetector detector;
+  final void Function(VerifiedRep rep) onVerifiedRep;
+
+  void accept(PoseFrame frame) {
+    final rep = detector.process(frame);
+    if (rep != null) onVerifiedRep(rep);
+  }
+}
 
 class PoseCameraController {
   PoseCameraController({
-    required this.onVerifiedRep,
+    required PoseRepDetector detector,
+    required void Function(VerifiedRep rep) onVerifiedRep,
     MlKitPoseProvider? provider,
-    this._adapter = const CameraInputAdapter(),
-  }) : _provider = provider ?? MlKitPoseProvider(),
-       super();
+    CameraInputAdapter adapter = const CameraInputAdapter(),
+  }) : _dispatcher = PoseRepDispatcher(
+         detector: detector,
+         onVerifiedRep: onVerifiedRep,
+       ),
+       _provider = provider ?? MlKitPoseProvider(),
+       _adapter = adapter;
 
-  final void Function(VerifiedRep rep) onVerifiedRep;
+  final PoseRepDispatcher _dispatcher;
   final MlKitPoseProvider _provider;
   final CameraInputAdapter _adapter;
-  final SquatDetector _squatDetector = SquatDetector();
   CameraController? _camera;
-  StreamSubscription? _subscription;
+  StreamSubscription<PoseFrame>? _subscription;
   Object? error;
 
   CameraController? get camera => _camera;
@@ -49,10 +69,7 @@ class PoseCameraController {
       _camera = controller;
       await controller.initialize();
       await _provider.start();
-      _subscription = _provider.frames.listen((frame) {
-        final rep = _squatDetector.process(frame);
-        if (rep != null) onVerifiedRep(rep);
-      });
+      _subscription = _provider.frames.listen(_dispatcher.accept);
       await controller.startImageStream((image) {
         final input = _adapter.convert(
           image: image,
