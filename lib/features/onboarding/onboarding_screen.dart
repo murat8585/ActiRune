@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import 'calibration_result_screen.dart';
+import 'first_calibration_engine.dart';
 import 'first_calibration_screen.dart';
 import 'onboarding_welcome_screen.dart';
 
-typedef CalibrationRunner = Future<bool> Function();
+typedef CalibrationRunner = Future<FirstCalibrationAssessment> Function();
 
 enum _OnboardingPhase { welcome, firstCalibration, calibrationResult }
 
@@ -15,6 +16,7 @@ class OnboardingScreen extends StatefulWidget {
     this.onLanguage,
     this.onAccessibility,
     this.onRunCalibration,
+    this.onCalibrationReady,
     this.onEnterApp,
   });
 
@@ -23,10 +25,14 @@ class OnboardingScreen extends StatefulWidget {
 
   /// Runs the real calibration owned by the product layer.
   ///
-  /// The result screen is shown only when this returns true. A missing runner
-  /// keeps the primary calibration action disabled rather than fabricating a
-  /// successful calibration.
+  /// The result screen is shown only when the returned typed assessment is
+  /// ready for a starting profile. A missing runner keeps the primary action
+  /// disabled rather than fabricating calibration success.
   final CalibrationRunner? onRunCalibration;
+
+  /// Receives the non-medical starting profile only after a fail-closed
+  /// calibration assessment succeeds. Persistence remains caller-owned.
+  final ValueChanged<StartingCalibrationProfile>? onCalibrationReady;
 
   /// Optional seam for tests/embedding. Production falls back to `/app`.
   final VoidCallback? onEnterApp;
@@ -49,16 +55,25 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     if (runner == null || _calibrationInFlight) return;
 
     setState(() => _calibrationInFlight = true);
-    var succeeded = false;
+    FirstCalibrationAssessment? assessment;
     try {
-      succeeded = await runner();
+      assessment = await runner();
     } finally {
       if (mounted) {
         setState(() => _calibrationInFlight = false);
       }
     }
 
-    if (!mounted || !succeeded) return;
+    if (!mounted ||
+        assessment == null ||
+        !assessment.readyForStartingProfile) {
+      return;
+    }
+
+    final startingProfile = assessment.startingProfile;
+    if (startingProfile == null) return;
+
+    widget.onCalibrationReady?.call(startingProfile);
     setState(() => _phase = _OnboardingPhase.calibrationResult);
   }
 
