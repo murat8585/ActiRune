@@ -1,0 +1,40 @@
+name: ActiRune Production Readiness
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  production-release-guard:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout integration branch
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Resolve dependencies
+        run: flutter pub get
+
+      - name: Verify formatting
+        run: >-
+          dart format --output=none --set-exit-if-changed
+          lib/core/release/production_release_guard.dart
+          test/production_release_guard_test.dart
+          tool/check_production_release_readiness.dart
+
+      - name: Analyze
+        run: flutter analyze
+
+      - name: Release guard regression tests
+        run: flutter test --no-pub test/production_release_guard_test.dart
+
+      - name: Enforce production release readiness
+        run: dart run tool/check_production_release_readiness.dart
