@@ -1,5 +1,6 @@
 import '../provider/pose_models.dart';
 import 'geometry.dart';
+import 'pose_rep_detector.dart';
 import 'verified_rep.dart';
 
 enum LungePhase { unknown, standing, descending, bottom, ascending }
@@ -11,7 +12,7 @@ enum LungeSide { left, right }
 /// Thresholds are configuration, not biomechanical truth. They must remain
 /// adjustable until the labelled multi-view movement corpus and real-device
 /// ML Kit validation are complete.
-class LungeDetector {
+class LungeDetector implements PoseRepDetector {
   LungeDetector({
     this.minimumConfidence = .65,
     this.standingAngle = 160,
@@ -31,6 +32,7 @@ class LungeDetector {
   DateTime? _bottomAt;
   DateTime? _lastRepAt;
 
+  @override
   VerifiedRep? process(PoseFrame frame) {
     final angles = _kneeAngles(frame);
     if (angles == null) return null;
