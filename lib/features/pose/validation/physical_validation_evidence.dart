@@ -260,7 +260,9 @@ final class PhysicalValidationEvidenceSummary {
       for (final record in records)
         if (record.movement == VerifiedMovementType.plank) ...record.coverage,
     };
-    if (!plankCoverage.contains(PhysicalValidationCoverage.plankHoldValidation)) {
+    if (!plankCoverage.contains(
+      PhysicalValidationCoverage.plankHoldValidation,
+    )) {
       blockers.add('plank: missing plankHoldValidation coverage.');
     }
 
@@ -321,7 +323,8 @@ final class PhysicalValidationEvidenceSummary {
       failedRecords: records
           .where(
             (record) =>
-                record.reviewerDisposition == PhysicalValidationDisposition.fail,
+                record.reviewerDisposition ==
+                PhysicalValidationDisposition.fail,
           )
           .length,
       thresholdReviewRecords: records
@@ -417,9 +420,7 @@ Set<PhysicalValidationCoverage> _coverageValues(Object? raw) {
     if (item is! String) {
       throw const FormatException('coverage entries must be strings.');
     }
-    values.add(
-      _enumValue(PhysicalValidationCoverage.values, item, 'coverage'),
-    );
+    values.add(_enumValue(PhysicalValidationCoverage.values, item, 'coverage'));
   }
   return Set.unmodifiable(values);
 }

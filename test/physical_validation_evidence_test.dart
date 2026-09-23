@@ -68,39 +68,44 @@ void main() {
     );
   });
 
-  test('reviewer FAIL is surfaced but never converted into an automatic gate', () {
-    final records = <PhysicalValidationRecord>[
-      _record(
-        movement: VerifiedMovementType.squat,
-        lighting: 'normal indoor',
-        framing: 'full body centered',
-        disposition: PhysicalValidationDisposition.fail,
-        extraCoverage: const {PhysicalValidationCoverage.cameraLifecycle},
-      ),
-      _record(
-        movement: VerifiedMovementType.lunge,
-        lighting: 'bright indoor',
-        framing: 'left offset',
-        extraCoverage: const {PhysicalValidationCoverage.leftRightOrientation},
-      ),
-      _record(
-        movement: VerifiedMovementType.pushUp,
-        lighting: 'normal indoor',
-        framing: 'side full body',
-      ),
-      _record(
-        movement: VerifiedMovementType.plank,
-        lighting: 'bright indoor',
-        framing: 'side full body',
-        extraCoverage: const {PhysicalValidationCoverage.plankHoldValidation},
-      ),
-    ];
+  test(
+    'reviewer FAIL is surfaced but never converted into an automatic gate',
+    () {
+      final records = <PhysicalValidationRecord>[
+        _record(
+          movement: VerifiedMovementType.squat,
+          lighting: 'normal indoor',
+          framing: 'full body centered',
+          disposition: PhysicalValidationDisposition.fail,
+          extraCoverage: const {PhysicalValidationCoverage.cameraLifecycle},
+        ),
+        _record(
+          movement: VerifiedMovementType.lunge,
+          lighting: 'bright indoor',
+          framing: 'left offset',
+          extraCoverage: const {
+            PhysicalValidationCoverage.leftRightOrientation,
+          },
+        ),
+        _record(
+          movement: VerifiedMovementType.pushUp,
+          lighting: 'normal indoor',
+          framing: 'side full body',
+        ),
+        _record(
+          movement: VerifiedMovementType.plank,
+          lighting: 'bright indoor',
+          framing: 'side full body',
+          extraCoverage: const {PhysicalValidationCoverage.plankHoldValidation},
+        ),
+      ];
 
-    final summary = PhysicalValidationEvidenceSummary.fromRecords(records);
+      final summary = PhysicalValidationEvidenceSummary.fromRecords(records);
 
-    expect(summary.readyForHumanReview, isTrue);
-    expect(summary.failedRecords, 1);
-  });
+      expect(summary.readyForHumanReview, isTrue);
+      expect(summary.failedRecords, 1);
+    },
+  );
 
   test('raw personal media fields are rejected from repository evidence', () {
     final json = _recordJson(VerifiedMovementType.squat);
@@ -143,7 +148,8 @@ PhysicalValidationRecord _record({
   required VerifiedMovementType movement,
   required String lighting,
   required String framing,
-  PhysicalValidationDisposition disposition = PhysicalValidationDisposition.pass,
+  PhysicalValidationDisposition disposition =
+      PhysicalValidationDisposition.pass,
   Set<PhysicalValidationCoverage> extraCoverage = const {},
   Set<PhysicalValidationCoverage> removeCoverage = const {},
 }) {
