@@ -24,6 +24,28 @@ Branch: `integration/artwork-interactions-20260921`
 - Movement analytics reuses the existing `VerifiedMovementType`; economy material events reuse the locked `MaterialFamily` authority.
 - `AnalyticsSink` is an interface only. No analytics provider, network transport, persistence, account identity, backend endpoint, SDK success or production telemetry delivery was fabricated.
 
+## Release-gate audit now recorded
+- Matrix: `docs/release/PHASE1_RELEASE_GATE_MATRIX_20260923.md`.
+- Physical ML Kit gate: `docs/release/PHYSICAL_DEVICE_MLKIT_VALIDATION_GATE.md`.
+- Release matrix commit: `e514eed8dae43cdfbf6a2c04f46bd4161854c7c1`.
+- Physical-device validation protocol commit: `d45a74115ef94e91965788e76511faaca57750b5`.
+- These are documentation-only changes after the last fully green runtime commit; they do not alter tested runtime behavior.
+
+### Current release-service classifications
+- Core verified Flutter/gameplay scope: IMPLEMENTED within repository scope.
+- Four movement state machines + VerifiedRep routing: IMPLEMENTED, but physical-device proof still required.
+- Dynamic Difficulty: IMPLEMENTED deterministic policy owner.
+- Recovery/Safety: IMPLEMENTED deterministic policy owner.
+- Loot/Crafting: ADAPTER_ONLY beyond local validation; no real persistence/economy backend owner.
+- Rewarded Ads: ADAPTER_ONLY; product policy exists, real ad provider SDK does not.
+- Pro/Billing: ADAPTER_ONLY at UI/contract level; no billing/IAP provider or SKU owner exists.
+- Analytics/Balance: ADAPTER_ONLY; typed event contract exists, real provider/transport does not.
+- Backend/cloud persistence: ABSENT in current repository evidence.
+- Health Connect/HealthKit: ABSENT in current repository evidence.
+- Android production id/signing: ABSENT/not production-ready; app id remains `com.example.actirune` and release currently uses debug signing.
+- iOS production id/signing: ABSENT/not production-ready; bundle id remains `com.example.actirune` and no `DEVELOPMENT_TEAM` value is present in repository evidence.
+- ML Kit physical-device release proof: BLOCKED_EXTERNAL_PROOF until real-human labelled physical-device corpus is completed and reviewed.
+
 ## Recently verified policy systems
 ### Loot / Crafting ownership boundary
 - Runtime: `lib/features/economy/loot_crafting_policy.dart`.
@@ -87,28 +109,27 @@ Branch: `integration/artwork-interactions-20260921`
 - Rune Shrine + PvE Rewarded Ads eligibility/completion policy
 - Provider-neutral required Analytics/Balance event contract
 
-## Active work
-- Phase-1 Core Solo release-service and physical-device gate classification.
-- Repository evidence currently shows Flutter dependencies only for Flame, Camera, Google ML Kit Pose Detection and GoRouter; there is no billing, ad, Firebase/backend, Health Connect/HealthKit or analytics-provider package in `pubspec.yaml`.
-- Android main manifest declares camera only; no Health Connect integration is configured there.
-- iOS Info.plist declares camera usage only; no HealthKit usage descriptions are present.
-- Android application id remains `com.example.actirune`, and release build explicitly uses debug signing.
-- iOS product bundle identifier remains `com.example.actirune`; no `DEVELOPMENT_TEAM` entry was found in the current Xcode project.
-- Therefore no production readiness claim may be made for billing, ad SDK delivery, backend/cloud persistence, Health Connect/HealthKit, analytics delivery or store signing.
-- Google ML Kit pose adapter/unit infrastructure is implemented, but real-human labelled-corpus validation on physical devices remains a mandatory release gate.
-
-## Phase-1 product authority boundary
+## Product authority / safety boundary
 - Master Product Bible Phase 1 requires Core Solo: Home, Adventure, Squat/Lunge/Push-up/Plank infrastructure, Camera Prep, Live Battle, Form Coach, quests, Player/Hero/Lumi/Mastery, loot/crafting, Recovery/Difficulty, Pro base layer and Rewarded Ads.
 - Master Product Bible separately marks Analytics/Balance and camera/pose proof as REQUIRED.
+- Master Product Bible names no Firebase, RevenueCat or AdMob provider; provider selection must not be invented merely to make a dependency list look impressive.
 - Do not invent gameplay effects, inventory mutations, engine state, rewards, routes, entitlement behavior, purchase behavior, pricing, trial state, personalization output, medical diagnosis, analytics transport/output or ad-provider behavior where product/engine/provider authority is absent.
 - Meaningful gameplay progress remains movement-backed.
 - Pose thresholds stay configuration until labelled-video corpus and real-device ML Kit validation are completed.
 
-## Next exact actions
-1. Create a repository release-gate matrix classifying billing, ad SDK, backend/cloud persistence, Health Connect/HealthKit, analytics provider, Android signing, iOS signing and ML Kit physical-device proof as implemented, adapter-only, absent or blocked using direct repository evidence.
-2. Create the physical-device ML Kit labelled-corpus validation protocol without inventing numeric pass thresholds that the product authority has not set.
-3. Keep provider-neutral policy/contracts intact; do not fabricate external service success or credentials.
-4. Only after real provider integrations and physical-device proof exist should Phase-1 Core Solo be called production/release complete.
+## Current hard boundary
+- The remaining blockers are no longer ordinary local UI/state-machine gaps. They require production-provider decisions/accounts/configuration, signing identity or real physical devices/evidence.
+- No provider is currently authoritative in the product Bible for backend, billing, ads, health or analytics delivery.
+- Production credentials/signing secrets must not be invented or committed.
+- Real physical-device ML Kit validation cannot be truthfully replaced by CI or synthetic unit tests.
+
+## Next exact actions when external authority/evidence is available
+1. Select/confirm authoritative backend, billing, ad and analytics providers before adding provider SDKs.
+2. Confirm final Android application id and iOS bundle id before production signing work.
+3. Configure production signing through protected secret management, never repository plaintext.
+4. Integrate Health Connect/HealthKit only if it remains in the approved release scope and permission/consent requirements are fixed.
+5. Execute the labelled real-human physical-device protocol in `docs/release/PHYSICAL_DEVICE_MLKIT_VALIDATION_GATE.md` and record results against an exact release commit/build.
+6. Re-run full Direct Validation after any runtime/provider integration and do not call the build production-ready until all applicable release gates are proven.
 
 ## Permanent working rule
 After each meaningful green batch, update this file with latest green run/commit, completed scope, blockers and exact next step. This file is the GitHub recovery checkpoint when a chat/tab ends.
