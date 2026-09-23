@@ -100,7 +100,7 @@ void main() {
     expect(state.combat.snapshot.verifiedReps, 0);
   });
 
-  test('each explicit input is forwarded at most once', () {
+  test('same verified event cannot be delivered twice', () {
     final state = liveRouter(VerifiedMovementType.plank);
     final event = rep('plank');
 
@@ -108,8 +108,20 @@ void main() {
     expect(state.session.snapshot.verifiedActionCount, 1);
     expect(state.combat.snapshot.verifiedReps, 1);
 
+    expect(state.router.accept(event), isFalse);
+    expect(state.session.snapshot.verifiedActionCount, 1);
+    expect(state.combat.snapshot.verifiedReps, 1);
+  });
+
+  test('rejected event is not marked consumed and can be accepted later', () {
+    final state = liveRouter(VerifiedMovementType.squat);
+    final event = rep('squat');
+    state.session.pause();
+
+    expect(state.router.accept(event), isFalse);
+    state.session.resumeLiveBattle();
     expect(state.router.accept(event), isTrue);
-    expect(state.session.snapshot.verifiedActionCount, 2);
-    expect(state.combat.snapshot.verifiedReps, 2);
+    expect(state.session.snapshot.verifiedActionCount, 1);
+    expect(state.combat.snapshot.verifiedReps, 1);
   });
 }
