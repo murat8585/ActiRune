@@ -41,8 +41,10 @@ Branch: `integration/artwork-interactions-20260921`
 
 ## Active work
 - Next exact functional gap: typed movement-verification routing from detector-produced `VerifiedRep` into the authoritative BattleSession/Combat boundary.
-- The router must map only the four supported exercise identities and must never fabricate a movement event.
-- Exactly one accepted verified movement must produce exactly one BattleSession action; unknown events and invalid battle phases must be rejected.
+- Verified implementation authority before editing: `VerifiedRep` carries `exercise`, `at`, and `formScore`; `BattleSessionEngine.acceptVerifiedMovement` owns live/paused phase acceptance; `CombatEngine.acceptVerifiedRep` owns existing combat damage/combo semantics.
+- Architecture contract remains: one `VerifiedRep` must create at most one BattleSession action and one CombatEngine damage event.
+- The adapter must map only `squat`, `lunge`, `push_up`, and `plank`; unknown exercise names and invalid battle phases must be rejected without combat mutation.
+- Do not change combat balance, detector thresholds, prepared-movement policy, or UI state while implementing this boundary.
 
 ## Completed / verified major areas
 - Canonical root navigation: Ana Dünya / Macera / Savaş / Kahraman / Profil
@@ -74,9 +76,9 @@ Branch: `integration/artwork-interactions-20260921`
 - Pose thresholds stay configuration until labelled-video corpus and real-device ML Kit validation are completed.
 
 ## Next exact actions
-1. Inspect `VerifiedRep`, `BattleSessionEngine`, `CombatEngine` and all existing usages before choosing the narrowest typed adapter boundary.
-2. Implement movement routing without changing combat balance or UI state.
-3. Prove all four movement identities map correctly, unknown exercise names are rejected, paused/non-live sessions reject events, and one input cannot double-count.
+1. Implement the narrow typed VerifiedRep -> BattleSession/Combat adapter using only existing owners.
+2. Prove the four exact movement identities map correctly, unknown names reject, paused/non-live sessions reject, and duplicate event identity cannot double-count.
+3. Pass form score through to existing CombatEngine semantics without introducing new balance values.
 4. Require formatter + analyzer + focused/full tests + diff hygiene before marking routing green.
 5. Re-audit Dynamic Difficulty, Recovery/Safety, loot/crafting ownership and Rewarded Ads ownership.
 6. Physical-device ML Kit corpus validation remains a mandatory release gate and cannot be replaced by synthetic unit tests.
