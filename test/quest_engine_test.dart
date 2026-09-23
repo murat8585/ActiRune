@@ -7,10 +7,7 @@ void main() {
 
     test('requires exactly five product-authoritative daily candidates', () {
       expect(
-        () => engine.buildPlan(
-          dayId: '2026-09-23',
-          candidates: _quests(4),
-        ),
+        () => engine.buildPlan(dayId: '2026-09-23', candidates: _quests(4)),
         throwsArgumentError,
       );
 
@@ -24,29 +21,19 @@ void main() {
     });
 
     test('unlocks cumulative 1 / 3 / 5 daily milestones', () {
-      expect(
-        engine.milestonesForCompletedCount(0),
-        isEmpty,
-      );
-      expect(
-        engine.milestonesForCompletedCount(1),
-        {DailyQuestMilestone.firstVictory},
-      );
-      expect(
-        engine.milestonesForCompletedCount(3),
-        {
-          DailyQuestMilestone.firstVictory,
-          DailyQuestMilestone.dailyRuneChest,
-        },
-      );
-      expect(
-        engine.milestonesForCompletedCount(5),
-        {
-          DailyQuestMilestone.firstVictory,
-          DailyQuestMilestone.dailyRuneChest,
-          DailyQuestMilestone.masterCompletion,
-        },
-      );
+      expect(engine.milestonesForCompletedCount(0), isEmpty);
+      expect(engine.milestonesForCompletedCount(1), {
+        DailyQuestMilestone.firstVictory,
+      });
+      expect(engine.milestonesForCompletedCount(3), {
+        DailyQuestMilestone.firstVictory,
+        DailyQuestMilestone.dailyRuneChest,
+      });
+      expect(engine.milestonesForCompletedCount(5), {
+        DailyQuestMilestone.firstVictory,
+        DailyQuestMilestone.dailyRuneChest,
+        DailyQuestMilestone.masterCompletion,
+      });
     });
 
     test('three completed quests is the normal daily goal', () {
@@ -94,16 +81,19 @@ void main() {
   group('WeeklyQuestEngine', () {
     const engine = WeeklyQuestEngine();
 
-    test('locks weekly quest counts and main reward minimums by level band', () {
-      expectPolicy(engine.policyForPlayerLevel(1), total: 6, minimum: 4);
-      expectPolicy(engine.policyForPlayerLevel(9), total: 6, minimum: 4);
-      expectPolicy(engine.policyForPlayerLevel(10), total: 8, minimum: 5);
-      expectPolicy(engine.policyForPlayerLevel(24), total: 8, minimum: 5);
-      expectPolicy(engine.policyForPlayerLevel(25), total: 10, minimum: 6);
-      expectPolicy(engine.policyForPlayerLevel(49), total: 10, minimum: 6);
-      expectPolicy(engine.policyForPlayerLevel(50), total: 12, minimum: 7);
-      expectPolicy(engine.policyForPlayerLevel(100), total: 12, minimum: 7);
-    });
+    test(
+      'locks weekly quest counts and main reward minimums by level band',
+      () {
+        expectPolicy(engine.policyForPlayerLevel(1), total: 6, minimum: 4);
+        expectPolicy(engine.policyForPlayerLevel(9), total: 6, minimum: 4);
+        expectPolicy(engine.policyForPlayerLevel(10), total: 8, minimum: 5);
+        expectPolicy(engine.policyForPlayerLevel(24), total: 8, minimum: 5);
+        expectPolicy(engine.policyForPlayerLevel(25), total: 10, minimum: 6);
+        expectPolicy(engine.policyForPlayerLevel(49), total: 10, minimum: 6);
+        expectPolicy(engine.policyForPlayerLevel(50), total: 12, minimum: 7);
+        expectPolicy(engine.policyForPlayerLevel(100), total: 12, minimum: 7);
+      },
+    );
 
     test('rejects non-product-authoritative weekly candidate count', () {
       expect(

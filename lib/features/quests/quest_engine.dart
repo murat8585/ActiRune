@@ -9,18 +9,11 @@ enum QuestFamily {
   recovery,
 }
 
-enum DailyQuestMilestone {
-  firstVictory,
-  dailyRuneChest,
-  masterCompletion,
-}
+enum DailyQuestMilestone { firstVictory, dailyRuneChest, masterCompletion }
 
 @immutable
 class QuestDefinition {
-  const QuestDefinition({
-    required this.id,
-    required this.family,
-  });
+  const QuestDefinition({required this.id, required this.family});
 
   final String id;
   final QuestFamily family;
@@ -41,7 +34,8 @@ class DailyQuestPlan {
   final Set<DailyQuestMilestone> unlockedMilestones;
 
   int get completedCount => completedQuestIds.length;
-  bool get normalDailyGoalReached => completedCount >= DailyQuestEngine.normalGoal;
+  bool get normalDailyGoalReached =>
+      completedCount >= DailyQuestEngine.normalGoal;
 }
 
 class DailyQuestEngine {
@@ -136,27 +130,15 @@ class WeeklyQuestEngine {
     }
 
     if (playerLevel <= 9) {
-      return const WeeklyQuestPolicy(
-        totalQuestCount: 6,
-        mainRewardMinimum: 4,
-      );
+      return const WeeklyQuestPolicy(totalQuestCount: 6, mainRewardMinimum: 4);
     }
     if (playerLevel <= 24) {
-      return const WeeklyQuestPolicy(
-        totalQuestCount: 8,
-        mainRewardMinimum: 5,
-      );
+      return const WeeklyQuestPolicy(totalQuestCount: 8, mainRewardMinimum: 5);
     }
     if (playerLevel <= 49) {
-      return const WeeklyQuestPolicy(
-        totalQuestCount: 10,
-        mainRewardMinimum: 6,
-      );
+      return const WeeklyQuestPolicy(totalQuestCount: 10, mainRewardMinimum: 6);
     }
-    return const WeeklyQuestPolicy(
-      totalQuestCount: 12,
-      mainRewardMinimum: 7,
-    );
+    return const WeeklyQuestPolicy(totalQuestCount: 12, mainRewardMinimum: 7);
   }
 
   WeeklyQuestPlan buildPlan({
@@ -187,10 +169,7 @@ enum QuestRewardClaimStatus { notEligible, claimable, alreadyClaimed }
 
 @immutable
 class QuestRewardClaimDecision {
-  const QuestRewardClaimDecision({
-    required this.claimId,
-    required this.status,
-  });
+  const QuestRewardClaimDecision({required this.claimId, required this.status});
 
   final String claimId;
   final QuestRewardClaimStatus status;
