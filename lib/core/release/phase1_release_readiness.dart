@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 
 import '../../features/pose/validation/physical_validation_evidence.dart';
 import 'production_release_guard.dart';
+import 'provider_authority_lock.dart';
 
 enum ProviderReleaseState { undecided, lockedNotConfigured, configured }
 
@@ -10,6 +11,7 @@ enum PhysicalValidationFinalReview { pending, passed, failed }
 enum Phase1ReleaseBlocker {
   productionIdentityOrSigning,
   providerAuthorityUndecided,
+  providerAuthorityInvalid,
   providerConfigurationIncomplete,
   physicalEvidenceMissing,
   physicalEvidenceIncomplete,
@@ -25,11 +27,13 @@ final class Phase1ReleaseReadinessEvidence {
     required this.productionRelease,
     required this.providerState,
     required this.physicalFinalReview,
+    this.providerAuthority,
     this.physicalEvidence,
   });
 
   final ProductionReleaseReport productionRelease;
   final ProviderReleaseState providerState;
+  final ProviderAuthorityReport? providerAuthority;
   final PhysicalValidationEvidenceSummary? physicalEvidence;
   final PhysicalValidationFinalReview physicalFinalReview;
 }
@@ -39,12 +43,14 @@ final class Phase1ReleaseReadinessReport {
   const Phase1ReleaseReadinessReport({
     required this.blockers,
     required this.productionIssues,
+    required this.providerAuthorityIssues,
     required this.providerState,
     required this.physicalFinalReview,
   });
 
   final List<Phase1ReleaseBlocker> blockers;
   final List<ProductionReleaseIssue> productionIssues;
+  final List<ProviderAuthorityIssue> providerAuthorityIssues;
   final ProviderReleaseState providerState;
   final PhysicalValidationFinalReview physicalFinalReview;
 
@@ -65,13 +71,19 @@ abstract final class Phase1ReleaseReadiness {
       blockers.add(Phase1ReleaseBlocker.productionIdentityOrSigning);
     }
 
+    final providerAuthority = evidence.providerAuthority;
     switch (evidence.providerState) {
       case ProviderReleaseState.undecided:
         blockers.add(Phase1ReleaseBlocker.providerAuthorityUndecided);
       case ProviderReleaseState.lockedNotConfigured:
+        if (providerAuthority == null || !providerAuthority.isValid) {
+          blockers.add(Phase1ReleaseBlocker.providerAuthorityInvalid);
+        }
         blockers.add(Phase1ReleaseBlocker.providerConfigurationIncomplete);
       case ProviderReleaseState.configured:
-        break;
+        if (providerAuthority == null || !providerAuthority.isValid) {
+          blockers.add(Phase1ReleaseBlocker.providerAuthorityInvalid);
+        }
     }
 
     final physicalEvidence = evidence.physicalEvidence;
@@ -106,6 +118,9 @@ abstract final class Phase1ReleaseReadiness {
     return Phase1ReleaseReadinessReport(
       blockers: List.unmodifiable(blockers.toSet()),
       productionIssues: List.unmodifiable(evidence.productionRelease.issues),
+      providerAuthorityIssues: List.unmodifiable(
+        providerAuthority?.issues ?? const <ProviderAuthorityIssue>[],
+      ),
       providerState: evidence.providerState,
       physicalFinalReview: evidence.physicalFinalReview,
     );
