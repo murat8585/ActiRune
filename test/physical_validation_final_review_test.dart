@@ -3,8 +3,9 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   const evidenceSha = '0123456789abcdef0123456789abcdef01234567';
+  const evidenceBuilds = <String>{'1.0.0+100'};
 
-  test('passed review bound to exact evidence blob is valid', () {
+  test('passed review bound to exact evidence blob and build is valid', () {
     final report = PhysicalValidationFinalReviewValidator.evaluate(
       record: const PhysicalValidationFinalReviewRecord(
         disposition: PhysicalFinalReviewDisposition.passed,
@@ -13,6 +14,7 @@ void main() {
         reviewedBuild: '1.0.0+100',
       ),
       actualEvidenceGitBlobSha: evidenceSha,
+      evidenceBuilds: evidenceBuilds,
     );
 
     expect(report.isPassed, isTrue);
@@ -28,6 +30,7 @@ void main() {
         reviewedBuild: '1.0.0+100',
       ),
       actualEvidenceGitBlobSha: evidenceSha,
+      evidenceBuilds: evidenceBuilds,
     );
 
     expect(report.isPassed, isFalse);
@@ -46,12 +49,51 @@ void main() {
         reviewedBuild: '1.0.0+100',
       ),
       actualEvidenceGitBlobSha: 'ffffffffffffffffffffffffffffffffffffffff',
+      evidenceBuilds: evidenceBuilds,
     );
 
     expect(report.isPassed, isFalse);
     expect(
       report.issues,
       contains(PhysicalFinalReviewIssue.evidenceGitBlobMismatch),
+    );
+  });
+
+  test('review cannot be reused for a different build', () {
+    final report = PhysicalValidationFinalReviewValidator.evaluate(
+      record: const PhysicalValidationFinalReviewRecord(
+        disposition: PhysicalFinalReviewDisposition.passed,
+        evidenceGitBlobSha: evidenceSha,
+        reviewReference: 'release-review-001',
+        reviewedBuild: '1.0.0+101',
+      ),
+      actualEvidenceGitBlobSha: evidenceSha,
+      evidenceBuilds: evidenceBuilds,
+    );
+
+    expect(report.isPassed, isFalse);
+    expect(
+      report.issues,
+      contains(PhysicalFinalReviewIssue.reviewedBuildMismatch),
+    );
+  });
+
+  test('mixed-build physical evidence cannot receive one final pass', () {
+    final report = PhysicalValidationFinalReviewValidator.evaluate(
+      record: const PhysicalValidationFinalReviewRecord(
+        disposition: PhysicalFinalReviewDisposition.passed,
+        evidenceGitBlobSha: evidenceSha,
+        reviewReference: 'release-review-001',
+        reviewedBuild: '1.0.0+100',
+      ),
+      actualEvidenceGitBlobSha: evidenceSha,
+      evidenceBuilds: const <String>{'1.0.0+100', '1.0.0+101'},
+    );
+
+    expect(report.isPassed, isFalse);
+    expect(
+      report.issues,
+      contains(PhysicalFinalReviewIssue.evidenceBuildSetInvalid),
     );
   });
 
@@ -64,6 +106,7 @@ void main() {
         reviewedBuild: '1.0.0+100',
       ),
       actualEvidenceGitBlobSha: evidenceSha,
+      evidenceBuilds: evidenceBuilds,
     );
 
     expect(report.isPassed, isFalse);
