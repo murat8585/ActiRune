@@ -4,37 +4,38 @@ Updated: 2026-09-23 (Europe/Istanbul)
 Branch: `integration/artwork-interactions-20260921`
 
 ## Last fully green Direct Validation
-- Run: 219 (successful re-run attempt)
-- Exact checked-out commit: `a79688ae000cd322869a1c9ee62369b3f29e356c`
+- Run: 220 (successful re-run attempt)
 - Result: SUCCESS
-- Scope: Pro / Paywall exact-art shell, canonical asset guard/dimensions, canonical formatting, analyzer, focused interaction tests, full Flutter suite and diff hygiene.
-- Focused suite: 128 PASS.
-- Full Flutter suite: 137 PASS.
+- Scope: Kişisel Günlük Macera / Personal Daily Adventure exact-art shell, canonical asset guard/dimensions, canonical formatting, analyzer, focused interaction tests, full Flutter suite and diff hygiene.
+- Canonical formatter commit: `6e11dbf008eacd2b37b8781c8c4b58c7f6fd576a`.
 
 ## Completed verified screen
-- Screen: Pro / Paywall
-- Status: VERIFIED by Direct Validation Run 219 successful re-run.
+- Screen: Kişisel Günlük Macera / Personal Daily Adventure
+- Status: VERIFIED by Direct Validation Run 220 successful re-run.
+- Canonical artwork: `visual_authority/20260921/current/01_CANONICAL_FINAL/VIS_0226__P1_PERSONAL_DAILY_ADVENTURE_FINAL.png`.
+- Runtime shell: `lib/features/adventure/personal_daily_adventure_screen.dart`.
+- Regression test: `test/personal_daily_adventure_screen_test.dart`.
+- The screen preserves the canonical 941x1672 artwork and exposes only owner callbacks for duration selection, start, plan view, top actions and root navigation.
+- No personalized targets, recovery state, encounter/reward values or battle ownership were invented because the current runtime does not expose an authoritative personalization owner.
+- Initial Run 220 failed only at canonical formatting of `test/personal_daily_adventure_screen_test.dart`; formatter workflow committed exact Dart output as `6e11dbf008eacd2b37b8781c8c4b58c7f6fd576a`, after which the re-run passed every validation gate.
+
+## Previously verified immediately before this screen
+- Pro / Paywall: VERIFIED by Direct Validation Run 219 successful re-run.
 - Canonical artwork: `visual_authority/20260921/current/01_CANONICAL_FINAL/VIS_0216__P1_PRO_PAYWALL_FINAL.png`.
 - Runtime shell: `lib/features/shop/pro_paywall_screen.dart`.
-- No billing, trial, entitlement, pricing, or purchase-success state was invented; visible actions remain owner callbacks.
-- Initial Run 219 failed only at canonical formatting of `test/pro_paywall_screen_test.dart`; formatter workflow committed exact Dart output as `a79688ae000cd322869a1c9ee62369b3f29e356c`, after which the re-run was fully green.
+- No billing, trial, entitlement, pricing or purchase-success state was invented.
 
-## Active screen: Kişisel Günlük Macera / Personal Daily Adventure
-- Canonical artwork: `visual_authority/20260921/current/01_CANONICAL_FINAL/VIS_0226__P1_PERSONAL_DAILY_ADVENTURE_FINAL.png`.
-- Visual authority manifest: CANONICAL_FINAL, intrinsic size 941x1672.
-- Personal Daily Artwork Capture Run 1 on `e2170e648cc0ef6c2ab4926f641b6bc1ae6bc31f`: SUCCESS.
-- The exact canonical image was inspected directly before implementation.
-- Visible actionable controls identified from the canonical art: Notifications, Settings, 15 dk Hızlı Macera, 30 dk Standart Macera, 45 dk Derin Macera, `MACERAYA BAŞLA`, `Planı Gör`, and the five canonical root-navigation targets.
-- Product authority defines the screen as a personalized daily plan whose inputs include Player Level, recent activity/completion history, form, difficult movements, available time, goals and recovery state.
-- No current runtime owner exposes an authoritative Personal Daily parent route or personalization engine. Therefore the shell must not calculate fake personalized targets, rewards, encounters, recovery state, or battle ownership.
-- Exact-art runtime shell and regression test are being added as `lib/features/adventure/personal_daily_adventure_screen.dart` and `test/personal_daily_adventure_screen_test.dart`.
-- `pubspec.yaml` and Direct Validation are being extended to include/guard the canonical asset and focused regression test.
-- Status: IMPLEMENTED FOR VALIDATION; not VERIFIED until Direct Validation is fully green.
+## Active screen
+- Screen: Pro Form Koçu / Long-Term Form Analytics
+- Canonical artwork exists: `visual_authority/20260921/current/01_CANONICAL_FINAL/VIS_0219__P1_PRO_FORM_COACH_FINAL.png`.
+- Existing `lib/features/battle/form_coach_screen.dart` is the basic real-time Free form-feedback surface and must not be replaced or repurposed.
+- Product rule: basic real-time form feedback remains Free; this new screen is the Pro long-term analysis layer.
+- Before wiring routes or analytics state, inspect current product/runtime ownership and canonical artwork; do not synthesize analytics data or entitlement behavior.
 
 ## Completed / verified major areas
 - Canonical root navigation: Ana Dünya / Macera / Savaş / Kahraman / Profil
 - Home, Adventure, Hero and Profile artwork shells
-- Battle Prep, Camera Prep, Live Battle, Form Coach, Victory, Defeat
+- Battle Prep, Camera Prep, Live Battle, basic Form Coach, Victory, Defeat
 - BattleFlowHost and canonical BattleScreen adapter
 - Rewarded retry state 3/3 -> 2/3 -> 1/3 -> 0/3
 - Events + Event Detail popup
@@ -47,18 +48,19 @@ Branch: `integration/artwork-interactions-20260921`
 - World Progression
 - Profile -> Achievements / Rozetler
 - Pro / Paywall
+- Kişisel Günlük Macera / Personal Daily Adventure
 
 ## Product/evidence boundary
-- Do not invent gameplay effects, engine state, rewards, routes, entitlement behavior, purchase behavior, pricing, trial state, personalization output, recovery state, or ad behavior where product/engine authority is absent.
+- Do not invent gameplay effects, engine state, rewards, routes, entitlement behavior, purchase behavior, pricing, trial state, personalization output, recovery state, analytics output or ad behavior where product/engine authority is absent.
 - Approved canonical artwork must be used as-is; do not generate replacement art in runtime implementation.
 - Meaningful gameplay progress remains movement-backed under the Master Product Bible.
 
 ## Next exact actions
-1. Validate the Personal Daily Adventure implementation through the full Direct Validation chain.
-2. If any gate fails, use exact CI evidence and make only the smallest evidence-backed correction.
-3. When fully green, record the exact green run/commit here and mark Personal Daily Adventure VERIFIED.
-4. Do not invent a parent route until a real product/runtime owner is evidenced.
-5. Then inspect the next genuinely unimplemented Phase-1 queue item; expected candidate is Pro Form Koçu / Long-Term Form Analytics, but verify repository state before switching screens.
+1. Inspect Pro Form Koçu canonical artwork and product/runtime authority.
+2. Implement the exact-art long-term analytics shell without modifying the basic real-time Free Form Coach.
+3. Add strict canonical asset/dimension guards and focused regression coverage.
+4. Run the full Direct Validation chain and make only evidence-backed corrections.
+5. After green, record the exact result here and audit the next genuinely unimplemented Phase-1 canonical screen instead of blindly following already-completed queue items.
 
 ## Permanent working rule
-After each meaningful green batch, update this file with latest green commit, Actions run, completed scope, blockers and exact next step. This file is the GitHub recovery checkpoint when a chat/tab ends.
+After each meaningful green batch, update this file with latest green run/commit, completed scope, blockers and exact next step. This file is the GitHub recovery checkpoint when a chat/tab ends.
