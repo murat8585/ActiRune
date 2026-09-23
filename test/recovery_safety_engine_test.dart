@@ -26,18 +26,21 @@ void main() {
     expect(decision.recoveryDayStreakEligible, isTrue);
   });
 
-  test('reported pain or unsuitability offers alternative without diagnosis', () {
-    final decision = engine.evaluate(
-      const RecoverySafetyInput(
-        consecutiveIntenseLowerBodyDays: 0,
-        userReportedPainOrUnsuitability: true,
-      ),
-    );
+  test(
+    'reported pain or unsuitability offers alternative without diagnosis',
+    () {
+      final decision = engine.evaluate(
+        const RecoverySafetyInput(
+          consecutiveIntenseLowerBodyDays: 0,
+          userReportedPainOrUnsuitability: true,
+        ),
+      );
 
-    expect(decision.route, RecoveryRoute.lighterAlternative);
-    expect(decision.offerAlternativeMovement, isTrue);
-    expect(decision.recommendsRecovery, isFalse);
-  });
+      expect(decision.route, RecoveryRoute.lighterAlternative);
+      expect(decision.offerAlternativeMovement, isTrue);
+      expect(decision.recommendsRecovery, isFalse);
+    },
+  );
 
   test('movement marked unsuitable also offers lighter alternative', () {
     final decision = engine.evaluate(

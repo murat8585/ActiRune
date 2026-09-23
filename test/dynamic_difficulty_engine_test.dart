@@ -16,10 +16,7 @@ void main() {
       decision.repetitionOrDuration,
       AdaptationDirection.increaseGradually,
     );
-    expect(
-      decision.encounterDifficulty,
-      AdaptationDirection.increaseGradually,
-    );
+    expect(decision.encounterDifficulty, AdaptationDirection.increaseGradually);
     expect(decision.bossPhase, AdaptationDirection.increaseGradually);
     expect(decision.taskDensity, AdaptationDirection.increaseGradually);
     expect(decision.offerAlternativeMovement, isFalse);
@@ -58,22 +55,25 @@ void main() {
     expect(decision.recoveryRoute, isFalse);
   });
 
-  test('unsuitable movement requests alternative without invented escalation', () {
-    final decision = engine.evaluate(
-      const DynamicDifficultyInput(
-        playerLevel: 50,
-        performanceTrend: PerformanceTrend.consistentlyComfortable,
-        movementUnsuitable: true,
-      ),
-    );
+  test(
+    'unsuitable movement requests alternative without invented escalation',
+    () {
+      final decision = engine.evaluate(
+        const DynamicDifficultyInput(
+          playerLevel: 50,
+          performanceTrend: PerformanceTrend.consistentlyComfortable,
+          movementUnsuitable: true,
+        ),
+      );
 
-    expect(decision.repetitionOrDuration, AdaptationDirection.hold);
-    expect(decision.encounterDifficulty, AdaptationDirection.hold);
-    expect(decision.bossPhase, AdaptationDirection.hold);
-    expect(decision.taskDensity, AdaptationDirection.hold);
-    expect(decision.offerAlternativeMovement, isTrue);
-    expect(decision.recoveryRoute, isFalse);
-  });
+      expect(decision.repetitionOrDuration, AdaptationDirection.hold);
+      expect(decision.encounterDifficulty, AdaptationDirection.hold);
+      expect(decision.bossPhase, AdaptationDirection.hold);
+      expect(decision.taskDensity, AdaptationDirection.hold);
+      expect(decision.offerAlternativeMovement, isTrue);
+      expect(decision.recoveryRoute, isFalse);
+    },
+  );
 
   test('Recovery Safety overrides upward difficulty pressure', () {
     final decision = engine.evaluate(
