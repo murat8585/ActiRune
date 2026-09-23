@@ -110,7 +110,8 @@ abstract final class ProductionReleaseGuard {
     return ProductionReleaseReport(issues: List.unmodifiable(issues));
   }
 
-  static bool _isMissing(String? value) => value == null || value.trim().isEmpty;
+  static bool _isMissing(String? value) =>
+      value == null || value.trim().isEmpty;
 
   static bool _isPlaceholderIdentifier(String value) {
     final normalized = value.trim().toLowerCase();

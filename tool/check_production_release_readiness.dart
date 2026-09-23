@@ -27,11 +27,21 @@ void main() {
   final report = ProductionReleaseGuard.evaluate(evidence);
 
   stdout.writeln('ActiRune production release guard');
-  stdout.writeln('Android application id: ${evidence.androidApplicationId ?? '<missing>'}');
-  stdout.writeln('Android release signing configured: ${evidence.androidReleaseSigningConfigured}');
-  stdout.writeln('Android uses debug signing: ${evidence.androidUsesDebugSigning}');
-  stdout.writeln('iOS bundle identifier: ${evidence.iosBundleIdentifier ?? '<missing>'}');
-  stdout.writeln('iOS development team: ${evidence.iosDevelopmentTeam ?? '<missing>'}');
+  stdout.writeln(
+    'Android application id: ${evidence.androidApplicationId ?? '<missing>'}',
+  );
+  stdout.writeln(
+    'Android release signing configured: ${evidence.androidReleaseSigningConfigured}',
+  );
+  stdout.writeln(
+    'Android uses debug signing: ${evidence.androidUsesDebugSigning}',
+  );
+  stdout.writeln(
+    'iOS bundle identifier: ${evidence.iosBundleIdentifier ?? '<missing>'}',
+  );
+  stdout.writeln(
+    'iOS development team: ${evidence.iosDevelopmentTeam ?? '<missing>'}',
+  );
 
   if (report.isReady) {
     stdout.writeln('RESULT: PASS');

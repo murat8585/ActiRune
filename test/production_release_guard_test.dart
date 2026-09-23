@@ -25,12 +25,15 @@ PRODUCT_BUNDLE_IDENTIFIER = com.example.actirune.RunnerTests;
     final report = ProductionReleaseGuard.evaluate(evidence);
 
     expect(report.isReady, isFalse);
-    expect(report.issues, containsAll(<ProductionReleaseIssue>[
-      ProductionReleaseIssue.placeholderAndroidApplicationId,
-      ProductionReleaseIssue.androidDebugSigning,
-      ProductionReleaseIssue.placeholderIosBundleIdentifier,
-      ProductionReleaseIssue.missingIosDevelopmentTeam,
-    ]));
+    expect(
+      report.issues,
+      containsAll(<ProductionReleaseIssue>[
+        ProductionReleaseIssue.placeholderAndroidApplicationId,
+        ProductionReleaseIssue.androidDebugSigning,
+        ProductionReleaseIssue.placeholderIosBundleIdentifier,
+        ProductionReleaseIssue.missingIosDevelopmentTeam,
+      ]),
+    );
   });
 
   test('production identities release signing and iOS team pass', () {
