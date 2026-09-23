@@ -18,6 +18,7 @@ class BattleScreen extends StatefulWidget {
     required this.movement,
     this.cameraReadiness = CameraPrepReadiness.checking,
     this.cameraEnabled = true,
+    this.requiredPlankHoldDuration,
     this.onExitEncounter,
     this.onRootNavigate,
     this.onEquipment,
@@ -37,6 +38,10 @@ class BattleScreen extends StatefulWidget {
   final VerifiedMovementType movement;
   final CameraPrepReadiness cameraReadiness;
   final bool cameraEnabled;
+
+  /// Required only for plank encounters. The authoritative encounter/task
+  /// owner supplies the hold target; no UI or camera layer default is invented.
+  final Duration? requiredPlankHoldDuration;
 
   final VoidCallback? onExitEncounter;
   final ValueChanged<BattlePrepRootDestination>? onRootNavigate;
@@ -115,6 +120,7 @@ class _BattleScreenState extends State<BattleScreen> {
       session: _session,
       cameraReadiness: widget.cameraReadiness,
       cameraEnabled: widget.cameraEnabled,
+      requiredPlankHoldDuration: widget.requiredPlankHoldDuration,
       onBattlePrepBack: _exitEncounter,
       onBattlePrepInfo: widget.onBattlePrepInfo,
       onEquipment: widget.onEquipment,
