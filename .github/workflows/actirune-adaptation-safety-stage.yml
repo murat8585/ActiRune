@@ -1,0 +1,70 @@
+name: ActiRune Adaptation Safety Stage
+
+on:
+  push:
+    branches:
+      - integration/adaptation-safety-stage-20260923
+    paths:
+      - '.github/workflows/actirune-adaptation-safety-stage.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  validate-and-format:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout adaptation safety stage
+        uses: actions/checkout@v4
+        with:
+          ref: integration/adaptation-safety-stage-20260923
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Resolve dependencies
+        run: flutter pub get
+
+      - name: Apply canonical Dart format
+        run: >-
+          dart format
+          lib/features/adaptation/dynamic_difficulty_engine.dart
+          lib/features/adaptation/recovery_safety_engine.dart
+          test/dynamic_difficulty_engine_test.dart
+          test/recovery_safety_engine_test.dart
+
+      - name: Analyze
+        run: flutter analyze
+
+      - name: Focused adaptation safety tests
+        run: >-
+          flutter test --no-pub
+          test/dynamic_difficulty_engine_test.dart
+          test/recovery_safety_engine_test.dart
+          test/verified_movement_router_test.dart
+          test/battle_session_engine_test.dart
+          test/combat_engine_test.dart
+
+      - name: Full Flutter tests
+        run: flutter test --no-pub
+
+      - name: Diff hygiene
+        run: git diff --check
+
+      - name: Commit canonical formatting
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- lib/features/adaptation test/dynamic_difficulty_engine_test.dart test/recovery_safety_engine_test.dart; then
+            echo 'No formatting change required.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add lib/features/adaptation test/dynamic_difficulty_engine_test.dart test/recovery_safety_engine_test.dart
+          git commit -m 'Apply canonical adaptation safety formatting'
+          git push origin HEAD:integration/adaptation-safety-stage-20260923
