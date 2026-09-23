@@ -1,5 +1,6 @@
 import '../provider/pose_models.dart';
 import 'geometry.dart';
+import 'pose_rep_detector.dart';
 import 'verified_rep.dart';
 
 enum PushUpPhase { unknown, top, descending, bottom, ascending }
@@ -9,7 +10,7 @@ enum PushUpPhase { unknown, top, descending, bottom, ascending }
 /// Thresholds are configuration until labelled-video and real-device ML Kit
 /// validation are complete. Missing/low-confidence landmarks freeze progress;
 /// an observed body-line failure invalidates the current repetition.
-class PushUpDetector {
+class PushUpDetector implements PoseRepDetector {
   PushUpDetector({
     this.minimumConfidence = .65,
     this.topElbowAngle = 160,
@@ -31,6 +32,7 @@ class PushUpDetector {
   DateTime? _lastRepAt;
   bool _cycleInvalid = false;
 
+  @override
   VerifiedRep? process(PoseFrame frame) {
     final points = _bodySide(frame);
     if (points == null) return null;
