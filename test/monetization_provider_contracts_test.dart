@@ -101,25 +101,28 @@ void main() {
       expect(gateway.calls, isEmpty);
     });
 
-    test('blocked policy decision does not invoke external ad provider', () async {
-      final gateway = _FakeRewardedAdGateway(
-        RewardedAdGatewayOutcome.completed,
-      );
-      final coordinator = RewardedAdDeliveryCoordinator(
-        policy: const RewardedAdPolicy(),
-        gateway: gateway,
-      );
+    test(
+      'blocked policy decision does not invoke external ad provider',
+      () async {
+        final gateway = _FakeRewardedAdGateway(
+          RewardedAdGatewayOutcome.completed,
+        );
+        final coordinator = RewardedAdDeliveryCoordinator(
+          policy: const RewardedAdPolicy(),
+          gateway: gateway,
+        );
 
-      final result = await coordinator.execute(
-        decision: RewardedAdDecision.unavailable(
-          RewardedAdBlockReason.dailyLimit,
-        ),
-        placement: RewardedAdPlacement.runeShrine,
-      );
+        final result = await coordinator.execute(
+          decision: RewardedAdDecision.unavailable(
+            RewardedAdBlockReason.dailyLimit,
+          ),
+          placement: RewardedAdPlacement.runeShrine,
+        );
 
-      expect(result, isFalse);
-      expect(gateway.calls, isEmpty);
-    });
+        expect(result, isFalse);
+        expect(gateway.calls, isEmpty);
+      },
+    );
   });
 }
 
