@@ -14,9 +14,16 @@ class VerifiedMovementRouter {
   final BattleSessionEngine session;
   final CombatEngine combat;
 
+  String? _lastAcceptedExercise;
+  DateTime? _lastAcceptedAt;
+
   bool accept(VerifiedRep rep) {
     final movement = movementTypeForExercise(rep.exercise);
     if (movement == null) return false;
+
+    if (_lastAcceptedExercise == rep.exercise && _lastAcceptedAt == rep.at) {
+      return false;
+    }
 
     final prepared = session.snapshot.preparedMovement;
     if (prepared != null && prepared != movement) return false;
@@ -24,6 +31,8 @@ class VerifiedMovementRouter {
     if (!session.acceptVerifiedMovement(movement)) return false;
 
     combat.acceptVerifiedRep(formScore: rep.formScore);
+    _lastAcceptedExercise = rep.exercise;
+    _lastAcceptedAt = rep.at;
     return true;
   }
 
