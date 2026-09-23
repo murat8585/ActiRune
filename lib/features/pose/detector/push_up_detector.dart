@@ -35,16 +35,8 @@ class PushUpDetector {
     final points = _bodySide(frame);
     if (points == null) return null;
 
-    final elbowAngle = jointAngle(
-      points.shoulder,
-      points.elbow,
-      points.wrist,
-    );
-    final bodyLineAngle = jointAngle(
-      points.shoulder,
-      points.hip,
-      points.ankle,
-    );
+    final elbowAngle = jointAngle(points.shoulder, points.elbow, points.wrist);
+    final bodyLineAngle = jointAngle(points.shoulder, points.hip, points.ankle);
     final bodyLineValid = bodyLineAngle >= minimumBodyLineAngle;
 
     if (!bodyLineValid) {
@@ -122,7 +114,8 @@ class PushUpDetector {
     JointPoint wrist,
     JointPoint hip,
     JointPoint ankle,
-  })? _bodySide(PoseFrame frame) {
+  })?
+  _bodySide(PoseFrame frame) {
     final left = _side(
       frame,
       Joint.leftShoulder,
@@ -148,7 +141,8 @@ class PushUpDetector {
     JointPoint wrist,
     JointPoint hip,
     JointPoint ankle,
-  })? _side(
+  })?
+  _side(
     PoseFrame frame,
     Joint shoulderJoint,
     Joint elbowJoint,
