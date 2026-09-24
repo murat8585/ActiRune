@@ -1,5 +1,3 @@
-import 'package:flutter/foundation.dart';
-
 import 'provider_authority_lock.dart';
 
 enum ProviderConfigurationVerificationMethod {
@@ -22,7 +20,6 @@ enum ProviderConfigurationIssue {
   analyticsNotConfigured,
 }
 
-@immutable
 final class ProviderConfigurationEntry {
   const ProviderConfigurationEntry({
     required this.providerName,
@@ -95,7 +92,6 @@ final class ProviderConfigurationEntry {
   final Set<ProviderConfigurationVerificationMethod> verificationMethods;
 }
 
-@immutable
 final class ProviderConfigurationEvidence {
   const ProviderConfigurationEvidence({
     required this.androidApplicationId,
@@ -163,7 +159,6 @@ final class ProviderConfigurationEvidence {
   final ProviderConfigurationEntry analytics;
 }
 
-@immutable
 final class ProviderConfigurationReport {
   const ProviderConfigurationReport({required this.issues});
 
