@@ -1,5 +1,3 @@
-import 'package:flutter/foundation.dart';
-
 enum ProductionIdentityIssue {
   missingAndroidNamespace,
   placeholderAndroidNamespace,
@@ -10,7 +8,6 @@ enum ProductionIdentityIssue {
   iosRunnerTestBundleIdentifierMismatch,
 }
 
-@immutable
 final class ProductionIdentityEvidence {
   const ProductionIdentityEvidence({
     required this.androidNamespace,
@@ -68,7 +65,6 @@ final class ProductionIdentityEvidence {
   final String? iosRunnerTestBundleIdentifier;
 }
 
-@immutable
 final class ProductionIdentityReport {
   const ProductionIdentityReport({required this.issues});
 
