@@ -68,8 +68,8 @@ These areas may reopen only under the `REOPENED` rule above.
 | P1-004 | CLOSED — FAIL-CLOSED | Production Battle encounter authority | Current production `/app` constructs `MainShell` with no `battleRootBuilder`; no repository-owned encounter/content authority supplies unlocked encounter movement/target/duration/reward. Existing typed seam and navigation tests correctly keep Battle inaccessible until a real owner is injected. No fabricated encounter was added. |
 | P1-005 | CLOSED | Runtime route closure | Proven route gap: locked Home `Ödüller` entry had no runtime owner although Master Product Bible places Rune Shrine on Home. Connected it only to canonical Rune Shrine Ready; reward/open-gift remains fail-closed because no real rewarded-ad/reward owner is authoritative. Direct Validation Run 262 SUCCESS at `aa90168126f0adca0f43910f81d96f9dc2328316`. Other unbound approved screens were not mapped to arbitrary hotspots; their visual/entry authority is handled by P1-006. |
 | P1-006 | CLOSED | Visual authority closure | Runtime source classes are now explicitly classified. Non-runtime near-final/camera-reference/patch/superseded/legacy classes are forbidden by regression guard; selected `final_p1` candidate use is restricted to six documented exact exceptions and does not promote the Profile revision candidate over canonical VIS_0222. Direct Validation Run 266 SUCCESS at `dc8a55cdfc47a941cb6a35da106431d287112db4`. |
-| P1-007 | IN_PROGRESS | Phase-1 internal release gate | Reconcile the completed P1-001..P1-006 results with current release-gate code/docs. No broad feature re-audit. Any genuinely new internal blocker must have concrete code/test evidence. |
-| P1-008 | TODO | Phase-1 internal close | Require P1-001..P1-007 closed or correctly external-blocked, Direct Validation green for final internal HEAD, and an updated recovery checkpoint. Then freeze Phase-1 internal scope. |
+| P1-007 | CLOSED — NO INTERNAL CODE GAP | Phase-1 internal release gate | Existing `Phase1ReleaseReadiness` and production-readiness workflow correctly represent external production proof and intentionally fail closed without real identities/providers/physical evidence. The actual gap was documentation ambiguity/staleness. Historical audit was superseded and release matrix/evidence README now explicitly separate internal closeout from production readiness. No production gate was weakened or fabricated. |
+| P1-008 | IN_PROGRESS | Phase-1 internal close | Require P1-001..P1-007 closed or correctly external-blocked, Direct Validation green for final internal HEAD, and an updated recovery checkpoint. Then freeze Phase-1 internal scope. |
 
 ## Production/external queue boundary
 
@@ -139,12 +139,21 @@ These belong to a separate production closeout phase after Phase-1 internal clos
 - Direct Validation Run 266 SUCCESS: artwork presence/dimensions, formatting, analyzer, focused interaction tests, full Flutter suite and diff hygiene all PASS.
 - Visual existence still does not create route authority; screens without an unambiguous approved parent entry remain intentionally unbound rather than attached to arbitrary hotspots.
 
+### P1-007 — Internal Release Gate Reconciliation
+- Current release code was inspected before mutation: `lib/core/release/phase1_release_readiness.dart`, `tool/check_phase1_production_readiness.dart`, `tool/phase1_production_readiness_gate_test.dart`, `test/phase1_release_readiness_test.dart` and `.github/workflows/actirune-production-readiness.yml` all model production/external proof, not the internal Phase-1 work queue.
+- `test/phase1_release_readiness_test.dart` already proves current placeholder identities, undecided provider authority and missing physical evidence remain fail-closed; no code weakening was needed.
+- The production-readiness workflow is manual `workflow_dispatch`, while `ActiRune Direct Validation` is the internal behavioral regression gate.
+- Historical stale audit status was superseded at `cb09d035c12a5499b2dee4717ce59d9f725ad870` so old findings cannot silently reopen completed work.
+- Release matrix reconciliation commit `bb954f68312bcd2a4fcaa49f8208a07844326f9f` now records P1-001..P1-006 status, Run 266, and the internal-versus-production boundary.
+- Release evidence README clarification commit `3c5011e8219d1ff40c327dc4032b9b2df28d5c9d` explicitly states that blocked external production evidence is expected and must not be weakened to manufacture internal closure.
+- No runtime/release-gate code changed in P1-007; therefore the last applicable behavioral validation remains Direct Validation Run 266 SUCCESS. Production readiness was intentionally not claimed or fabricated.
+
 ## Current checkpoint
 
 - Baseline HEAD before ledger: `7484d52474203720f95ec063bd86465c693a7fd1`.
 - Last fully green behavioral Direct Validation: Run 266 at `dc8a55cdfc47a941cb6a35da106431d287112db4`.
 - `CURRENT_PROGRESS.md` is historical evidence and must not override this ordered ledger.
-- Active item: `P1-007`.
+- Active item: `P1-008`.
 
 ## Session checkpoint format
 
@@ -154,4 +163,4 @@ Every meaningful closeout transition must update the bottom of this file with:
 
 Current:
 
-`dc8a55cdfc47a941cb6a35da106431d287112db4 | LAST_CLOSED=P1-006 | ACTIVE=P1-007 | NEXT=P1-008 | BLOCKER=none`
+`dc8a55cdfc47a941cb6a35da106431d287112db4 | LAST_CLOSED=P1-007 | ACTIVE=P1-008 | NEXT=none | BLOCKER=none`
