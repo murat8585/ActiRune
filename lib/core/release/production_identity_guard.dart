@@ -25,12 +25,12 @@ final class ProductionIdentityEvidence {
     required String androidMainActivity,
     required String iosProject,
   }) {
-    final namespace = RegExp(
-      r'namespace\s*=\s*"([^"]+)"',
-    ).firstMatch(androidGradle)?.group(1);
-    final applicationId = RegExp(
-      r'applicationId\s*=\s*"([^"]+)"',
-    ).firstMatch(androidGradle)?.group(1);
+    final namespace = RegExp(r'namespace\s*=\s*"([^"]+)"')
+        .firstMatch(androidGradle)
+        ?.group(1);
+    final applicationId = RegExp(r'applicationId\s*=\s*"([^"]+)"')
+        .firstMatch(androidGradle)
+        ?.group(1);
     final mainActivityPackage = RegExp(
       r'^\s*package\s+([^\s;]+)',
       multiLine: true,
@@ -78,7 +78,9 @@ final class ProductionIdentityReport {
 }
 
 abstract final class ProductionIdentityGuard {
-  static ProductionIdentityReport evaluate(ProductionIdentityEvidence evidence) {
+  static ProductionIdentityReport evaluate(
+    ProductionIdentityEvidence evidence,
+  ) {
     final issues = <ProductionIdentityIssue>[];
 
     if (_isMissing(evidence.androidNamespace)) {
@@ -90,9 +92,7 @@ abstract final class ProductionIdentityGuard {
     if (!_isMissing(evidence.androidNamespace) &&
         !_isMissing(evidence.androidApplicationId) &&
         evidence.androidNamespace != evidence.androidApplicationId) {
-      issues.add(
-        ProductionIdentityIssue.androidNamespaceApplicationIdMismatch,
-      );
+      issues.add(ProductionIdentityIssue.androidNamespaceApplicationIdMismatch);
     }
 
     if (_isMissing(evidence.androidMainActivityPackage)) {
@@ -107,9 +107,7 @@ abstract final class ProductionIdentityGuard {
     } else if (!_isMissing(evidence.iosBundleIdentifier) &&
         evidence.iosRunnerTestBundleIdentifier !=
             '${evidence.iosBundleIdentifier}.RunnerTests') {
-      issues.add(
-        ProductionIdentityIssue.iosRunnerTestBundleIdentifierMismatch,
-      );
+      issues.add(ProductionIdentityIssue.iosRunnerTestBundleIdentifierMismatch);
     }
 
     return ProductionIdentityReport(issues: List.unmodifiable(issues));

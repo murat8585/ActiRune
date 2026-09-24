@@ -67,9 +67,7 @@ PRODUCT_BUNDLE_IDENTIFIER = com.actirune.app.RunnerTests;
 
     expect(
       ProductionIdentityGuard.evaluate(evidence).issues,
-      contains(
-        ProductionIdentityIssue.androidNamespaceApplicationIdMismatch,
-      ),
+      contains(ProductionIdentityIssue.androidNamespaceApplicationIdMismatch),
     );
   });
 
@@ -99,9 +97,7 @@ PRODUCT_BUNDLE_IDENTIFIER = com.actirune.app.RunnerTests;
 
     expect(
       ProductionIdentityGuard.evaluate(evidence).issues,
-      contains(
-        ProductionIdentityIssue.iosRunnerTestBundleIdentifierMismatch,
-      ),
+      contains(ProductionIdentityIssue.iosRunnerTestBundleIdentifierMismatch),
     );
   });
 }
