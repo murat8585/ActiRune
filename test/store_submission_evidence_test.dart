@@ -102,8 +102,14 @@ void main() {
 
       expect(report.isReadyForSubmission, isFalse);
       expect(report.hasValidSubmissionEvidence, isFalse);
-      expect(report.issues, contains(StoreSubmissionIssue.appleMetadataIncomplete));
-      expect(report.issues, contains(StoreSubmissionIssue.applePrivacyIncomplete));
+      expect(
+        report.issues,
+        contains(StoreSubmissionIssue.appleMetadataIncomplete),
+      );
+      expect(
+        report.issues,
+        contains(StoreSubmissionIssue.applePrivacyIncomplete),
+      );
       expect(
         report.issues,
         contains(StoreSubmissionIssue.googlePlaySigningUnverified),
@@ -114,9 +120,38 @@ void main() {
       );
     });
 
+    test('conditional store requirements must be explicitly resolved', () {
+      final json = _evidenceJson(
+        reviewState: 'notSubmitted',
+        withSubmissionReferences: false,
+      );
+      final apple = json['apple']! as Map<String, Object?>;
+      final googlePlay = json['googlePlay']! as Map<String, Object?>;
+      apple['exportCompliance'] = 'undecided';
+      googlePlay['productionAccess'] = 'undecided';
+      final evidence = StoreSubmissionEvidence.fromJson(json);
+
+      final report = StoreSubmissionValidator.evaluate(
+        authority: authority,
+        evidence: evidence,
+      );
+
+      expect(report.isReadyForSubmission, isFalse);
+      expect(
+        report.issues,
+        containsAll(<StoreSubmissionIssue>[
+          StoreSubmissionIssue.appleExportComplianceUndecided,
+          StoreSubmissionIssue.googlePlayProductionAccessUndecided,
+        ]),
+      );
+    });
+
     test('submitted state requires non-secret audit references', () {
       final evidence = StoreSubmissionEvidence.fromJson(
-        _evidenceJson(reviewState: 'submitted', withSubmissionReferences: false),
+        _evidenceJson(
+          reviewState: 'submitted',
+          withSubmissionReferences: false,
+        ),
       );
 
       final report = StoreSubmissionValidator.evaluate(
