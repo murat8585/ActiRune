@@ -1,0 +1,10 @@
+AVD name: ActiRune_Emulator
+ADB serial: emulator-5554
+PACKAGE_ID: com.example.actirune
+APK: C:\Users\Murat\Desktop\ActiRune-emulator-x64-debug-119889c35119.apk
+APK_SHA256: 48129eb1e4ca9ccf9d1582958c73a926b64b045dea1c99b12994c1e6c8c01bd3
+PACKAGE_BEFORE_INSTALL: NOT_INSTALLED
+INSTALL_COMMAND: adb -s emulator-5554 install <verified APK>
+INSTALL_RESULT: SUCCESS
+INSTALLED_VERSION_CODE: 1
+FIRST_LAUNCH: PENDING
