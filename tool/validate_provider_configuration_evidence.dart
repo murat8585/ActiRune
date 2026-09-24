@@ -32,7 +32,9 @@ void main(List<String> args) {
   }
   if (!configurationFile.existsSync()) {
     stderr.writeln('RESULT: BLOCKED_PROVIDER_CONFIGURATION_MISSING');
-    stderr.writeln('Provider configuration evidence not found: $configurationPath');
+    stderr.writeln(
+      'Provider configuration evidence not found: $configurationPath',
+    );
     exitCode = 1;
     return;
   }
