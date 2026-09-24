@@ -34,6 +34,7 @@ Phase-1 internal scope is frozen at commit `034305744735afd9fef93488e7a81b73d87d
 | ID | Status | Scope | Current truth / closure requirement |
 |---|---|---|---|
 | P2-000 | CLOSED | Production closeout bootstrap | Dedicated production branch and ordered ledger created from the exact frozen Phase-1 HEAD. |
+| P2-001A | CLOSED | Identity migration safety prep | Added a typed platform-identity consistency guard, regressions, and a dedicated production-closeout CI workflow. It blocks placeholder Android namespace and mismatched namespace/applicationId/MainActivity or iOS RunnerTests derivation without selecting a production identifier. |
 | P2-001 | BLOCKED_EXTERNAL | Final Android/iOS application identity authority | Android `applicationId`/namespace and iOS Runner bundle id are still `com.example.actirune`. No final production package/bundle decision is authoritative. Owner must explicitly lock the real identifiers before platform/provider registration. |
 | P2-002 | BLOCKED_EXTERNAL | Android/iOS production signing ownership | Android release currently uses debug signing. No authoritative Apple Development Team/signing evidence exists. Requires protected signing ownership after P2-001. |
 | P2-003 | BLOCKED_EXTERNAL | Production provider authority lock | Recommended stack is Firebase + RevenueCat + Google Mobile Ads + Firebase Analytics/optional BigQuery, but recommendation is not authority. Requires P2-001 plus explicit provider/account decision before `validation/release/provider_authority.json` may legitimately exist. |
@@ -58,6 +59,27 @@ Current iOS configuration:
 
 Historical `com.example.actirune_canonical_visual_prototype` is visual-prototype history only and is explicitly not production authority.
 
+Identity-decision packet:
+- `docs/release/PRODUCTION_IDENTITY_DECISION_PACKET_20260924.md`
+- candidate shapes are proposals only; no platform identity mutation has been made.
+
+### P2-001A identity migration safety prep
+
+Persistent repository safeguards now exist before any owner-approved identity mutation:
+- `lib/core/release/production_identity_guard.dart`
+- `test/production_identity_guard_test.dart`
+- `.github/workflows/actirune-production-closeout-validation.yml`
+
+The guard validates:
+- Android namespace is present and not `com.example.*`;
+- Android namespace and applicationId stay aligned;
+- `MainActivity` package stays aligned with Android namespace;
+- iOS RunnerTests bundle id is derived from the Runner bundle id.
+
+The first production-closeout CI run correctly stopped on canonical Dart formatting only. Canonical formatter commit `f78232ccdca03ecb87b187f2f1400dcc64df527d` applied the formatter output; the temporary formatting workflow was removed at `8b415eca4e8b1f5aae2632923a6be157275f4545`.
+
+A green production-closeout validation run on the post-cleanup user checkpoint is still required before treating P2-001A evidence as final. P2-001 itself remains externally blocked and no final identifier is inferred from test fixtures such as `com.actirune.app`.
+
 ### P2-003 provider recommendation
 
 Current architecture recommendation remains:
@@ -76,7 +98,7 @@ P2-005 Battle encounter/content authority may be resolved in parallel when autho
 
 ## Current checkpoint
 
-`BASE=034305744735afd9fef93488e7a81b73d87db7c0 | LAST_CLOSED=P2-000 | ACTIVE=none | FIRST_BLOCKER=P2-001 | NEXT_AFTER_AUTHORITY=P2-002`
+`BASE=034305744735afd9fef93488e7a81b73d87db7c0 | LAST_CLOSED=P2-001A | ACTIVE=none | FIRST_BLOCKER=P2-001 | NEXT_AFTER_AUTHORITY=P2-002`
 
 ## Hard boundary reached on 2026-09-24
 
