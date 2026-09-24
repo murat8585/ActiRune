@@ -1,0 +1,49 @@
+name: ActiRune Production Identity Formatter
+
+on:
+  push:
+    branches:
+      - production/closeout-20260924
+    paths:
+      - '.github/workflows/actirune-production-identity-format-stage.yml'
+      - 'lib/core/release/production_identity_guard.dart'
+      - 'test/production_identity_guard_test.dart'
+
+permissions:
+  contents: write
+
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout production closeout branch
+        uses: actions/checkout@v4
+        with:
+          ref: production/closeout-20260924
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Apply canonical Dart format
+        run: >-
+          dart format
+          lib/core/release/production_identity_guard.dart
+          test/production_identity_guard_test.dart
+
+      - name: Commit canonical formatting
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- lib/core/release/production_identity_guard.dart test/production_identity_guard_test.dart; then
+            echo 'No formatting change required.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add lib/core/release/production_identity_guard.dart test/production_identity_guard_test.dart
+          git commit -m 'Apply canonical production identity formatting'
+          git push origin HEAD:production/closeout-20260924
