@@ -61,7 +61,7 @@ void main() {
     final files = runtimeDartFiles();
     final usedFinalP1Assets = <String, List<String>>{};
     final finalP1Pattern = RegExp(
-      r"visual_authority/20260921/final_p1/[^'\"\s]+\.png",
+      r'''visual_authority/20260921/final_p1/[^'"\s]+\.png''',
     );
 
     for (final file in files) {
@@ -91,11 +91,13 @@ void main() {
     }
 
     expect(
-      usedFinalP1Assets,
-      isNot(contains(
-        'visual_authority/20260921/final_p1/'
-        '01_P1_PROFILE_FINAL_REVISION.png',
-      )),
+      usedFinalP1Assets.keys,
+      isNot(
+        contains(
+          'visual_authority/20260921/final_p1/'
+          '01_P1_PROFILE_FINAL_REVISION.png',
+        ),
+      ),
       reason:
           'The Profile revision remains a candidate; the current canonical '
           'Profile shell must not be silently replaced.',
