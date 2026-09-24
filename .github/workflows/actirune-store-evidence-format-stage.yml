@@ -1,0 +1,44 @@
+name: ActiRune Store Evidence Formatter
+
+on:
+  push:
+    branches:
+      - production/closeout-20260924
+    paths:
+      - '.github/workflows/actirune-store-evidence-format-stage.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout production closeout branch
+        uses: actions/checkout@v4
+        with:
+          ref: production/closeout-20260924
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Apply canonical Dart formatting
+        run: dart format lib/core/release/store_submission_evidence.dart
+
+      - name: Commit canonical formatting if needed
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- lib/core/release/store_submission_evidence.dart; then
+            echo 'No formatting changes required.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add lib/core/release/store_submission_evidence.dart
+          git commit -m 'Apply canonical store evidence formatting'
+          git push origin HEAD:production/closeout-20260924
