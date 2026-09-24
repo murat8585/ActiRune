@@ -347,7 +347,8 @@ abstract final class StoreSubmissionValidator {
       state: googlePlay.reviewState,
       submissionReference: googlePlay.submissionReference,
       notSubmitted: StoreSubmissionIssue.googlePlayNotSubmitted,
-      missingReference: StoreSubmissionIssue.googlePlaySubmissionReferenceMissing,
+      missingReference:
+          StoreSubmissionIssue.googlePlaySubmissionReferenceMissing,
       rejected: StoreSubmissionIssue.googlePlayRejected,
       issues: issues,
     );
