@@ -33,7 +33,8 @@ Phase-1 internal scope is frozen at commit `034305744735afd9fef93488e7a81b73d87d
 |---|---|---|---|
 | P2-000 | CLOSED | Production closeout bootstrap | Dedicated production branch and ordered ledger created from the exact frozen Phase-1 HEAD. |
 | P2-001A | CLOSED | Identity migration safety prep | Typed platform-identity consistency guard, regressions and production-closeout CI are green. Production Closeout Validation Run 3 SUCCESS at exact HEAD `8717303a76b3853e4ca6c8cbfa8ce8765662df6f`. |
-| P2-001B | CLOSED | Unified identity/release CLI binding | Unified CLI now evaluates both release state and platform-identity consistency as pure Dart. Production Closeout Validation Run 7 SUCCESS at exact HEAD `370b08093e338729af1836e986059a8aa487ed20`. This closure remains valid only if the Production Closeout Validation attached to the exact commit containing this ledger closure is also SUCCESS. |
+| P2-001B | CLOSED | Unified identity/release CLI binding | Unified CLI evaluates both release state and platform-identity consistency as pure Dart. Production Closeout Validation Run 7 SUCCESS at exact HEAD `370b08093e338729af1836e986059a8aa487ed20`; closure commit validation also succeeded. |
+| P2-001C | VERIFIED | Dry-run identity authority migration planner | Candidate syntax/placeholder guard, regression coverage and a dry-run-only migration planner exist. Canonical formatting is applied and temporary formatter is removed. Exact post-cleanup production-closeout validation must pass before this is CLOSED. |
 | P2-001 | BLOCKED_EXTERNAL | Final Android/iOS application identity authority | Android `applicationId`/namespace and iOS Runner bundle id remain `com.example.actirune`. No final production package/bundle decision is authoritative. |
 | P2-002 | BLOCKED_EXTERNAL | Android/iOS production signing ownership | Android release uses debug signing. No authoritative Apple Development Team/signing evidence exists. Requires P2-001 first. |
 | P2-003 | BLOCKED_EXTERNAL | Production provider authority lock | Firebase + RevenueCat + Google Mobile Ads + Firebase Analytics/optional BigQuery is recommended, not authoritative. Requires real identity/provider/account authority. |
@@ -101,9 +102,31 @@ Production Closeout Validation Run 7 SUCCESS on exact HEAD `370b08093e338729af18
 - 9 identity/release guard regressions PASS;
 - unified `dart run tool/check_production_release_readiness.dart` PASS as a gate execution while correctly returning repository state `RESULT: BLOCKED` for the real placeholder/signing/Team blockers rather than a false production-ready state.
 
-The unified CLI discovers the single Android `MainActivity.kt` under `android/app/src/main/kotlin`, so a future approved package migration is not tied to today's placeholder directory. It reports release and identity-consistency issues separately and exits `0` only when both reports are green. The persistent production-closeout workflow accepts an evidence-backed PASS or the current expected BLOCKED state while rejecting parser/runtime/tooling errors.
+Production Closeout Validation Run 8 SUCCESS on exact closure commit `18dcb1c2ac963123c1a754e8721e75f478a21d64`, satisfying the P2-001B self-validating closure rule.
 
-**Self-validating closure rule:** P2-001B is CLOSED only while `ActiRune Production Closeout Validation` attached to the exact commit containing this section concludes SUCCESS. A failure automatically reopens P2-001B.
+## P2-001C evidence
+
+Persistent files:
+- `lib/core/release/production_identity_candidate.dart`
+- `test/production_identity_candidate_test.dart`
+- `tool/plan_production_identity_migration.dart`
+- `.github/workflows/actirune-production-closeout-validation.yml`
+
+The candidate guard rejects:
+- missing Android/iOS identifiers;
+- malformed Android application ids;
+- malformed iOS bundle identifiers;
+- any `com.example.*` candidate.
+
+The planner is deliberately `DRY_RUN_ONLY`. It accepts explicit `--android-id` and `--ios-bundle-id` values, reads current platform identity files, prints the exact Android namespace/applicationId/MainActivity and iOS Runner/RunnerTests mutations that would be required, and does not modify platform identity, signing, provider, account or secret state.
+
+Validation history:
+- Production Closeout Validation Run 11 reached the formatter and exposed canonical formatting drift only; analyzer/tests/planner were correctly not run after that failure.
+- Canonical two-file formatting commit: `bdd7d379234a444fa23534eb7a7b71b604d8a2e5`.
+- Temporary formatter removed: `b94db018f217d69a8313889f753f05965d038f29`.
+- This checkpoint intentionally triggers the persistent production-closeout validation on the exact post-cleanup HEAD.
+
+P2-001C may be CLOSED only after that exact validation passes formatting, analyzer, candidate/identity/release regressions, the valid dry-run planner path, the placeholder-rejection planner path, and the unified production readiness gate.
 
 ## Provider recommendation boundary
 
@@ -123,8 +146,8 @@ P2-005 Battle encounter/content authority may be resolved in parallel only when 
 
 ## Current checkpoint
 
-`BASE=034305744735afd9fef93488e7a81b73d87db7c0 | LAST_CLOSED=P2-001B | ACTIVE=none | FIRST_BLOCKER=P2-001 | NEXT_AFTER_AUTHORITY=P2-002`
+`BASE=034305744735afd9fef93488e7a81b73d87db7c0 | LAST_CLOSED=P2-001B | ACTIVE=P2-001C-VERIFY | FIRST_BLOCKER=P2-001 | NEXT_AFTER_AUTHORITY=P2-002`
 
 ## Hard boundary
 
-Repository-safe identity preparation is complete. No next state-changing action may guess the final package/bundle identifiers, signing owner, provider projects/accounts, product ids, prices, ad-unit ids, credentials, physical-device results, or Battle content. Those require real owner/external evidence.
+Repository-safe identity preparation now includes a dry-run candidate validation/migration planner. No platform identity has been changed. No next state-changing action may guess the final package/bundle identifiers, signing owner, provider projects/accounts, product ids, prices, ad-unit ids, credentials, physical-device results, or Battle content. Those require real owner/external evidence.
