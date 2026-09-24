@@ -1,9 +1,14 @@
-AVD name: ActiRune_Emulator
-ADB serial: emulator-5554
-AVD device profile: Pixel 8 (pixel_8)
-Android API: 37
-Android release: 17
+SOURCE_REPO: https://github.com/murat8585/ActiRune
+PRODUCTION_BRANCH: production/closeout-20260924
+PRODUCTION_HEAD: 95d7a83a529bf7e04ca3939a85e65bd277de4f88
+VALIDATION_BRANCH: validation/emulator-20260924
+AVD_NAME: ActiRune_Emulator
+ADB_SERIAL: emulator-5554
+AVD_DEVICE_PROFILE: Pixel 8 (pixel_8)
+ANDROID_REPORTED_MODEL: sdk_gphone64_x86_64
+ANDROID_API: 37
+ANDROID_RELEASE: 17
 ABI: x86_64
-Android-reported device model: sdk_gphone64_x86_64
-System image: system-images;android-37.0;google_apis;x86_64
-Boot completed: 1
+SYSTEM_IMAGE: system-images;android-37.0;google_apis;x86_64
+BOOT_COMPLETED: 1
+DISPLAY_RESOLUTION: 1080x2400

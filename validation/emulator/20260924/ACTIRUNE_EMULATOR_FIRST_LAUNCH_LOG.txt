@@ -1,0 +1,97 @@
+ACTIRUNE FIRST LAUNCH LOG
+AVD: ActiRune_Emulator
+ADB_SERIAL: emulator-5554
+PACKAGE: com.example.actirune
+PROCESS_ID: 4960
+LAUNCH_AT: 2026-09-24 22:41:52 +03:00
+BUFFER_READ_AT: 2026-09-24 22:43:07 +03:00
+LOGCAT_WINDOW: target-only buffer cleared before cold launch; retained startup entries through 17.4 seconds after launch; entries after 20 seconds excluded
+REDACTION: Dart VM service token, credential-like lines, bearer tokens, and API-key patterns removed
+RELEVANT_ENTRY_COUNT: 80
+FATAL_CRASH_MATCHES: 0
+FLUTTER_FATAL_MATCHES: 0
+NATIVE_FATAL_MATCHES: 0
+FIREBASE_FATAL_MATCHES: 0
+
+--------- beginning of main
+--------- beginning of system
+09-24 19:41:53.281  4960  4960 I libprocessgroup: Created cgroup /sys/fs/cgroup/apps/uid_10234/pid_4960
+09-24 19:41:53.285  4960  4960 I Zygote  : Process 4960 created for com.example.actirune
+09-24 19:41:53.285  4960  4960 I xample.actirune: Late-enabling -Xcheck:jni
+09-24 19:41:53.303  4960  4960 I xample.actirune: Using generational CollectorTypeCMC GC.
+09-24 19:41:53.303  4960  4960 W xample.actirune: Unexpected CPU variant for x86: x86_64.
+09-24 19:41:53.303  4960  4960 W xample.actirune: Known variants: atom, sandybridge, silvermont, goldmont, goldmont-plus, goldmont-without-sha-xsaves, tremont, kabylake, alderlake, pantherlake, default
+09-24 19:41:53.312  4960  4960 D nativeloader: Load libframework-connectivity-tiramisu-jni.so using APEX ns com_android_tethering for caller /apex/com.android.tethering/javalib/framework-connectivity-t.jar: ok
+09-24 19:41:53.343  4960  4960 D ApplicationLoaders: Returning zygote-cached class loader: /system_ext/framework/androidx.window.extensions.jar
+09-24 19:41:53.343  4960  4960 D ApplicationLoaders: Returning zygote-cached class loader: /system_ext/framework/androidx.window.sidecar.jar
+09-24 19:41:53.548  4960  4960 D nativeloader: Configuring clns-9 for other apk /data/app/~~_fZar6ghwiOeZa6GTlfGtA==/com.example.actirune-AXuwooTT_x7H4X7QC_tVwQ==/base.apk. target_sdk_version=36, uses_libraries=, library_path=/data/app/~~_fZar6ghwiOeZa6GTlfGtA==/com.example.actirune-AXuwooTT_x7H4X7QC_tVwQ==/lib/x86_64:/data/app/~~_fZar6ghwiOeZa6GTlfGtA==/com.example.actirune-AXuwooTT_x7H4X7QC_tVwQ==/base.apk!/lib/x86_64, permitted_path=/data:/mnt/expand:/data/user/0/com.example.actirune
+09-24 19:41:53.560  4960  4960 V GraphicsEnvironment: Currently set values for:
+09-24 19:41:53.560  4960  4960 V GraphicsEnvironment:   angle_gl_driver_selection_pkgs=[]
+09-24 19:41:53.560  4960  4960 V GraphicsEnvironment:   angle_gl_driver_selection_values=[]
+09-24 19:41:53.560  4960  4960 V GraphicsEnvironment: com.example.actirune is not listed in per-application setting
+09-24 19:41:53.560  4960  4960 V GraphicsEnvironment: No special selections for ANGLE, returning default driver choice
+09-24 19:41:53.561  4960  4960 V GraphicsEnvironment: Neither updatable production driver nor prerelease driver is supported.
+09-24 19:41:53.611  4960  4960 D WM-WrkMgrInitializer: Initializing WorkManager with default configuration.
+09-24 19:41:53.665  4960  4975 I DisplayManager: Choreographer implicitly registered for the refresh rate.
+09-24 19:41:53.724  4960  4980 I ResourceExtractor: Found extracted resources res_timestamp-1-1790278071291
+09-24 19:41:53.725  4960  4979 D FlutterJNI: Beginning load of flutter...
+09-24 19:41:53.735  4960  4975 I GFXSTREAM: [eglDisplay.cpp(297)] Opening libGLESv1_CM_emulation.so
+09-24 19:41:53.736  4960  4975 I GFXSTREAM: [eglDisplay.cpp(297)] Opening libGLESv2_emulation.so
+09-24 19:41:53.742  4960  4975 W libc    : Access denied finding property "vendor.mesa.virtgpu.kumquat"
+09-24 19:41:53.750  4960  4975 W HWUI    : Failed to choose config with EGL_SWAP_BEHAVIOR_PRESERVED, retrying without...
+09-24 19:41:53.752  4960  4975 W HWUI    : Failed to initialize 101010-2 format, error = EGL_SUCCESS
+09-24 19:41:53.780  4960  4979 D nativeloader: Load /data/app/~~_fZar6ghwiOeZa6GTlfGtA==/com.example.actirune-AXuwooTT_x7H4X7QC_tVwQ==/base.apk!/lib/x86_64/libflutter.so using class loader ns clns-9 (caller=/data/app/~~_fZar6ghwiOeZa6GTlfGtA==/com.example.actirune-AXuwooTT_x7H4X7QC_tVwQ==/base.apk): ok
+09-24 19:41:53.782  4960  4979 D FlutterJNI: flutter (null) was loaded normally!
+09-24 19:41:53.790  4960  4981 D skia    : [SkFontMgr Android Parser] '/product/etc/fonts_customization.xml' could not be opened
+09-24 19:41:53.816  4960  4960 W xample.actirune: type=1400 audit(0.0:25): avc:  denied  { read } for  name="max_map_count" dev="proc" ino=25980 scontext=u:r:untrusted_app_34:s0:c234,c256,c512,c768 tcontext=u:object_r:proc_max_map_count:s0 tclass=file permissive=0 app=com.example.actirune
+09-24 19:41:53.825  4960  4982 W libc    : Access denied finding property "vendor.mesa.virtgpu.kumquat"
+09-24 19:41:53.860  4960  4982 I flutter : [IMPORTANT:flutter/shell/platform/android/android_context_gl_impeller.cc(104)] Using the Impeller rendering backend (OpenGLES).
+09-24 19:41:53.863  4960  4983 W libc    : Access denied finding property "vendor.mesa.virtgpu.kumquat"
+09-24 19:41:53.938  4960  4988 I flutter : The Dart VM service is listening on http://127.0.0.1:[PORT]/[REDACTED_VM_SERVICE_TOKEN]/
+09-24 19:41:54.284  4960  4960 I xample.actirune: hiddenapi: Accessing hidden method Landroid/view/accessibility/AccessibilityNodeInfo;->getSourceNodeId()J (runtime_flags=0, domain=platform, api=unsupported,test-api) from Lio/flutter/view/AccessibilityViewEmbedder$ReflectionAccessors; (domain=app, TargetSdkVersion=36) using reflection: allowed
+09-24 19:41:54.284  4960  4960 I xample.actirune: hiddenapi: Accessing hidden method Landroid/view/accessibility/AccessibilityRecord;->getSourceNodeId()J (runtime_flags=0, domain=platform, api=unsupported) from Lio/flutter/view/AccessibilityViewEmbedder$ReflectionAccessors; (domain=app, TargetSdkVersion=36) using reflection: allowed
+09-24 19:41:54.285  4960  4960 I xample.actirune: hiddenapi: Accessing hidden field Landroid/view/accessibility/AccessibilityNodeInfo;->mChildNodeIds:Landroid/util/LongArray; (runtime_flags=0, domain=platform, api=unsupported) from Lio/flutter/view/AccessibilityViewEmbedder$ReflectionAccessors; (domain=app, TargetSdkVersion=36) using reflection: allowed
+09-24 19:41:54.285  4960  4960 I xample.actirune: hiddenapi: Accessing hidden method Landroid/util/LongArray;->get(I)J (runtime_flags=0, domain=platform, api=unsupported) from Lio/flutter/view/AccessibilityViewEmbedder$ReflectionAccessors; (domain=app, TargetSdkVersion=36) using reflection: allowed
+09-24 19:41:54.288  4960  4960 D AccessibilityBridge: Setting not found: accessibility_display_inversion_enabled, using default: 0
+09-24 19:41:54.298  4960  4960 D FlutterRenderer: Width is zero. 0,0
+09-24 19:41:54.301  4960  4960 D CompatChangeReporter: Compat change id reported: 377864165; UID 10234; state: ENABLED
+09-24 19:41:54.309  4960  4960 W HWUI    : Unknown dataspace 0
+09-24 19:41:54.320  4960  4994 W libc    : Access denied finding property "vendor.mesa.virtgpu.kumquat"
+09-24 19:41:54.945  4960  4960 I Choreographer: Skipped 76 frames!  The application may be doing too much work on its main thread.
+09-24 19:41:54.946  4960  4960 D WindowOnBackDispatcher: setTopOnBackInvokedCallback (unwrapped): android.app.Activity$$ExternalSyntheticLambda0@942f91e
+09-24 19:41:54.966  4960  4965 I xample.actirune: Compiler allocated 5250KB to compile void android.view.ViewRootImpl.performTraversals(long)
+09-24 19:41:54.969  4960  4960 I WindowExtensionsImpl: Initializing Window Extensions, vendor API level=10, activity embedding enabled=true
+09-24 19:41:54.974  4960  4960 W UiContextUtils: Requested context is a non-UI Context. Creating a UI-Context with display: 0. Context: Context=android.app.Application@4d1be5, of which baseContext=android.app.ContextImpl@a966132
+09-24 19:41:55.023  4960  4960 D VRI[MainActivity]: WindowInsets changed: 1080x2400 statusBars:[0,132,0,0] navigationBars:[0,0,0,63] mandatorySystemGestures:[0,164,0,84]
+09-24 19:41:55.024  4960  4960 D FlutterRenderer: Width is zero. 0,0
+09-24 19:41:55.029  4960  4960 I Surface : Creating surface for consumer unnamed-4960-0 with slotExpansion=1 for 64 slots
+09-24 19:41:55.030  4960  4960 I Surface : Creating surface for consumer VRI[MainActivity]#0(BLAST Consumer)0 with slotExpansion=1 for 64 slots
+09-24 19:41:55.032  4960  4960 D FlutterJNI: Sending viewport metrics to the engine.
+09-24 19:41:55.040  4960  4960 I Surface : Creating surface for consumer unnamed-4960-1 with slotExpansion=1 for 64 slots
+09-24 19:41:55.041  4960  4960 I Surface : Creating surface for consumer 663a42c SurfaceView[com.example.actirune/com.example.actirune.MainActivity]#1(BLAST Consumer)1 with slotExpansion=1 for 64 slots
+09-24 19:41:55.523  4960  4996 I HWUI    : Using FreeType backend (prop=Auto)
+09-24 19:41:55.553  4960  4960 I Choreographer: Skipped 31 frames!  The application may be doing too much work on its main thread.
+09-24 19:41:55.599  4960  4960 D WindowLayoutComponentImpl: Register WindowLayoutInfoListener on Context=com.example.actirune.MainActivity@1838afb, of which baseContext=android.app.ContextImpl@ae03648
+09-24 19:41:55.603  4960  4960 D FlutterJNI: Sending viewport metrics to the engine.
+09-24 19:41:55.640  4960  4960 D InsetsController: hide(ime())
+09-24 19:41:55.640  4960  4960 I ImeTracker: com.example.actirune:ae42bb4d: onCancelled at PHASE_CLIENT_ALREADY_HIDDEN
+09-24 19:42:00.144  4960  5003 D ProfileInstaller: Installing profile for com.example.actirune
+09-24 19:41:53.214   534   534 I adbd    : adbd service requested 'shell,v2,TERM=dumb,raw:am start -W -n com.example.actirune/com.example.actirune.MainActivity'
+09-24 19:41:53.245   676  1244 I ActivityTaskManager: Add Task{7cf7af4 #9 type=standard I=com.example.actirune/.MainActivity} to hidden list because adding Task{4cf21de #10 type=standard I=com.example.actirune/.MainActivity}
+09-24 19:41:53.245   676  1244 V ActivityTaskManager: TaskLaunchParamsModifier: phase=3 task=Task{4cf21de #10 type=standard I=com.example.actirune/.MainActivity} activity=ActivityRecord{62180633 u0 com.example.actirune/.MainActivity t-1} display-from-task=0 display-id=0 task-display-area-windowing-mode=1 suggested-display-area=DefaultTaskDisplayArea@174686492 inherit-from-task=fullscreen non-freeform-task-display-area display-area=DefaultTaskDisplayArea@174686492 skip-bounds-fullscreen
+09-24 19:41:53.246   676  1244 I ActivityTaskManager: START u0 {flg=0x10000000 xflg=0x5 cmp=com.example.actirune/.MainActivity} with LAUNCH_SINGLE_TOP from uid 2000 (com.android.shell) (BAL_ALLOW_PERMISSION) result code=0
+09-24 19:41:53.253   676  2785 I AppsFilter: interaction: PackageSetting{1790900 com.android.microdroid.empty_payload/10219} -> PackageSetting{9277dea com.example.actirune/10234} BLOCKED
+09-24 19:41:53.258   676  1093 I AppWidgetServiceImpl: Updating package stopped masked state for uid 10234 package com.example.actirune isStopped false
+09-24 19:41:53.269   676   707 I ActivityManager: Start proc 4960:com.example.actirune/u0a234 for next-top-activity {com.example.actirune/com.example.actirune.MainActivity}
+09-24 19:41:53.271   676  1538 D WindowManager: setClientSurface Surface(name=VRI-Splash Screen com.example.actirune#153)/@0xa13359a for baa0651 Splash Screen com.example.actirune
+09-24 19:41:53.354   676   697 V WindowManager:         {WCT{RemoteToken{13addf2 Task{4cf21de #10 type=standard I=com.example.actirune/.MainActivity}}} m=OPEN f=MOVE_TO_TOP|FLAG_CHANGED_INTERACTIVE leash=Surface(name=Task=10#150)/@0x6df1166 sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) epz=Point(1080, 2400) d=0 taskParent=-1 winMode=1 userId=0},
+09-24 19:41:53.367   676  1536 W WindowManager: Exception thrown during dispatchAppVisibility Window{41e70d9 u0 com.example.actirune/com.example.actirune.MainActivity EXITING}
+09-24 19:41:53.378   676  1538 E WindowOrganizerController: Attempting to externally change a non-organized container: Task{7cf7af4 #9 type=standard I=com.example.actirune/.MainActivity}={handlePackageUpdate:false,} playercount=2 taskorg=android.window.ITaskOrganizer$Stub$Proxy@5bb9265
+09-24 19:41:54.947   676  1859 D CoreBackPreview: Window{b09bad9 u0 com.example.actirune/com.example.actirune.MainActivity}: Setting back callback OnBackInvokedCallbackInfo{mCallback=android.window.IOnBackInvokedCallback$Stub$Proxy@492437f, mPriority=-1, mIsAnimationCallback=false, mOverrideBehavior=0}
+09-24 19:41:55.026   676  1859 D WindowManager: setClientSurface Surface(name=VRI-com.example.actirune/com.example.actirune.MainActivity#160)/@0xf5f6438 for b09bad9 com.example.actirune/com.example.actirune.MainActivity
+09-24 19:41:55.582   676   697 I ActivityTaskManager: Displayed com.example.actirune/.MainActivity for user 0: +2s343ms
+09-24 19:41:55.582   676   697 I ActivityTaskManager: Fully drawn com.example.actirune/.MainActivity: +2s343ms
+09-24 19:41:55.638   676   811 I ImeTracker: com.example.actirune:ae42bb4d: onRequestHide at ORIGIN_SERVER reason HIDE_UNSPECIFIED_WINDOW fromUser false userId 0 displayId 0
+09-24 19:41:55.646  1616  1616 I GoogleInputMethodService: GoogleInputMethodService.onStartInput():1446 onStartInput(EditorInfo{EditorInfo{packageName=com.example.actirune, inputType=0, inputTypeString=NULL, enableLearning=false, autoCorrection=false, autoComplete=false, imeOptions=0, privateImeOptions=null, actionName=UNSPECIFIED, actionLabel=null, initialSelStart=-1, initialSelEnd=-1, initialCapsMode=0, label=null, fieldId=0, fieldName=null, extras=null, hintText=null, hintLocales=[]}}, false)
+09-24 19:41:55.649   676  2785 W PackageConfigPersister: App-specific configuration not found for packageName: com.example.actirune and userId: 0
+09-24 19:42:10.620   534   534 I adbd    : adbd service requested 'shell,v2,TERM=dumb,raw:pidof com.example.actirune'
