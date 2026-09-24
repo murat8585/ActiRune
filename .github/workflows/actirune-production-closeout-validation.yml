@@ -8,6 +8,7 @@ on:
       - 'lib/core/release/**'
       - 'test/production_*'
       - 'tool/check_production_release_readiness.dart'
+      - 'tool/plan_production_identity_migration.dart'
       - 'android/app/**'
       - 'ios/Runner.xcodeproj/**'
       - 'PRODUCTION_CLOSEOUT.md'
@@ -44,11 +45,14 @@ jobs:
       - name: Verify production-closeout formatting
         run: >-
           dart format --output=none --set-exit-if-changed
+          lib/core/release/production_identity_candidate.dart
           lib/core/release/production_identity_guard.dart
           lib/core/release/production_release_guard.dart
+          test/production_identity_candidate_test.dart
           test/production_identity_guard_test.dart
           test/production_release_guard_test.dart
           tool/check_production_release_readiness.dart
+          tool/plan_production_identity_migration.dart
 
       - name: Analyze
         run: flutter analyze
@@ -56,8 +60,33 @@ jobs:
       - name: Production identity and release guard regressions
         run: >-
           flutter test --no-pub
+          test/production_identity_candidate_test.dart
           test/production_identity_guard_test.dart
           test/production_release_guard_test.dart
+
+      - name: Exercise dry-run production identity migration planner
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          valid_output="$(dart run tool/plan_production_identity_migration.dart \
+            --android-id=com.actirune.app \
+            --ios-bundle-id=com.actirune.app)"
+          printf '%s\n' "$valid_output"
+          grep -F 'Mode: DRY_RUN_ONLY' <<<"$valid_output"
+          grep -F 'RESULT: READY_FOR_AUTHORITY_APPLY' <<<"$valid_output"
+
+          set +e
+          blocked_output="$(dart run tool/plan_production_identity_migration.dart \
+            --android-id=com.example.actirune \
+            --ios-bundle-id=com.example.actirune 2>&1)"
+          blocked_status=$?
+          set -e
+          printf '%s\n' "$blocked_output"
+          test "$blocked_status" -eq 2
+          grep -F 'placeholderAndroidApplicationId' <<<"$blocked_output"
+          grep -F 'placeholderIosBundleIdentifier' <<<"$blocked_output"
+          grep -F 'RESULT: BLOCKED_CANDIDATE' <<<"$blocked_output"
 
       - name: Exercise unified production identity and release gate
         shell: bash
