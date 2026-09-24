@@ -1,8 +1,9 @@
 AVD name: ActiRune_Emulator
-ADB serial: PENDING
-Android API: 37.0
+ADB serial: emulator-5554
+AVD device profile: Pixel 8 (pixel_8)
+Android API: 37
+Android release: 17
 ABI: x86_64
-Device model: Pixel 8
+Android-reported device model: sdk_gphone64_x86_64
 System image: system-images;android-37.0;google_apis;x86_64
-Boot completed: PENDING
-AVD creation: SUCCESS
+Boot completed: 1
