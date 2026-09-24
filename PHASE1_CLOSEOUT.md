@@ -62,9 +62,9 @@ These areas may reopen only under the `REOPENED` rule above.
 
 | ID | Status | Scope | Closure target |
 |---|---|---|---|
-| P1-001 | TODO | Flexible Activity integration truth | Determine from current HEAD/branches whether a completed Flexible Activity implementation exists outside the authority branch; integrate only if it is authoritative, non-duplicative and green. Otherwise close with evidence explaining why it is not a current Phase-1 gap. |
-| P1-002 | TODO | Achievement contract semantics | Verify current achievement signal/category contract against current code and tests. Fix only a proven mismatch; add regression coverage; close with validation evidence. |
-| P1-003 | TODO | Progression ownership semantics | Verify Player Level / Hero Level / Lumi Bond / Movement Mastery ownership, persistence boundaries and current `progression_policy.dart`. Implement only internally authoritative semantics; external persistence remains a separate boundary. |
+| P1-001 | CLOSED | Flexible Activity integration truth | Verified staging implementation was integrated without its temporary workflow. Runtime `8aaab7130dacf829711f2cef2832f1c0db140d2b`; regression coverage `30f9d5b0614f69138f1da28596db0b218ef4e2cb`; Direct Validation Run 251 SUCCESS at `30f9d5b0614f69138f1da28596db0b218ef4e2cb`. |
+| P1-002 | CLOSED | Achievement contract semantics | Proven gap: signal equality was checked but category-to-signal compatibility was not enforced. Added fail-closed category validation and regression coverage; canonical formatting applied; temporary formatter removed. Final behavioral validation: Direct Validation Run 257 SUCCESS at `f0d27780edf944ba605123f0553df36f15e12d4e`. |
+| P1-003 | IN_PROGRESS | Progression ownership semantics | Verify Player Level / Hero Level / Lumi Bond / Movement Mastery ownership, persistence boundaries and current `progression_policy.dart`. Implement only internally authoritative semantics; external persistence remains a separate boundary. |
 | P1-004 | TODO | Production Battle encounter authority | Verify whether an authoritative encounter/content owner now exists. If absent, preserve fail-closed behavior and classify the missing authority correctly rather than fabricating content. If present, bind it through the existing typed battle root seam and validate. |
 | P1-005 | TODO | Runtime route closure | Check implemented Shop, Pro, Rune Shrine, Pro Form Coach and other approved Phase-1 screens against actual `MainShell`/runtime reachability. Connect only approved missing routes and regression-test them. |
 | P1-006 | TODO | Visual authority closure | Verify canonical/current/near-final/legacy/superseded classifications and runtime references. Do not regenerate art merely to satisfy bookkeeping. Close when runtime uses only approved authority or documented exceptions. |
@@ -88,19 +88,34 @@ The following do not prevent internal queue progress and must not be repeatedly 
 
 These belong to a separate production closeout phase after Phase-1 internal closure, unless an internal item explicitly depends on an owner-approved external decision.
 
+## Closure evidence
+
+### P1-001 — Flexible Activity
+- Source staging workflow Run `35896215278`: format, analyzer, focused tests, full Flutter suite and diff hygiene SUCCESS.
+- Integrated runtime commit: `8aaab7130dacf829711f2cef2832f1c0db140d2b`.
+- Integrated test commit: `30f9d5b0614f69138f1da28596db0b218ef4e2cb`.
+- Authority-branch Direct Validation: Run 251 SUCCESS at `30f9d5b0614f69138f1da28596db0b218ef4e2cb`.
+
+### P1-002 — Achievement Contract
+- Root defect confirmed from staging/current code: `AchievementDefinition.category` could disagree with its typed signal and still unlock when the evidence signal matched.
+- Added category-safe fail-closed policy and explicit mismatch regression.
+- Canonical formatter commit: `5508d42ce2478b06921557380b2bdb54e33db1d9`.
+- Temporary formatter was removed before final validation.
+- Final behavioral Direct Validation: Run 257 SUCCESS at `f0d27780edf944ba605123f0553df36f15e12d4e` including formatting, analyzer, focused interaction tests, full Flutter suite and diff hygiene.
+
 ## Current checkpoint
 
 - Baseline HEAD before ledger: `7484d52474203720f95ec063bd86465c693a7fd1`.
-- Last documented fully green behavioral Direct Validation: Run 248 at `7f72b8ab44aa38b5eb54f097e7de5b83f1335d56`.
-- `CURRENT_PROGRESS.md` is one behavioral checkpoint behind later progression-policy commits and must not be used to restart already-closed work.
-- Active item after ledger creation: none yet. Next item is `P1-001`.
+- Last fully green behavioral Direct Validation: Run 257 at `f0d27780edf944ba605123f0553df36f15e12d4e`.
+- `CURRENT_PROGRESS.md` is historical evidence and must not override this ordered ledger.
+- Active item: `P1-003`.
 
 ## Session checkpoint format
 
 Every meaningful closeout transition must update the bottom of this file with:
 
-`HEAD | LAST_CLOSED | ACTIVE | NEXT | BLOCKER`
+`BEHAVIORAL_HEAD | LAST_CLOSED | ACTIVE | NEXT | BLOCKER`
 
 Current:
 
-`7484d52474203720f95ec063bd86465c693a7fd1 | LAST_CLOSED=baseline | ACTIVE=none | NEXT=P1-001 | BLOCKER=none`
+`f0d27780edf944ba605123f0553df36f15e12d4e | LAST_CLOSED=P1-002 | ACTIVE=P1-003 | NEXT=P1-004 | BLOCKER=none`
