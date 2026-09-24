@@ -2,18 +2,20 @@
 
 Date: 2026-09-23 (Europe/Istanbul)
 Branch: `integration/artwork-interactions-20260921`
-Status: ACTIVE AUDIT
+Status: **SUPERSEDED — HISTORICAL EVIDENCE ONLY**
+
+> Do not use this file as an active work queue. Its Daily/Weekly Quest and First Calibration findings were closed after this snapshot. The authoritative ordered Phase-1 queue is repository-root `PHASE1_CLOSEOUT.md`. A later chat/session must not reopen work from this audit merely because the historical text below describes it as incomplete at the time.
 
 ## Purpose
 
-Re-audit Master Product Bible Phase 1 after the production-evidence safety work and distinguish:
+This document preserves the historical audit that was performed after the production-evidence safety work. At that point it distinguished:
 
-1. real internal product/runtime gaps that can still be completed without inventing external authority, from
+1. internal product/runtime gaps that could be completed without inventing external authority, from
 2. hard production boundaries that require real application identity, provider accounts, credentials, protected signing or physical-device evidence.
 
-No external account/provider identity is invented by this audit.
+No external account/provider identity was invented by this audit.
 
-## Daily + Weekly Quest Engine finding
+## Daily + Weekly Quest Engine finding — historical
 
 Before this audit, `lib/features/quests/` contained the canonical Daily/Weekly/Quest Chain screens but no deterministic runtime owner for the locked Daily Quest Engine and Weekly Quest Engine rules.
 
@@ -50,19 +52,19 @@ Dedicated staging validation Run 35886220528 completed SUCCESS:
 - full Flutter suite PASS,
 - diff hygiene PASS.
 
-The integration branch still requires its own Direct Validation before this batch is called fully verified.
+The integration-branch validation requirement described in the original audit was later satisfied. This paragraph is retained only to show what was known at the time.
 
 ## Persistence boundary
 
-Master Product Bible also requires quest/progression state to survive reopening. Current `pubspec.yaml` has no critical-data persistence/backend provider.
+Master Product Bible also requires quest/progression state to survive reopening. The repository snapshot had no critical-data persistence/backend provider.
 
-The official Flutter `shared_preferences` package is suitable for simple key-value preferences but its own documentation warns that it must not be used for critical data. Therefore this audit does not falsely promote simple preferences storage into the authoritative owner of rewards/economy/progression.
+The official Flutter `shared_preferences` package is suitable for simple key-value preferences but its own documentation warns that it must not be used for critical data. Therefore this audit did not falsely promote simple preferences storage into the authoritative owner of rewards/economy/progression.
 
-Critical quest claims, inventory/economy and progression persistence remain tied to the real backend/persistence authority that will be selected and integrated later.
+Critical quest claims, inventory/economy and progression persistence remain tied to the real backend/persistence authority that will be selected and integrated later. This is an external/production authority boundary, not permission to invent a local critical-data owner.
 
-## First Calibration finding
+## First Calibration finding — historical
 
-Master Product Bible marks First Calibration as REQUIRED. Current `lib/features/onboarding/` contains calibration screens, but this audit found no separate deterministic calibration-domain owner yet for:
+At the time of this snapshot, Master Product Bible marked First Calibration as REQUIRED and the audit had not yet found a separate deterministic calibration-domain owner for:
 
 - declared goal/time/experience input,
 - movement suitability/preferences,
@@ -70,7 +72,7 @@ Master Product Bible marks First Calibration as REQUIRED. Current `lib/features/
 - safe non-medical starting-profile classification,
 - false-success prevention at the domain boundary.
 
-This remains a legitimate internal Phase-1 gap that can be implemented without external provider identity, provided no medical diagnosis or fabricated pose evidence is introduced.
+That internal gap was subsequently implemented and validated. It must not be reopened from this historical wording without new concrete evidence under the `PHASE1_CLOSEOUT.md` reopening rule.
 
 ## External hard boundaries remain unchanged
 
@@ -85,9 +87,6 @@ The following are not internal-feature fabrication targets:
 - real-human physical-device ML Kit corpus and final review,
 - protected production secrets.
 
-## Next internal sequence
+## Historical sequence — no longer active instructions
 
-1. Close and Direct-Validate Daily + Weekly Quest Engine batch.
-2. Implement a deterministic First Calibration domain owner with false-success protection and regression tests, without inventing medical/pose facts.
-3. Re-audit remaining Phase-1 internal gaps after calibration.
-4. Stop at the external authority boundary rather than substituting fake providers or synthetic physical evidence.
+The original audit proposed Quest Engine -> First Calibration -> another broad internal re-audit. The first two items were completed. The broad re-audit loop is superseded by the bounded `PHASE1_CLOSEOUT.md` ledger, which advances monotonically and only adds a new item when concrete code/test evidence proves a new gap.
