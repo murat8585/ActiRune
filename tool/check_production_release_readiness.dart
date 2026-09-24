@@ -11,7 +11,8 @@ void main() {
   final missingFiles = <String>[
     if (!androidGradle.existsSync()) androidGradle.path,
     if (!iosProject.existsSync()) iosProject.path,
-    if (androidMainActivity == null) 'android/app/src/main/kotlin/**/MainActivity.kt',
+    if (androidMainActivity == null)
+      'android/app/src/main/kotlin/**/MainActivity.kt',
   ];
 
   if (missingFiles.isNotEmpty) {
@@ -96,7 +97,9 @@ File? _findAndroidMainActivity() {
   final matches = kotlinRoot
       .listSync(recursive: true)
       .whereType<File>()
-      .where((file) => file.path.replaceAll('\\', '/').endsWith('/MainActivity.kt'))
+      .where(
+        (file) => file.path.replaceAll('\\', '/').endsWith('/MainActivity.kt'),
+      )
       .toList(growable: false);
 
   return matches.length == 1 ? matches.single : null;
