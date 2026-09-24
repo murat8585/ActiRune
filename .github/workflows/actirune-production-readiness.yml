@@ -11,10 +11,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
-      - name: Checkout canonical integration branch
+      - name: Checkout exact selected release-candidate SHA
         uses: actions/checkout@v4
         with:
-          ref: integration/artwork-interactions-20260921
+          ref: ${{ github.sha }}
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
