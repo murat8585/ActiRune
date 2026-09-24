@@ -9,97 +9,84 @@ Authoritative internal queue: `PHASE1_CLOSEOUT.md`
 - P1-001 Flexible Activity integration truth: CLOSED.
 - P1-002 Achievement contract semantics: CLOSED.
 - P1-003 Progression ownership semantics: CLOSED.
-- P1-004 Production Battle encounter authority: CLOSED — FAIL-CLOSED; no fake encounter/content owner was introduced.
+- P1-004 Production Battle encounter authority: CLOSED — FAIL-CLOSED.
 - P1-005 Runtime route closure: CLOSED.
 - P1-006 Visual authority closure: CLOSED.
 - P1-007 Internal release-gate reconciliation: CLOSED — NO INTERNAL CODE GAP.
-- P1-008 Phase-1 internal close: IN_PROGRESS at this checkpoint.
+- P1-008 Phase-1 internal close: CLOSED, contingent on the exact commit containing this checkpoint having `ActiRune Direct Validation` SUCCESS.
 
-Do not reopen P1-001..P1-007 from an older audit, chat summary or historical handoff unless the reopening rule in `PHASE1_CLOSEOUT.md` is satisfied by new concrete evidence.
+If that exact-HEAD Direct Validation fails, P1-008 is automatically REOPENED. Do not pretend a failed final check is green merely because the documentation got there first. Computers are annoyingly literal in exactly the situations humans wish they were not.
 
-## Last fully green behavioral Direct Validation
+## Behavioral validation chain
 
-- Run: **266**
-- Checked commit: `dc8a55cdfc47a941cb6a35da106431d287112db4`
-- Result: **SUCCESS**
-- Artwork presence/dimensions: PASS.
-- Formatting: PASS.
-- Analyzer: PASS.
-- Focused interaction tests: PASS.
-- Full Flutter suite: PASS.
-- Diff hygiene: PASS.
+Pre-freeze fully green baseline:
+- Direct Validation Run **266**
+- Commit `dc8a55cdfc47a941cb6a35da106431d287112db4`
+- Artwork guards: PASS
+- Formatting: PASS
+- Analyzer: PASS
+- Focused tests: PASS
+- Full Flutter suite: PASS
+- Diff hygiene: PASS
 
-Commits after Run 266 up to this checkpoint are closeout/release documentation only; they do not change runtime behavior. P1-008 still requires a final exact-HEAD Direct Validation before internal scope is frozen.
+Final freeze authority:
+- The exact commit containing this file and the P1-008 CLOSED ledger entry also contains only a comment-only test-file CI trigger beyond documentation state.
+- That exact commit must have `ActiRune Direct Validation` SUCCESS.
+- Once green, it supersedes Run 266 as the final internal Phase-1 checkpoint without claiming production readiness.
 
-## Closeout evidence since the old Run 248 checkpoint
+## Closeout result
 
 ### P1-001 — Flexible Activity
-- Integrated and regression-verified.
-- Direct Validation Run 251 SUCCESS.
+Integrated and regression-verified; Direct Validation Run 251 SUCCESS.
 
 ### P1-002 — Achievement contract semantics
-- Added fail-closed category-to-signal compatibility enforcement and regression coverage.
-- Direct Validation Run 257 SUCCESS.
+Fail-closed category-to-signal compatibility added; Direct Validation Run 257 SUCCESS.
 
 ### P1-003 — Progression ownership semantics
-- Player Level, Hero Level, Lumi Bond/Level and Movement Mastery remain independent axes.
-- No fabricated numeric balance or critical persistence owner was introduced.
-- Direct Validation Run 259 SUCCESS.
+Player/Hero/Lumi/Movement Mastery semantics separated without fabricated balance/persistence; Direct Validation Run 259 SUCCESS.
 
-### P1-004 — Production Battle encounter authority
-- Production `/app` has no authoritative encounter/content owner for movement/target/duration/reward.
-- Existing `battleRootBuilder` seam remains fail-closed.
-- No synthetic enemy, encounter, target, reward, unlock or plank duration was invented.
+### P1-004 — Battle encounter authority
+Closed fail-closed. No authoritative production encounter/content owner exists, so Battle remains unavailable in the production root instead of inventing enemy/movement/target/reward data.
 
-### P1-005 — Runtime route closure
-- Locked Home `Ödüller` entry now opens canonical Rune Shrine Ready.
-- Reward/open-gift side effects remain caller-owned and fail-closed without a real authority.
-- Direct Validation Run 262 SUCCESS.
+### P1-005 — Runtime routes
+Home `Ödüller` opens canonical Rune Shrine Ready only; Direct Validation Run 262 SUCCESS.
 
-### P1-006 — Visual authority closure
-- Runtime visual authority hierarchy is documented in `docs/release/RUNTIME_VISUAL_AUTHORITY_20260924.md`.
-- Regression guard forbids near-final, camera-reference, patch-base, superseded and legacy-only runtime source classes.
-- Six selected `final_p1` runtime candidate exceptions are exact and documented; Profile revision candidate does not silently replace canonical VIS_0222.
-- Direct Validation Run 266 SUCCESS.
+### P1-006 — Visual authority
+Runtime source classes and selected candidate exceptions are documented and regression-guarded; Direct Validation Run 266 SUCCESS.
 
-### P1-007 — Internal release-gate reconciliation
-- `Phase1ReleaseReadiness`, its CLI test gate and the `ActiRune Production Readiness` workflow were re-read from current HEAD.
-- They correctly model **production/external** evidence, not the internal Phase-1 work queue.
-- Existing release regression tests already prove current placeholder identities, undecided providers and missing physical evidence cannot produce false green.
-- The production workflow is manual `workflow_dispatch`; the automatic internal regression workflow remains `ActiRune Direct Validation`.
-- `docs/release/PHASE1_INTERNAL_GAP_AUDIT_20260923.md` is now explicitly superseded historical evidence.
-- `docs/release/PHASE1_RELEASE_GATE_MATRIX_20260923.md` and `validation/release/README.md` now explicitly separate internal closeout from production readiness.
-- No production gate was weakened and no external evidence was fabricated.
+### P1-007 — Release-gate reconciliation
+Production readiness and internal closeout are explicitly separated. Existing production gate remains strict and external-proof-driven. Historical audit/release docs no longer reopen completed internal work.
+
+### P1-008 — Internal freeze
+All internal ledger items are closed. Final exact-HEAD Direct Validation is the closure condition. No runtime behavior is changed merely to force this freeze.
 
 ## Production readiness remains separate and BLOCKED
 
-Internal Phase-1 closure does not mean production-ready. Current external/production boundaries still include:
-
+Internal Phase-1 closure is not a production-ready claim. External/production work still includes:
 1. Final Android application id.
 2. Android production signing/provenance.
 3. Final iOS bundle id.
 4. Apple Development Team/signing/archive/export proof.
-5. Real backend/provider authority and configuration evidence.
+5. Real backend/provider authority and configuration.
 6. Real billing products/entitlements/pricing if Pro ships.
 7. Real rewarded-ad provider/app/ad units if Rewarded Ads ship.
-8. Real analytics transport/configuration if production telemetry is enabled.
-9. Real-human physical-device ML Kit corpus and exact-build human review.
+8. Real analytics transport/configuration if telemetry is enabled.
+9. Real-human physical-device ML Kit corpus and exact-build final review.
 10. Store submission/review and protected credential provenance.
-11. Authoritative production encounter/content owner before Battle can be enabled in the production root.
+11. Authoritative production encounter/content owner before Battle is enabled in the production root.
 
-The unified production-readiness checker is expected to remain non-green until those real external inputs exist. That is correct fail-closed behavior, not an internal regression.
+The unified production-readiness checker is expected to remain blocked until those real inputs exist. That is correct behavior.
 
-## Recovery rule
-
-When a new chat/session resumes:
+## Recovery rule after internal freeze
 
 1. Read branch HEAD.
 2. Read `PHASE1_CLOSEOUT.md` first.
-3. Read this file only as the recovery checkpoint.
-4. Resume the single active ledger item; do not restart a broad audit.
-5. Do not reinterpret a red production-readiness gate as proof that a closed internal item is unfinished.
-6. Do not invent provider accounts, identities, credentials, encounter data, rewards or physical-device evidence.
+3. Confirm the exact final internal HEAD has a green `ActiRune Direct Validation` result.
+4. If green, do not restart Phase-1 internal auditing from historical documents.
+5. Reopen only with a reproducible regression, verified runtime defect, authoritative product-contract change, or explicit owner scope change.
+6. Otherwise continue in the separate production/external queue.
+7. Never invent providers, identities, credentials, encounter data, rewards or physical-device evidence.
 
-## Next exact action
+## Next exact action after green final CI
 
-Complete P1-008 only after the final closeout checkpoint and a Direct Validation run are both attached to the same final internal HEAD. If that exact-HEAD run is green, freeze Phase-1 internal scope and move all remaining work to the separate production/external queue unless new concrete reopening evidence appears.
+Freeze Phase-1 internal scope. Continue only with evidence-backed production/external decisions or a qualifying reopening event.
