@@ -25,12 +25,12 @@ final class ProductionIdentityEvidence {
     required String androidMainActivity,
     required String iosProject,
   }) {
-    final namespace = RegExp(r'namespace\s*=\s*"([^"]+)"')
-        .firstMatch(androidGradle)
-        ?.group(1);
-    final applicationId = RegExp(r'applicationId\s*=\s*"([^"]+)"')
-        .firstMatch(androidGradle)
-        ?.group(1);
+    final namespace = RegExp(
+      r'namespace\s*=\s*"([^"]+)"',
+    ).firstMatch(androidGradle)?.group(1);
+    final applicationId = RegExp(
+      r'applicationId\s*=\s*"([^"]+)"',
+    ).firstMatch(androidGradle)?.group(1);
     final mainActivityPackage = RegExp(
       r'^\s*package\s+([^\s;]+)',
       multiLine: true,
