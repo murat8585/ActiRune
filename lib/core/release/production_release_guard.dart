@@ -1,5 +1,3 @@
-import 'package:flutter/foundation.dart';
-
 enum ProductionReleaseIssue {
   missingAndroidApplicationId,
   placeholderAndroidApplicationId,
@@ -10,7 +8,6 @@ enum ProductionReleaseIssue {
   missingIosDevelopmentTeam,
 }
 
-@immutable
 final class ProductionReleaseEvidence {
   const ProductionReleaseEvidence({
     required this.androidApplicationId,
@@ -72,7 +69,6 @@ final class ProductionReleaseEvidence {
   final String? iosDevelopmentTeam;
 }
 
-@immutable
 final class ProductionReleaseReport {
   const ProductionReleaseReport({required this.issues});
 
