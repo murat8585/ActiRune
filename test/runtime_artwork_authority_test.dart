@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 
+// Runtime authority exceptions are documented in RUNTIME_VISUAL_AUTHORITY_20260924.md.
 void main() {
   const finalP1Prefix = 'visual_authority/20260921/final_p1/';
   const forbiddenRuntimeFragments = <String>[
