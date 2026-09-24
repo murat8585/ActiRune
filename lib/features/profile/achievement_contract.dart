@@ -13,11 +13,7 @@ enum AchievementCategory {
   hidden,
 }
 
-/// Typed milestone signals that authoritative gameplay/progression owners may
-/// emit after their own criteria are satisfied.
-///
-/// For example, the distance owner decides when its configured distance
-/// milestone is reached; this contract does not invent a kilometre threshold.
+/// Typed milestone signals emitted by authoritative gameplay/progression owners.
 enum AchievementSignal {
   firstBattleCompleted,
   firstBossCompleted,
@@ -80,7 +76,7 @@ class AchievementUnlockDecision {
 /// Pure, fail-closed achievement unlock policy.
 ///
 /// Threshold computation remains owned by source systems. This layer validates
-/// the typed evidence, enforces the locked category/signal relationship, and
+/// typed evidence, enforces the locked category/signal relationship, and
 /// guarantees one-time unlock semantics without inventing reward values.
 class AchievementUnlockPolicy {
   const AchievementUnlockPolicy();
@@ -136,20 +132,22 @@ bool _categoryMatchesSignal(
   AchievementSignal signal,
 ) {
   return switch (signal) {
-    AchievementSignal.firstBattleCompleted ||
+    AchievementSignal.firstBattleCompleted =>
+      category == AchievementCategory.battle,
     AchievementSignal.firstBossCompleted =>
       category == AchievementCategory.battle,
-    AchievementSignal.distanceMilestoneReached ||
-    AchievementSignal.worldCompletionReached =>
+    AchievementSignal.distanceMilestoneReached =>
       category == AchievementCategory.exploration,
     AchievementSignal.verifiedMovementMilestoneReached =>
       category == AchievementCategory.movement,
     AchievementSignal.highFormSeriesReached =>
       category == AchievementCategory.form,
-    AchievementSignal.lumiBondMilestoneReached =>
-      category == AchievementCategory.lumi,
     AchievementSignal.socialMilestoneReached =>
       category == AchievementCategory.social,
+    AchievementSignal.lumiBondMilestoneReached =>
+      category == AchievementCategory.lumi,
+    AchievementSignal.worldCompletionReached =>
+      category == AchievementCategory.exploration,
     AchievementSignal.hiddenAchievementDiscovered =>
       category == AchievementCategory.hidden,
   };
