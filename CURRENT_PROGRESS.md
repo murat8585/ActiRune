@@ -1,198 +1,105 @@
 # ActiRune Current Progress
 
-Updated: 2026-09-23 (Europe/Istanbul)
+Updated: 2026-09-24 (Europe/Istanbul)
 Branch: `integration/artwork-interactions-20260921`
+Authoritative internal queue: `PHASE1_CLOSEOUT.md`
+
+## Current internal Phase-1 state
+
+- P1-001 Flexible Activity integration truth: CLOSED.
+- P1-002 Achievement contract semantics: CLOSED.
+- P1-003 Progression ownership semantics: CLOSED.
+- P1-004 Production Battle encounter authority: CLOSED — FAIL-CLOSED; no fake encounter/content owner was introduced.
+- P1-005 Runtime route closure: CLOSED.
+- P1-006 Visual authority closure: CLOSED.
+- P1-007 Internal release-gate reconciliation: CLOSED — NO INTERNAL CODE GAP.
+- P1-008 Phase-1 internal close: IN_PROGRESS at this checkpoint.
+
+Do not reopen P1-001..P1-007 from an older audit, chat summary or historical handoff unless the reopening rule in `PHASE1_CLOSEOUT.md` is satisfied by new concrete evidence.
 
 ## Last fully green behavioral Direct Validation
-- Run: **248**
-- Checked commit: `7f72b8ab44aa38b5eb54f097e7de5b83f1335d56`
+
+- Run: **266**
+- Checked commit: `dc8a55cdfc47a941cb6a35da106431d287112db4`
 - Result: **SUCCESS**
-- Scope: four-movement camera -> detector -> VerifiedRep -> BattleSession/Combat integration, prepared-movement fail-closed guard, authoritative plank-hold injection, plus all previously verified Phase-1 UI/gameplay, movement, battle routing, Dynamic Difficulty, Recovery/Safety, Loot/Crafting, Rewarded Ads policy, Analytics/Balance, provider-neutral billing/ad gateways, production release guard, physical-evidence infrastructure, aggregate release readiness and provider-authority enforcement.
+- Artwork presence/dimensions: PASS.
 - Formatting: PASS.
 - Analyzer: PASS.
 - Focused interaction tests: PASS.
 - Full Flutter suite: PASS.
 - Diff hygiene: PASS.
-- Canonical artwork presence/dimension guards: PASS.
-- The temporary four-movement staging workflow was removed before the integration checkpoint; `7f72b8ab44aa38b5eb54f097e7de5b83f1335d56` contains only the intended persistent runtime/test files.
 
-## Run 248 — Four-movement camera and battle closure
-- `PoseCameraController` no longer owns a hard-coded Squat detector; the authoritative caller supplies a `PoseRepDetector`.
-- Squat, Lunge and Push-up implement the shared detector contract; Plank uses the same contract with a caller-owned hold duration.
-- `MovementDetectorFactory` and `BattlePoseDetectorFactory` map only the four locked movement types.
-- Plank remains fail-closed when an authoritative positive hold duration is absent; no synthetic duration is invented by UI/camera code.
-- `LiveBattleScreen` no longer converts every verified rep into Squat. Detector events route through `VerifiedMovementRouter`.
-- `BattleSessionEngine.acceptVerifiedMovement` now requires the incoming verified movement to match the encounter's `preparedMovement` while live and unpaused.
-- Mismatched, unprepared, paused, duplicate, stale and unknown movement events cannot mutate battle/combat state.
-- Focused regressions cover detector dispatch, all four movement mappings, battle-session guards and VerifiedRep routing.
+Commits after Run 266 up to this checkpoint are closeout/release documentation only; they do not change runtime behavior. P1-008 still requires a final exact-HEAD Direct Validation before internal scope is frozen.
 
-## Latest verified release-safety batches
+## Closeout evidence since the old Run 248 checkpoint
 
-### Run 243 — Provider Authority Lock
-- Runtime: `lib/core/release/provider_authority_lock.dart`.
-- Tests: `test/provider_authority_lock_test.dart`.
-- CLI: `tool/validate_provider_authority_lock.dart`.
-- Template: `validation/release/provider_authority.template.json`.
-- Locks non-secret Android/iOS application ids plus backend, billing, rewarded-ad and analytics provider names.
-- Rejects placeholder ids, malformed authority, unknown/credential-like fields and platform-id mismatches.
-- Current real production authority is still NOT LOCKED; the verified system is the fail-closed mechanism, not fabricated provider/account data.
+### P1-001 — Flexible Activity
+- Integrated and regression-verified.
+- Direct Validation Run 251 SUCCESS.
 
-### Run 244 — Provider authority bound into aggregate release readiness
-- Runtime: `lib/core/release/phase1_release_readiness.dart`.
-- Tests: `test/phase1_release_readiness_test.dart`.
-- `ProviderReleaseState.configured` cannot produce aggregate green without a valid `ProviderAuthorityReport`.
-- A mismatched or absent provider authority is explicitly blocking.
-- Production identity/signing, provider authority/configuration and physical-device evidence/human review remain separate gates.
+### P1-002 — Achievement contract semantics
+- Added fail-closed category-to-signal compatibility enforcement and regression coverage.
+- Direct Validation Run 257 SUCCESS.
 
-### Run 245 — Production Evidence Chain
-New verified persistent files:
-- `lib/core/release/provider_configuration_evidence.dart`
-- `lib/features/pose/validation/physical_validation_final_review.dart`
-- `test/provider_configuration_evidence_test.dart`
-- `test/physical_validation_final_review_test.dart`
-- `tool/check_phase1_production_readiness.dart`
-- `tool/phase1_production_readiness_gate_test.dart`
-- `validation/release/provider_configuration.template.json`
-- `validation/release/physical_final_review.template.json`
-- updated `validation/release/README.md`
-- hardened `.github/workflows/actirune-production-readiness.yml`
+### P1-003 — Progression ownership semantics
+- Player Level, Hero Level, Lumi Bond/Level and Movement Mastery remain independent axes.
+- No fabricated numeric balance or critical persistence owner was introduced.
+- Direct Validation Run 259 SUCCESS.
 
-Provider configuration evidence:
-- Must match the locked Android/iOS ids and provider names.
-- Records only non-secret public/audit references and verification methods.
-- Required providers cannot be marked release-configured unless explicitly recorded as configured.
-- Unknown fields are rejected so API keys/tokens/secrets cannot quietly become release evidence.
+### P1-004 — Production Battle encounter authority
+- Production `/app` has no authoritative encounter/content owner for movement/target/duration/reward.
+- Existing `battleRootBuilder` seam remains fail-closed.
+- No synthetic enemy, encounter, target, reward, unlock or plank duration was invented.
 
-Physical final review:
-- A final physical PASS is bound to the exact Git blob SHA of `validation/physical_device_mlkit/evidence.json`.
-- The physical corpus must represent exactly one build.
-- `reviewedBuild` must match that corpus build.
-- Failed disposition, malformed SHA, changed evidence, mixed-build evidence or build mismatch blocks release.
-- Raw video, real subject identity and biometric data do not belong in repository release records.
+### P1-005 — Runtime route closure
+- Locked Home `Ödüller` entry now opens canonical Rune Shrine Ready.
+- Reward/open-gift side effects remain caller-owned and fail-closed without a real authority.
+- Direct Validation Run 262 SUCCESS.
 
-Unified production checker:
-- `dart run tool/check_phase1_production_readiness.dart` launches the real gate through Flutter test runtime so Flutter-domain types are evaluated correctly.
-- It evaluates production identity/signing, provider authority, provider configuration, physical evidence completeness, exact evidence/build-bound final review and the aggregate Phase-1 gate together.
-- Current repository is intentionally expected to return **BLOCKED_PHASE1_PRODUCTION_READINESS** until real external inputs exist.
-- The staging validation explicitly proved the current repo fails closed for the expected blockers rather than manufacturing a false PASS.
+### P1-006 — Visual authority closure
+- Runtime visual authority hierarchy is documented in `docs/release/RUNTIME_VISUAL_AUTHORITY_20260924.md`.
+- Regression guard forbids near-final, camera-reference, patch-base, superseded and legacy-only runtime source classes.
+- Six selected `final_p1` runtime candidate exceptions are exact and documented; Profile revision candidate does not silently replace canonical VIS_0222.
+- Direct Validation Run 266 SUCCESS.
 
-Manual Production Readiness workflow:
-- `.github/workflows/actirune-production-readiness.yml` is `workflow_dispatch` only.
-- It formats/analyzes the release-gate code, runs focused release regressions and enforces the unified Phase-1 production checker.
-- It is expected to fail today because the real production prerequisites below are unresolved. That red result is correct behavior, not a code regression.
+### P1-007 — Internal release-gate reconciliation
+- `Phase1ReleaseReadiness`, its CLI test gate and the `ActiRune Production Readiness` workflow were re-read from current HEAD.
+- They correctly model **production/external** evidence, not the internal Phase-1 work queue.
+- Existing release regression tests already prove current placeholder identities, undecided providers and missing physical evidence cannot produce false green.
+- The production workflow is manual `workflow_dispatch`; the automatic internal regression workflow remains `ActiRune Direct Validation`.
+- `docs/release/PHASE1_INTERNAL_GAP_AUDIT_20260923.md` is now explicitly superseded historical evidence.
+- `docs/release/PHASE1_RELEASE_GATE_MATRIX_20260923.md` and `validation/release/README.md` now explicitly separate internal closeout from production readiness.
+- No production gate was weakened and no external evidence was fabricated.
 
-## Physical-device ML Kit evidence infrastructure
-Verified by Run 241.
-- Model: `lib/features/pose/validation/physical_validation_evidence.dart`.
-- Validator: `tool/validate_physical_mlkit_evidence.dart`.
-- Tests: `test/physical_validation_evidence_test.dart`.
-- Docs/template: `validation/physical_device_mlkit/README.md`, `evidence.template.json`.
-- Covers Squat, Lunge, Push-up and Plank; valid/incomplete/incorrect-form/speed/occlusion/framing/duplicate/battle-integration coverage plus plank-hold and camera-lifecycle evidence.
-- Repository records privacy-safe metadata/results only. Raw personal footage and biometric identity fields are rejected.
-- Automation may say `READY_FOR_HUMAN_REVIEW`; it may not convert that into a release PASS.
+## Production readiness remains separate and BLOCKED
 
-## Verified movement/gameplay infrastructure
-- Squat: green.
-- Lunge: VERIFIED by Direct Validation Run 232 successful re-run.
-- Push-up: VERIFIED by Run 233.
-- Plank: VERIFIED by Run 234.
-- Typed VerifiedRep -> BattleSession/Combat routing: VERIFIED by Run 235.
-- Dynamic Difficulty + Recovery/Safety: Run 236.
-- Loot/Crafting + Rewarded Ads policy: Run 237.
-- Analytics/Balance typed contract: Run 238.
-- Production Release Guard: Run 239.
-- Provider-neutral Pro Billing + Rewarded Ad gateways: Run 240.
-- Physical-device evidence infrastructure: Run 241.
-- Base Phase-1 release-readiness aggregator: Run 242.
-- Provider Authority Lock: Run 243.
-- Provider authority aggregate hardening: Run 244.
-- Production Evidence Chain: Run 245.
-- Daily/Weekly Quest Engine: Run 246.
-- Typed fail-closed First Calibration: Run 247.
-- Four-movement camera + prepared-movement battle integration: Run 248.
+Internal Phase-1 closure does not mean production-ready. Current external/production boundaries still include:
 
-## Verified product/UI scope
-Major previously verified scope includes:
-- Root navigation: Ana Dünya / Macera / Savaş / Kahraman / Profil.
-- Home, Adventure, Hero, Profile and child routes.
-- Onboarding and typed calibration flow with false-success protection.
-- Daily/Weekly Quests, Quest Chain, Events, Daily Summary, Weekly League Result.
-- Battle Prep, Camera Prep, Live Battle, Form Coach, Victory, Defeat and BattleFlowHost.
-- Rewarded retry state 3/3 -> 2/3 -> 1/3 -> 0/3.
-- World Progression, Movement Mastery, Player Level, Achievements.
-- Pro Paywall, Personal Daily Adventure, Pro Form Coach / long-term form analytics UI.
-- Equipment, Inventory, Crafting / Rune Forge, Lumi, Shop Revision and settings family.
-- Canonical approved artwork remains runtime authority; replacement art must not be invented.
+1. Final Android application id.
+2. Android production signing/provenance.
+3. Final iOS bundle id.
+4. Apple Development Team/signing/archive/export proof.
+5. Real backend/provider authority and configuration evidence.
+6. Real billing products/entitlements/pricing if Pro ships.
+7. Real rewarded-ad provider/app/ad units if Rewarded Ads ship.
+8. Real analytics transport/configuration if production telemetry is enabled.
+9. Real-human physical-device ML Kit corpus and exact-build human review.
+10. Store submission/review and protected credential provenance.
+11. Authoritative production encounter/content owner before Battle can be enabled in the production root.
 
-## Internal product-authority audit after Run 248
-- Production `/app` still constructs `MainShell` without a `battleRootBuilder`; Battle therefore remains intentionally fail-closed.
-- This is not safe to solve by hard-coding Squat or fabricating an encounter. The locked product contract says the movement is selected by the encounter and story battles must not add a second movement-selection step.
-- No repository-owned story/encounter engine currently provides an authoritative unlocked encounter with movement/target/duration/reward content.
-- `DynamicDifficultyEngine` supplies adaptation direction only; it does not own encounters or numeric balance.
-- Daily/Weekly `QuestEngine` owns quest plans, not story encounters.
-- World Progression and Personal Daily Adventure remain caller-owned UI shells for encounter/reward actions.
-- Existing `MainShell.battleRootBuilder` is the correct fail-closed injection seam until an authoritative encounter owner/content source exists.
-- Do not enable production Battle by inventing an enemy, movement, target, reward, unlock threshold or plank duration.
+The unified production-readiness checker is expected to remain non-green until those real external inputs exist. That is correct fail-closed behavior, not an internal regression.
 
-## Production identity audit
-Audit: `docs/release/CANONICAL_IDENTITY_AUDIT_20260923.md`.
+## Recovery rule
 
-Current repository state:
-- Android application id: `com.example.actirune` — placeholder, BLOCKED.
-- Android release signing: debug signing — BLOCKED.
-- iOS Runner bundle id: `com.example.actirune` — placeholder, BLOCKED.
-- iOS `DEVELOPMENT_TEAM`: no authoritative value in repository evidence — BLOCKED.
-- Historical `com.example.actirune_canonical_visual_prototype` is a visual-prototype id only and is NOT production authority.
-- Aile Güvende/Kinola identities are unrelated and must never be reused for ActiRune.
+When a new chat/session resumes:
 
-No authoritative historical ActiRune Firebase project, RevenueCat project, AdMob app/ad units, Apple Team/App Store Connect identity, Google Play production package or final iOS bundle-id decision was found.
+1. Read branch HEAD.
+2. Read `PHASE1_CLOSEOUT.md` first.
+3. Read this file only as the recovery checkpoint.
+4. Resume the single active ledger item; do not restart a broad audit.
+5. Do not reinterpret a red production-readiness gate as proof that a closed internal item is unfinished.
+6. Do not invent provider accounts, identities, credentials, encounter data, rewards or physical-device evidence.
 
-## Provider recommendation versus authority
-Decision record: `docs/architecture/PRODUCTION_PROVIDER_DECISION_20260923.md`.
-Status: **RECOMMENDED / NOT YET LOCKED**.
+## Next exact action
 
-Current recommendation:
-- Firebase: backend/Auth/Firestore/Functions/App Check.
-- RevenueCat: Pro subscription/entitlement management.
-- Google Mobile Ads / AdMob: rewarded ads.
-- Firebase Analytics + optional BigQuery export: analytics/warehouse.
-- Health Connect / HealthKit: deferred unless explicitly retained in approved release scope.
-
-This recommendation is not permission to invent provider projects, credentials, product ids, pricing, entitlements or production app identities.
-
-## Current real release blockers
-1. Final Android application id has not been made authoritative.
-2. Android production signing identity/configuration is absent.
-3. Final iOS bundle id has not been made authoritative.
-4. Apple Development Team/signing authority is absent.
-5. `validation/release/provider_authority.json` is absent because the provider/application-identity decision is not yet authoritative.
-6. Real provider projects/accounts/configuration are absent; therefore `provider_configuration.json` is also absent.
-7. RevenueCat store products/pricing/entitlements are not authoritative/configured.
-8. Google Mobile Ads production app/ad-unit configuration is absent.
-9. Real analytics transport/provider configuration is absent.
-10. Real-human physical-device ML Kit corpus is absent/incomplete as release proof.
-11. `physical_final_review.json` cannot legitimately PASS until that exact corpus/build is reviewed.
-12. Store review and protected signing/credential provenance remain external release responsibilities.
-13. Production story Battle root has no authoritative unlocked-encounter content owner yet; it must remain fail-closed rather than inventing encounter data.
-
-## Current readiness truth
-- Repository-internal Phase-1 architecture/policy/guard scaffolding is highly mature and CI-green through Run 248.
-- Current production readiness is **BLOCKED**, intentionally and correctly.
-- Do not describe the build as production-ready while any blocker above remains unresolved.
-- Do not turn missing external proof or missing product authority into synthetic CI success.
-- Do not commit production secrets or signing credentials to Git history.
-
-## Next exact actions
-1. Continue the Master Product Bible audit for internal Phase-1 domain owners that can be completed without inventing numeric balance or external identities; next focus is Player/Hero/Lumi/Movement Mastery progression semantics.
-2. Keep production Battle fail-closed until authoritative encounter content exists; when it does, inject it through the existing typed Battle root boundary instead of adding a second movement picker.
-3. If no further internal product gap remains, stop internal feature fabrication at the hard boundary rather than creating fake work.
-4. When the owner makes final Android/iOS identities and provider choices authoritative, create `provider_authority.json` from the verified template and validate it against real platform files.
-5. Configure production signing only through protected secret/signing management.
-6. Integrate one real provider at a time behind the already verified provider-neutral interfaces; after each batch run full Direct Validation.
-7. Record provider configuration with non-secret audit evidence only after real console/runtime verification.
-8. Execute the labelled real-human physical-device protocol in `docs/release/PHYSICAL_DEVICE_MLKIT_VALIDATION_GATE.md` against an exact build and record it through the verified evidence schema.
-9. Bind the final physical human review to the exact evidence Git blob SHA and exact reviewed build.
-10. Run the manual Production Readiness workflow. Only an evidence-backed green result may advance release readiness.
-
-## Permanent working rule
-After each meaningful green behavioral batch, update this file with the latest verified run/commit, completed scope, blockers and next exact action. Documentation-only checkpoint commits do not redefine the last behavioral validation run. This file is the GitHub recovery checkpoint when a chat/tab ends.
+Complete P1-008 only after the final closeout checkpoint and a Direct Validation run are both attached to the same final internal HEAD. If that exact-HEAD run is green, freeze Phase-1 internal scope and move all remaining work to the separate production/external queue unless new concrete reopening evidence appears.
