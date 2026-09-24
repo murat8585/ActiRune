@@ -1,0 +1,92 @@
+name: ActiRune Phone ARM64 APK
+
+on:
+  push:
+    branches:
+      - build/phone-arm64-apk-20260924
+    paths:
+      - '.github/workflows/actirune-phone-arm64-apk.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-phone-arm64-apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout exact build HEAD
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+
+      - name: Verify source parent
+        shell: bash
+        run: |
+          set -euo pipefail
+          parent="$(git rev-parse HEAD^)"
+          expected="95d7a83a529bf7e04ca3939a85e65bd277de4f88"
+          test "$parent" = "$expected"
+          echo "Verified source parent: $parent"
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Resolve dependencies
+        run: flutter pub get
+
+      - name: Analyze before build
+        run: flutter analyze
+
+      - name: Build Android ARM64 debug APK
+        run: flutter build apk --debug --target-platform android-arm64
+
+      - name: Verify ARM64 APK contents
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f build/app/outputs/flutter-apk/app-debug.apk
+          unzip -l build/app/outputs/flutter-apk/app-debug.apk | grep -q 'lib/arm64-v8a/libflutter.so'
+          if unzip -l build/app/outputs/flutter-apk/app-debug.apk | grep -q 'lib/x86_64/libflutter.so'; then
+            echo 'Unexpected x86_64 Flutter library in phone APK' >&2
+            exit 1
+          fi
+
+      - name: Prepare phone artifact
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p build/phone-artifact
+          short_sha="${GITHUB_SHA:0:12}"
+          apk_name="ActiRune-phone-arm64-debug-${short_sha}.apk"
+          cp build/app/outputs/flutter-apk/app-debug.apk "build/phone-artifact/${apk_name}"
+          (
+            cd build/phone-artifact
+            sha256sum "${apk_name}" > SHA256SUMS.txt
+          )
+          cat > build/phone-artifact/BUILD_INFO.txt <<EOF
+          Project: ActiRune
+          Purpose: Android physical phone ARM64 debug APK
+          Git branch: ${GITHUB_REF_NAME}
+          Build commit: ${GITHUB_SHA}
+          Source production HEAD: 95d7a83a529bf7e04ca3939a85e65bd277de4f88
+          Target platform: android-arm64
+          ABI: arm64-v8a
+          Build mode: debug
+          Production identity/signing: NOT USED
+          APK: ${apk_name}
+          EOF
+          ls -lh build/phone-artifact
+          cat build/phone-artifact/SHA256SUMS.txt
+
+      - name: Upload phone APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ActiRune-phone-arm64-debug
+          path: build/phone-artifact/
+          if-no-files-found: error
+          retention-days: 14
