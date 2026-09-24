@@ -2,7 +2,7 @@
 
 Date: 2026-09-24 (Europe/Istanbul)
 Branch: `production/closeout-20260924`
-Status: `P2-002A = IN_PROGRESS / REPOSITORY-SAFE PREP`
+Status: `P2-002A = CLOSED / REPOSITORY-SAFE PREP`
 
 ## Purpose
 
@@ -34,26 +34,32 @@ Expected current result is `BLOCKED`, specifically because:
 - Android release still points to debug signing;
 - no authoritative Apple Development Team exists yet.
 
-Expected hygiene result remains clean:
+Expected hygiene result is clean:
 - signing material ignore coverage is present;
-- no tracked signing material may be accepted by CI.
+- no tracked signing material is accepted by CI.
 
 ## Validation history
 
-- Initial persistent workflow run 17 reached canonical formatting and stopped because only `test/production_signing_hygiene_guard_test.dart` required formatter output. No analyzer/test/preflight result was falsely treated as success.
+- Initial persistent workflow Run 17 reached canonical formatting and stopped because only `test/production_signing_hygiene_guard_test.dart` required formatter output. No analyzer/test/preflight result was falsely treated as success.
 - Canonical formatter commit: `9a641c282b49fb65c2739f511fa732edba4cc878`.
 - Temporary formatter removed at `a089337499b28c4cf0a65c7d27fc75100e7f12e2`.
+- Post-cleanup checkpoint commit: `65572971ef00685792dfd91536fd6f30db059945`.
+- Production Closeout Validation Run 18 SUCCESS on that exact checkpoint.
 
-## Closure rule
-
-`P2-002A` may be marked `CLOSED` only when `ActiRune Production Closeout Validation` succeeds on an exact post-cleanup checkpoint commit and proves:
-- formatting PASS;
+Run 18 proved:
+- exact checkout PASS;
+- package-aware formatting PASS;
 - analyzer PASS;
-- identity/release/signing regression tests PASS;
-- real repository signing preflight executes successfully while reporting the expected external blockers;
-- no tracked signing material is detected;
-- `.gitignore` signing coverage remains complete;
-- identity migration planner and unified production gate remain green as tooling while the real repository remains production-blocked where authority is absent.
+- identity + release + signing hygiene regression tests PASS;
+- real repository signing preflight PASS as tooling while correctly reporting current signing state `BLOCKED` for Android debug signing and missing Apple Team authority;
+- no tracked signing material detected;
+- `.gitignore` signing/secret coverage intact;
+- dry-run identity migration planner PASS;
+- unified production identity/release gate PASS as tooling while real production authority remains intentionally blocked.
+
+## Self-validating closure rule
+
+`P2-002A` is CLOSED only while `ActiRune Production Closeout Validation` attached to the exact commit containing this closure also concludes SUCCESS. A failure automatically reopens P2-002A.
 
 ## External boundary
 
