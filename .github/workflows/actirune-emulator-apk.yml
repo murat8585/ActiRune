@@ -1,0 +1,71 @@
+name: ActiRune Emulator APK
+
+on:
+  push:
+    branches:
+      - build/emulator-apk-20260924
+    paths:
+      - '.github/workflows/actirune-emulator-apk.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-emulator-apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout exact build HEAD
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Resolve dependencies
+        run: flutter pub get
+
+      - name: Analyze before build
+        run: flutter analyze
+
+      - name: Build Android x86_64 debug APK
+        run: flutter build apk --debug --target-platform android-x64
+
+      - name: Prepare emulator artifact
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f build/app/outputs/flutter-apk/app-debug.apk
+          mkdir -p build/emulator-artifact
+          short_sha="${GITHUB_SHA:0:12}"
+          apk_name="ActiRune-emulator-x64-debug-${short_sha}.apk"
+          cp build/app/outputs/flutter-apk/app-debug.apk "build/emulator-artifact/${apk_name}"
+          (
+            cd build/emulator-artifact
+            sha256sum "${apk_name}" > SHA256SUMS.txt
+          )
+          cat > build/emulator-artifact/BUILD_INFO.txt <<EOF
+          Project: ActiRune
+          Purpose: Android emulator debug APK
+          Git branch: ${GITHUB_REF_NAME}
+          Git commit: ${GITHUB_SHA}
+          Target platform: android-x64
+          Build mode: debug
+          Production identity/signing: NOT USED
+          APK: ${apk_name}
+          EOF
+          ls -lh build/emulator-artifact
+          cat build/emulator-artifact/SHA256SUMS.txt
+
+      - name: Upload emulator APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ActiRune-emulator-x64-debug
+          path: build/emulator-artifact/
+          if-no-files-found: error
+          retention-days: 14
