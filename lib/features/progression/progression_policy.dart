@@ -16,6 +16,11 @@ enum MovementMasteryTrack { squat, lunge, pushUp, plank }
 /// rule is enforceable instead of living as prose only.
 enum MovementMasteryAdvanceSource { verifiedCorrectMovement, purchase }
 
+/// Locked sources that may contribute to Lumi Bond progression.
+///
+/// Amounts, thresholds and persistence remain caller-owned.
+enum LumiBondAdvanceSource { realConsistency, questCompletion }
+
 enum PlayerProgressionUnlock {
   systemFeature,
   mapOrRegionAccess,
@@ -33,7 +38,12 @@ enum HeroProgressionUnlock {
   combatAbility,
 }
 
-enum LumiProgressionUnlock { supportEffect, visualEvolution, combatUtility }
+enum LumiProgressionUnlock {
+  supportEffect,
+  visualEvolution,
+  cosmeticAnimation,
+  combatUtility,
+}
 
 enum MovementMasteryUnlock {
   formQuality,
@@ -76,6 +86,11 @@ class ProgressionPolicy {
     MovementMasteryTrack.plank,
   };
 
+  static const lumiBondAdvanceSources = <LumiBondAdvanceSource>{
+    LumiBondAdvanceSource.realConsistency,
+    LumiBondAdvanceSource.questCompletion,
+  };
+
   static const playerUnlocks = <PlayerProgressionUnlock>{
     PlayerProgressionUnlock.systemFeature,
     PlayerProgressionUnlock.mapOrRegionAccess,
@@ -96,6 +111,7 @@ class ProgressionPolicy {
   static const lumiUnlocks = <LumiProgressionUnlock>{
     LumiProgressionUnlock.supportEffect,
     LumiProgressionUnlock.visualEvolution,
+    LumiProgressionUnlock.cosmeticAnimation,
     LumiProgressionUnlock.combatUtility,
   };
 
@@ -109,6 +125,10 @@ class ProgressionPolicy {
   /// Player Level is global/permanent and never participates in a seasonal
   /// reset. No equivalent reset rule is invented here for the other axes.
   bool get playerLevelParticipatesInSeasonalReset => false;
+
+  /// The locked milestone principle requires the next Player Level unlock to
+  /// remain visible even though exact level thresholds are balance-owned.
+  bool get playerLevelRequiresVisibleNextUnlock => true;
 
   /// True for the four locked axes. Keeping this explicit prevents a future UI
   /// from silently collapsing Player, Hero, Lumi and Movement Mastery into one
