@@ -8,12 +8,15 @@ on:
       - 'lib/core/release/**'
       - 'test/production_*'
       - 'test/provider_*'
+      - 'test/store_*'
       - 'tool/check_production_release_readiness.dart'
       - 'tool/check_production_signing_preflight.dart'
       - 'tool/plan_production_identity_migration.dart'
       - 'tool/validate_provider_authority_lock.dart'
       - 'tool/validate_provider_configuration_evidence.dart'
+      - 'tool/validate_store_submission_evidence.dart'
       - 'validation/release/provider_*'
+      - 'validation/release/store_*'
       - 'android/app/**'
       - 'ios/Runner.xcodeproj/**'
       - '.gitignore'
@@ -71,22 +74,25 @@ jobs:
           lib/core/release/production_signing_hygiene_guard.dart
           lib/core/release/provider_authority_lock.dart
           lib/core/release/provider_configuration_evidence.dart
+          lib/core/release/store_submission_evidence.dart
           test/production_identity_candidate_test.dart
           test/production_identity_guard_test.dart
           test/production_release_guard_test.dart
           test/production_signing_hygiene_guard_test.dart
           test/provider_authority_lock_test.dart
           test/provider_configuration_evidence_test.dart
+          test/store_submission_evidence_test.dart
           tool/check_production_release_readiness.dart
           tool/check_production_signing_preflight.dart
           tool/plan_production_identity_migration.dart
           tool/validate_provider_authority_lock.dart
           tool/validate_provider_configuration_evidence.dart
+          tool/validate_store_submission_evidence.dart
 
       - name: Analyze
         run: flutter analyze
 
-      - name: Production identity release signing and provider regressions
+      - name: Production identity release signing provider and store regressions
         run: >-
           flutter test --no-pub
           test/production_identity_candidate_test.dart
@@ -95,6 +101,7 @@ jobs:
           test/production_signing_hygiene_guard_test.dart
           test/provider_authority_lock_test.dart
           test/provider_configuration_evidence_test.dart
+          test/store_submission_evidence_test.dart
 
       - name: Exercise production signing preflight
         shell: bash
@@ -193,6 +200,98 @@ jobs:
           grep -F 'RESULT: PROVIDER_CONFIGURATION_VALID' <<<"$config_valid"
           grep -F 'Public references: NOT_PRINTED' <<<"$config_valid"
           grep -F 'Credentials/secrets: NOT_SUPPORTED' <<<"$config_valid"
+
+      - name: Exercise store submission evidence preflight
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          set +e
+          real_output="$(dart run tool/validate_store_submission_evidence.dart 2>&1)"
+          real_status=$?
+          set -e
+          printf '%s\n' "$real_output"
+          test "$real_status" -eq 1
+          grep -F 'RESULT: BLOCKED_PROVIDER_AUTHORITY_MISSING' <<<"$real_output"
+
+          temp_dir="$(mktemp -d)"
+          trap 'rm -rf "$temp_dir"' EXIT
+
+          cat > "$temp_dir/authority.json" <<'JSON'
+          {
+            "schemaVersion": 1,
+            "androidApplicationId": "com.actirune.synthetic",
+            "iosBundleIdentifier": "com.actirune.synthetic",
+            "backendProvider": "Synthetic Backend",
+            "billingProvider": "Synthetic Billing",
+            "rewardedAdsProvider": "Synthetic Ads",
+            "analyticsProvider": "Synthetic Analytics"
+          }
+          JSON
+
+          cat > "$temp_dir/store-ready.json" <<'JSON'
+          {
+            "schemaVersion": 1,
+            "releaseGitCommit": "1234567890abcdef1234567890abcdef12345678",
+            "releaseBuild": "synthetic-ci-fixture",
+            "androidApplicationId": "com.actirune.synthetic",
+            "iosBundleIdentifier": "com.actirune.synthetic",
+            "apple": {
+              "appStoreConnectAppReference": "apple-app-reference",
+              "selectedBuildReference": "apple-build-reference",
+              "requiredMetadataComplete": true,
+              "appPrivacyComplete": true,
+              "exportCompliance": "notRequired",
+              "reviewAccessComplete": true,
+              "monetizationItemsReady": true,
+              "reviewState": "notSubmitted",
+              "submissionReference": null
+            },
+            "googlePlay": {
+              "playConsoleAppReference": "play-app-reference",
+              "artifactReference": "play-artifact-reference",
+              "playAppSigningVerified": true,
+              "storeListingComplete": true,
+              "appContentComplete": true,
+              "dataSafetyComplete": true,
+              "reviewAccessComplete": true,
+              "productionAccess": "notRequired",
+              "monetizationItemsReady": true,
+              "reviewState": "notSubmitted",
+              "submissionReference": null
+            }
+          }
+          JSON
+
+          set +e
+          ready_output="$(dart run tool/validate_store_submission_evidence.dart \
+            "$temp_dir/authority.json" "$temp_dir/store-ready.json" 2>&1)"
+          ready_status=$?
+          set -e
+          printf '%s\n' "$ready_output"
+          test "$ready_status" -eq 1
+          grep -F 'RESULT: READY_FOR_STORE_SUBMISSION' <<<"$ready_output"
+
+          python3 - "$temp_dir/store-ready.json" "$temp_dir/store-submitted.json" <<'PY'
+          import json
+          import sys
+
+          source, destination = sys.argv[1:]
+          data = json.load(open(source, encoding='utf-8'))
+          data['apple']['reviewState'] = 'submitted'
+          data['apple']['submissionReference'] = 'apple-submission-reference'
+          data['googlePlay']['reviewState'] = 'submitted'
+          data['googlePlay']['submissionReference'] = 'play-submission-reference'
+          with open(destination, 'w', encoding='utf-8') as handle:
+              json.dump(data, handle)
+          PY
+
+          submitted_output="$(dart run tool/validate_store_submission_evidence.dart \
+            "$temp_dir/authority.json" "$temp_dir/store-submitted.json")"
+          printf '%s\n' "$submitted_output"
+          grep -F 'RESULT: STORE_SUBMISSION_EVIDENCE_VALID' <<<"$submitted_output"
+          grep -F 'Store references: NOT_PRINTED' <<<"$submitted_output"
+          grep -F 'Credentials/secrets: NOT_SUPPORTED' <<<"$submitted_output"
 
       - name: Exercise dry-run production identity migration planner
         shell: bash
