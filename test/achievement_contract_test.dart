@@ -24,7 +24,7 @@ void main() {
     expect(decision.shouldUnlock, isTrue);
   }
 
-  test('locked signals accept their product categories', () {
+  test('locked signals accept only their product categories', () {
     expectUnlockable(
       AchievementSignal.firstBattleCompleted,
       AchievementCategory.battle,
