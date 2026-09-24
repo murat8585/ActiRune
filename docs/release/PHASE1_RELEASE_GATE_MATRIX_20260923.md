@@ -1,54 +1,96 @@
 # ActiRune Phase-1 Release Gate Matrix
 
-Date: 2026-09-23
+Original date: 2026-09-23
+Reconciled: 2026-09-24 (Europe/Istanbul)
 Branch authority: `integration/artwork-interactions-20260921`
+Internal closeout authority: repository-root `PHASE1_CLOSEOUT.md`
 
-This file classifies repository state. It is **not** a production-readiness certificate. A local policy or typed interface is not evidence that an external provider, account, credential, store product or physical-device proof exists.
+This file classifies repository and release state. It is **not** a production-readiness certificate.
 
-## Status vocabulary
+## Two different gates
 
-- `IMPLEMENTED`: repository contains the real runtime owner for the stated scope and it has direct verification evidence.
-- `ADAPTER_ONLY`: repository contains a typed boundary/policy/interface, but the external provider or production integration is not present.
-- `ABSENT`: required production integration/configuration is not present in the current repository evidence.
-- `BLOCKED_EXTERNAL_PROOF`: implementation exists far enough to test, but release proof requires evidence that cannot be manufactured by unit tests or CI.
+ActiRune has two deliberately separate gates:
 
-## Matrix
+1. **Phase-1 internal closeout** — repository-owned product/runtime work. Its ordered authority is `PHASE1_CLOSEOUT.md`, and its behavioral regression gate is `ActiRune Direct Validation`.
+2. **Phase-1 production readiness** — external identities, signing, provider configuration and real-device evidence. Its aggregate is `Phase1ReleaseReadiness`, enforced by `tool/check_phase1_production_readiness.dart` and the manually dispatched `ActiRune Production Readiness` workflow.
 
-| Area | Current status | Repository evidence | Release requirement |
+A red production-readiness result caused by missing real identities/providers/signing/physical evidence does **not** reopen a completed internal Phase-1 item. Conversely, a green internal Direct Validation run is not evidence that production providers, stores, signing or physical-device review exist.
+
+## Internal Phase-1 closeout state
+
+As of this reconciliation:
+
+| Internal item | State | Evidence boundary |
+|---|---|---|
+| P1-001 Flexible Activity integration truth | CLOSED | Direct Validation Run 251 SUCCESS |
+| P1-002 Achievement contract semantics | CLOSED | Direct Validation Run 257 SUCCESS |
+| P1-003 Progression ownership semantics | CLOSED | Direct Validation Run 259 SUCCESS |
+| P1-004 Production Battle encounter authority | CLOSED — FAIL-CLOSED | No repository-owned encounter/content authority exists; Battle remains inaccessible without an injected real owner rather than inventing encounter data |
+| P1-005 Runtime route closure | CLOSED | Home `Ödüller` -> canonical Rune Shrine Ready only; Direct Validation Run 262 SUCCESS |
+| P1-006 Visual authority closure | CLOSED | Runtime authority classification + regression guard; Direct Validation Run 266 SUCCESS at `dc8a55cdfc47a941cb6a35da106431d287112db4` |
+| P1-007 Internal release-gate reconciliation | IN PROGRESS at this document revision | Production and internal gate semantics are being reconciled without changing external proof requirements |
+| P1-008 Internal close | TODO at this document revision | Requires P1-007 closure, final internal Direct Validation green and recovery checkpoint update |
+
+The last fully green behavioral validation before this document-only reconciliation is Direct Validation Run 266. Documentation-only commits after that run do not alter runtime behavior.
+
+## Status vocabulary for production scope
+
+- `IMPLEMENTED`: repository contains the runtime/policy owner for the stated scope and direct verification evidence exists.
+- `ADAPTER_ONLY`: repository contains a typed boundary/policy/interface, but the external production provider/integration is not proven.
+- `ABSENT`: required production integration/configuration is not present in repository evidence.
+- `BLOCKED_EXTERNAL_PROOF`: implementation exists far enough to test, but release proof requires real external evidence that unit tests/CI cannot manufacture.
+
+## Production matrix
+
+| Area | Current status | Repository evidence | Production requirement |
 |---|---|---|---|
-| Core Flutter game/UI | IMPLEMENTED for the currently verified Phase-1 repository scope | Direct Validation through Run 238 is green; `CURRENT_PROGRESS.md` records verified UI, battle, movement, progression and policy systems | Keep Direct Validation green after future integration work |
-| Pose / movement state machines | IMPLEMENTED | Squat, Lunge, Push-up and Plank deterministic detectors plus typed `VerifiedRep` routing are in runtime and regression coverage | Preserve detector/router tests and validate thresholds against labelled real-human footage |
-| ML Kit physical-device proof | BLOCKED_EXTERNAL_PROOF | `google_mlkit_pose_detection` is declared and movement logic is unit-tested, but repository/CI cannot prove camera behavior on real people and real devices | Complete `PHYSICAL_DEVICE_MLKIT_VALIDATION_GATE.md` with real-device labelled-corpus evidence |
+| Core Flutter game/UI | IMPLEMENTED for the internally verified Phase-1 repository scope | P1-001..P1-006 closeout evidence is recorded in `PHASE1_CLOSEOUT.md`; Direct Validation Run 266 is green | Keep final internal Direct Validation green and do not confuse it with production-service proof |
+| Pose / movement state machines | IMPLEMENTED | Squat, Lunge, Push-up and Plank deterministic detectors plus typed `VerifiedRep` routing are in runtime/regression coverage | Validate thresholds against labelled real-human footage before production claims |
+| ML Kit physical-device proof | BLOCKED_EXTERNAL_PROOF | `google_mlkit_pose_detection` and validation tooling exist; CI cannot prove real-person/device behavior | Complete `PHYSICAL_DEVICE_MLKIT_VALIDATION_GATE.md` and exact-build human review |
 | Dynamic Difficulty | IMPLEMENTED as deterministic policy owner | `lib/features/adaptation/dynamic_difficulty_engine.dart` and tests | Real production inputs/persistence must come from authoritative data owners |
-| Recovery / Safety | IMPLEMENTED as deterministic policy owner | `lib/features/adaptation/recovery_safety_engine.dart` and tests | Do not turn policy into medical diagnosis; production history inputs remain caller-owned |
-| Loot / Crafting | ADAPTER_ONLY beyond local validation | `lib/features/economy/loot_crafting_policy.dart` validates authoritative caller-supplied recipes/inventory without mutating persistence | Add real inventory persistence/economy authority and server-side integrity before production economy claims |
-| Rewarded Ads policy | ADAPTER_ONLY | `lib/features/monetization/rewarded_ad_policy.dart` enforces locked eligibility/completion rules, but `pubspec.yaml` contains no ad SDK | Integrate a real ad provider, lifecycle, consent/privacy handling and verified completion callback before any live ad claim |
-| Pro / Billing | ADAPTER_ONLY at UI/contract level | Pro paywall UI exists, but `pubspec.yaml` contains no billing/IAP provider package and no authoritative SKU/store-product integration | Add StoreKit/Google Play Billing through an approved owner; verify purchase, restore, renewal, entitlement and failure paths |
-| Analytics / Balance event model | ADAPTER_ONLY | `lib/core/analytics/analytics_event.dart` defines typed required events and `AnalyticsSink`; no provider is bound | Bind an approved analytics provider/backend with privacy/consent rules and delivery verification |
-| Backend / cloud persistence | ABSENT from current repository evidence | No Firebase/backend dependency or production service configuration is present in current Flutter dependencies/tree audit | Select and integrate authoritative backend, auth/data model, security rules, environment separation and production credentials |
-| Health Connect / HealthKit | ABSENT | Android main manifest declares camera only; iOS Info.plist declares camera usage only; `pubspec.yaml` has no health integration package | Add product-approved Health Connect/HealthKit capability, permissions, consent UX, least-privilege data access and real-device tests |
-| Android production application id | ABSENT / placeholder | `android/app/build.gradle.kts` still uses `com.example.actirune` | Set final production application id before store release |
-| Android production signing | ABSENT | Android release build explicitly uses the debug signing config | Configure protected production keystore/signing path; never commit private signing secrets |
-| iOS production bundle id | ABSENT / placeholder | Xcode project still uses `com.example.actirune` | Set final production bundle identifier before App Store distribution |
-| iOS production signing | ABSENT | Current project has automatic signing style but no `DEVELOPMENT_TEAM` value in repository evidence | Configure the approved Apple team/provisioning path outside source secrets and verify archive/export |
+| Recovery / Safety | IMPLEMENTED as deterministic policy owner | `lib/features/adaptation/recovery_safety_engine.dart` and tests | Keep non-medical boundary; production history inputs remain caller-owned |
+| Loot / Crafting | ADAPTER_ONLY beyond local validation | `lib/features/economy/loot_crafting_policy.dart` validates caller-supplied recipes/inventory | Real persistence/economy authority and integrity controls remain external production work |
+| Rewarded Ads | ADAPTER_ONLY | Provider-neutral gateway/policy exists; no live ad-provider proof is authoritative | Approved provider, consent/privacy, lifecycle and verified completion callback |
+| Pro / Billing | ADAPTER_ONLY | Provider-neutral billing boundary and paywall exist; no authoritative live SKU/store entitlement proof | StoreKit/Google Play Billing provider configuration plus purchase/restore/renewal/failure verification |
+| Analytics | ADAPTER_ONLY | Typed analytics event contract/sink exists; no production transport proof is bound | Approved provider, privacy/consent and delivery verification |
+| Backend / cloud persistence | ABSENT from current authoritative production evidence | No locked/configured backend evidence file establishes a live production service | Approved backend/auth/data/security/environment configuration and non-secret audit evidence |
+| Health Connect / HealthKit | ABSENT | No health integration package/capability is authoritative in current release evidence | Add only if included in approved release scope, with least privilege and real-device consent tests |
+| Android production application id | ABSENT / placeholder | Platform file still uses `com.example.actirune` | Final owner-approved application id |
+| Android production signing | ABSENT | Release path still lacks authoritative protected production signing proof | Protected production keystore/signing provenance outside Git secrets |
+| iOS production bundle id | ABSENT / placeholder | Current project evidence still uses placeholder identity | Final owner-approved bundle id |
+| iOS production signing | ABSENT | No authoritative Apple Development Team/signing evidence in repository release records | Approved Apple team/provisioning/archive/export evidence |
+
+## Release-gate code interpretation
+
+`lib/core/release/phase1_release_readiness.dart` is a **production-readiness aggregate**, despite the historical `Phase1` name. Its blockers are intentionally external-facing: production identity/signing, provider authority/configuration, physical-device evidence and final human review.
+
+`test/phase1_release_readiness_test.dart` explicitly proves that current placeholder identities, undecided providers and missing physical evidence cannot produce a green aggregate report. That fail-closed behavior is correct and must not be weakened merely to close internal Phase-1 work.
+
+`.github/workflows/actirune-production-readiness.yml` is `workflow_dispatch` only. It is not the automatic internal regression workflow. Running it before external evidence exists is expected to end blocked/non-green at the unified production-readiness enforcement step.
+
+The automatic internal behavioral gate remains `.github/workflows/actirune-direct-validation.yml`.
 
 ## Critical authority notes
 
 1. Meaningful gameplay progression remains movement-backed.
-2. Pose thresholds remain configuration until the labelled physical-device corpus proves them.
-3. The current verified BattleSession owner has the newer explicit user override for rewarded retries: `3 -> 2 -> 1 -> 0`, and each successful rewarded retry restarts the same encounter from the beginning. That newer owner supersedes the older Bible wording about one partial-HP/checkpoint revive unless the owner explicitly changes it again.
-4. A provider-neutral contract is deliberately not described as a live service. Humans have historically discovered that naming an interface `ProductionWhatever` does not cause servers, invoices or legal compliance to materialize.
-5. Production credentials, signing secrets, billing keys and provider secrets must not be committed to this repository.
+2. Pose thresholds remain configuration until a labelled physical-device corpus proves them.
+3. The verified BattleSession owner retains the newer explicit rewarded-retry behavior `3 -> 2 -> 1 -> 0`, with each successful rewarded retry restarting the same encounter from the beginning, unless product authority changes it again.
+4. Provider-neutral contracts are not live-service evidence. Naming an interface after production, as humanity has repeatedly demonstrated, does not cause a provider account to appear by spontaneous generation.
+5. Production credentials, signing secrets, billing keys and provider secrets must not be committed.
+6. P1-004's fail-closed Battle state is an internal safety closure, not proof that production encounter content exists.
+7. P1-006 visual candidate exceptions remain exactly the documented runtime exceptions; runtime use does not silently promote candidate artwork to canonical authority.
 
-## Release-blocking gates before calling Phase-1 production ready
+## Production blockers before a production-ready claim
 
-- Real-human physical-device ML Kit corpus completed and reviewed.
+- Real-human physical-device ML Kit corpus completed and reviewed for the exact release build.
 - Final Android application id + production signing verified.
 - Final iOS bundle id + Apple signing/archive/export verified.
-- Real billing/entitlement integration verified if Pro is included in release.
-- Real ad-provider integration verified if Rewarded Ads are included in release.
-- Backend/cloud persistence and security model verified for any feature that depends on remote state.
-- Health Connect/HealthKit integrated and consent-tested if health data is included in release scope.
-- Analytics provider/transport privacy and delivery verification completed if production telemetry is enabled.
+- Real billing/entitlement integration verified if Pro ships.
+- Real ad-provider integration verified if Rewarded Ads ship.
+- Backend/cloud persistence and security verified for features that depend on remote/critical state.
+- Health Connect/HealthKit integrated and consent-tested only if included in release scope.
+- Analytics provider/transport privacy and delivery verified if telemetry is enabled.
 
-Until those external gates are satisfied, the correct claim is: **Phase-1 core product logic is substantially implemented and regression-verified in repository scope; production service integration and physical-device release proof remain incomplete.**
+Until those external gates are satisfied, the correct claim is:
+
+**Phase-1 internal product logic can close independently when its ordered closeout ledger and Direct Validation are green; production service integration, platform identity/signing and physical-device release proof remain incomplete.**
