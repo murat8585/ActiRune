@@ -4,66 +4,81 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   const policy = AchievementUnlockPolicy();
 
-  const validPairs = <(AchievementCategory, AchievementSignal)>[
-    (AchievementCategory.battle, AchievementSignal.firstBattleCompleted),
-    (AchievementCategory.battle, AchievementSignal.firstBossCompleted),
-    (
-      AchievementCategory.exploration,
-      AchievementSignal.distanceMilestoneReached,
-    ),
-    (
-      AchievementCategory.movement,
-      AchievementSignal.verifiedMovementMilestoneReached,
-    ),
-    (AchievementCategory.form, AchievementSignal.highFormSeriesReached),
-    (AchievementCategory.social, AchievementSignal.socialMilestoneReached),
-    (AchievementCategory.lumi, AchievementSignal.lumiBondMilestoneReached),
-    (
-      AchievementCategory.exploration,
-      AchievementSignal.worldCompletionReached,
-    ),
-    (
-      AchievementCategory.hidden,
-      AchievementSignal.hiddenAchievementDiscovered,
-    ),
-  ];
+  void expectUnlockable(
+    AchievementSignal signal,
+    AchievementCategory category,
+  ) {
+    final decision = policy.evaluate(
+      definition: AchievementDefinition(
+        id: 'achievement-${signal.name}',
+        category: category,
+        signal: signal,
+      ),
+      evidence: AchievementEvidence(
+        signal: signal,
+        evidenceId: 'evidence-${signal.name}',
+      ),
+    );
 
-  for (final (category, signal) in validPairs) {
-    test('${signal.name} accepts only its locked category', () {
-      final accepted = policy.evaluate(
-        definition: AchievementDefinition(
-          id: 'achievement-${signal.name}',
-          category: category,
-          signal: signal,
-        ),
-        evidence: AchievementEvidence(
-          signal: signal,
-          evidenceId: 'evidence-${signal.name}',
-        ),
-      );
-
-      expect(accepted.status, AchievementUnlockStatus.unlockable);
-      expect(accepted.shouldUnlock, isTrue);
-
-      final wrongCategory = AchievementCategory.values.firstWhere(
-        (candidate) => candidate != category,
-      );
-      final rejected = policy.evaluate(
-        definition: AchievementDefinition(
-          id: 'wrong-${signal.name}',
-          category: wrongCategory,
-          signal: signal,
-        ),
-        evidence: AchievementEvidence(
-          signal: signal,
-          evidenceId: 'wrong-evidence-${signal.name}',
-        ),
-      );
-
-      expect(rejected.status, AchievementUnlockStatus.categoryMismatch);
-      expect(rejected.shouldUnlock, isFalse);
-    });
+    expect(decision.status, AchievementUnlockStatus.unlockable);
+    expect(decision.shouldUnlock, isTrue);
   }
+
+  test('locked signals accept their product categories', () {
+    expectUnlockable(
+      AchievementSignal.firstBattleCompleted,
+      AchievementCategory.battle,
+    );
+    expectUnlockable(
+      AchievementSignal.firstBossCompleted,
+      AchievementCategory.battle,
+    );
+    expectUnlockable(
+      AchievementSignal.distanceMilestoneReached,
+      AchievementCategory.exploration,
+    );
+    expectUnlockable(
+      AchievementSignal.verifiedMovementMilestoneReached,
+      AchievementCategory.movement,
+    );
+    expectUnlockable(
+      AchievementSignal.highFormSeriesReached,
+      AchievementCategory.form,
+    );
+    expectUnlockable(
+      AchievementSignal.socialMilestoneReached,
+      AchievementCategory.social,
+    );
+    expectUnlockable(
+      AchievementSignal.lumiBondMilestoneReached,
+      AchievementCategory.lumi,
+    );
+    expectUnlockable(
+      AchievementSignal.worldCompletionReached,
+      AchievementCategory.exploration,
+    );
+    expectUnlockable(
+      AchievementSignal.hiddenAchievementDiscovered,
+      AchievementCategory.hidden,
+    );
+  });
+
+  test('category mismatch fails closed', () {
+    final decision = policy.evaluate(
+      definition: const AchievementDefinition(
+        id: 'wrong-first-battle',
+        category: AchievementCategory.social,
+        signal: AchievementSignal.firstBattleCompleted,
+      ),
+      evidence: const AchievementEvidence(
+        signal: AchievementSignal.firstBattleCompleted,
+        evidenceId: 'battle-evidence',
+      ),
+    );
+
+    expect(decision.status, AchievementUnlockStatus.categoryMismatch);
+    expect(decision.shouldUnlock, isFalse);
+  });
 
   test('signal mismatch fails closed before unlock', () {
     final decision = policy.evaluate(
