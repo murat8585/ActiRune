@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  const finalP1Prefix = 'visual_authority/20260921/final_p1/';
   const forbiddenRuntimeFragments = <String>[
     'visual_authority/20260921/current/03_NEAR_FINAL_REFERENCES/',
     'visual_authority/20260921/current/04_CAMERA_PREP_REFERENCE_PAIR/',
@@ -34,11 +35,29 @@ void main() {
         .toList(growable: false);
   }
 
-  String repositoryPath(File file) => file.path.replaceAll('\\', '/');
+  String repositoryPath(File file) {
+    return file.path.replaceAll('\\', '/');
+  }
+
+  List<String> finalP1AssetsIn(String source) {
+    final assets = <String>[];
+    var offset = 0;
+    while (true) {
+      final start = source.indexOf(finalP1Prefix, offset);
+      if (start < 0) break;
+      final end = source.indexOf('.png', start);
+      if (end < 0) {
+        assets.add(source.substring(start));
+        break;
+      }
+      assets.add(source.substring(start, end + 4));
+      offset = end + 4;
+    }
+    return assets;
+  }
 
   test('runtime never points at non-runtime visual reference classes', () {
     final offenders = <String>[];
-
     for (final file in runtimeDartFiles()) {
       final source = file.readAsStringSync();
       for (final fragment in forbiddenRuntimeFragments) {
@@ -58,24 +77,16 @@ void main() {
   });
 
   test('selected P1 candidate runtime use is an exact documented exception', () {
-    final files = runtimeDartFiles();
-    final usedFinalP1Assets = <String, List<String>>{};
-    final finalP1Pattern = RegExp(
-      r'''visual_authority/20260921/final_p1/[^'"\s]+\.png''',
-    );
-
-    for (final file in files) {
+    final usedAssets = <String, List<String>>{};
+    for (final file in runtimeDartFiles()) {
       final source = file.readAsStringSync();
-      for (final match in finalP1Pattern.allMatches(source)) {
-        final asset = match.group(0)!;
-        usedFinalP1Assets
-            .putIfAbsent(asset, () => <String>[])
-            .add(repositoryPath(file));
+      for (final asset in finalP1AssetsIn(source)) {
+        usedAssets.putIfAbsent(asset, () => <String>[]).add(repositoryPath(file));
       }
     }
 
     expect(
-      usedFinalP1Assets.keys.toSet(),
+      usedAssets.keys.toSet(),
       selectedP1RuntimeExceptions.keys.toSet(),
       reason:
           'final_p1 contains selected candidates, not blanket canonical '
@@ -84,20 +95,17 @@ void main() {
 
     for (final entry in selectedP1RuntimeExceptions.entries) {
       expect(
-        usedFinalP1Assets[entry.key],
+        usedAssets[entry.key],
         <String>[entry.value],
         reason: '${entry.key} may only be owned by ${entry.value}.',
       );
     }
 
+    const profileCandidate =
+        'visual_authority/20260921/final_p1/01_P1_PROFILE_FINAL_REVISION.png';
     expect(
-      usedFinalP1Assets.keys,
-      isNot(
-        contains(
-          'visual_authority/20260921/final_p1/'
-          '01_P1_PROFILE_FINAL_REVISION.png',
-        ),
-      ),
+      usedAssets.keys,
+      isNot(contains(profileCandidate)),
       reason:
           'The Profile revision remains a candidate; the current canonical '
           'Profile shell must not be silently replaced.',
