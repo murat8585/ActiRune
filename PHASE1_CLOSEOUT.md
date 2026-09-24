@@ -67,8 +67,8 @@ These areas may reopen only under the `REOPENED` rule above.
 | P1-003 | CLOSED | Progression ownership semantics | Four independent axes remain separate; Player Level permanence and visible-next-unlock principle are explicit; Lumi Bond source semantics and cosmetic/animation unlock are represented; Movement Mastery remains verified-movement-only and non-purchasable. Numeric balance and persistence were not invented. Direct Validation Run 259 SUCCESS at `5b58d731f0843cc683c441eecc7993633c08cf58`. |
 | P1-004 | CLOSED — FAIL-CLOSED | Production Battle encounter authority | Current production `/app` constructs `MainShell` with no `battleRootBuilder`; no repository-owned encounter/content authority supplies unlocked encounter movement/target/duration/reward. Existing typed seam and navigation tests correctly keep Battle inaccessible until a real owner is injected. No fabricated encounter was added. |
 | P1-005 | CLOSED | Runtime route closure | Proven route gap: locked Home `Ödüller` entry had no runtime owner although Master Product Bible places Rune Shrine on Home. Connected it only to canonical Rune Shrine Ready; reward/open-gift remains fail-closed because no real rewarded-ad/reward owner is authoritative. Direct Validation Run 262 SUCCESS at `aa90168126f0adca0f43910f81d96f9dc2328316`. Other unbound approved screens were not mapped to arbitrary hotspots; their visual/entry authority is handled by P1-006. |
-| P1-006 | IN_PROGRESS | Visual authority closure | Verify canonical/current/near-final/legacy/superseded classifications and runtime references. Do not regenerate art merely to satisfy bookkeeping. Close when runtime uses only approved authority or documented exceptions. |
-| P1-007 | TODO | Phase-1 internal release gate | Reconcile the completed P1-001..P1-006 results with current release-gate code/docs. No broad feature re-audit. Any genuinely new internal blocker must have concrete code/test evidence. |
+| P1-006 | CLOSED | Visual authority closure | Runtime source classes are now explicitly classified. Non-runtime near-final/camera-reference/patch/superseded/legacy classes are forbidden by regression guard; selected `final_p1` candidate use is restricted to six documented exact exceptions and does not promote the Profile revision candidate over canonical VIS_0222. Direct Validation Run 266 SUCCESS at `dc8a55cdfc47a941cb6a35da106431d287112db4`. |
+| P1-007 | IN_PROGRESS | Phase-1 internal release gate | Reconcile the completed P1-001..P1-006 results with current release-gate code/docs. No broad feature re-audit. Any genuinely new internal blocker must have concrete code/test evidence. |
 | P1-008 | TODO | Phase-1 internal close | Require P1-001..P1-007 closed or correctly external-blocked, Direct Validation green for final internal HEAD, and an updated recovery checkpoint. Then freeze Phase-1 internal scope. |
 
 ## Production/external queue boundary
@@ -129,12 +129,22 @@ These belong to a separate production closeout phase after Phase-1 internal clos
 - Direct Validation Run 262 SUCCESS at `aa90168126f0adca0f43910f81d96f9dc2328316`: artwork guards, formatting, analyzer, focused interaction tests, full Flutter suite and diff hygiene all PASS.
 - Shop, Pro Paywall, Personal Daily Adventure, Pro Form Coach and Crafting code/art exist, but current locked root visuals do not yet provide an unambiguous approved parent hotspot for every one of them. They were not attached to unrelated controls merely to manufacture reachability; P1-006 owns the visual/entry-authority reconciliation.
 
+### P1-006 — Visual Authority Closure
+- Authority record commit `32e788e0c681210e9a655b7f17412a7a6f6e8ad3` documents the runtime authority hierarchy and candidate exceptions without falsely promoting filenames containing `FINAL`.
+- Regression guard `test/runtime_artwork_authority_test.dart` forbids runtime references to near-final, camera-reference, patch-base, superseded and legacy-only folders.
+- `final_p1` runtime use is restricted to exactly six selected-candidate exceptions: Equipment, Inventory, Crafting, Movement Mastery, Player Level and Settings Hub.
+- The selected Profile revision candidate is explicitly not runtime authority while `current/01_CANONICAL_FINAL/VIS_0222__P1_PROFILE_FINAL.png` remains the canonical Profile shell.
+- Canonical Dart formatter commit: `9ea3d7562fb0bc380a4286d29dbdf5dba825bc3d`; temporary formatter workflow was removed at `a804968073eedef73fc95b7873680d310f17cfce`.
+- Final validation trigger commit: `dc8a55cdfc47a941cb6a35da106431d287112db4`.
+- Direct Validation Run 266 SUCCESS: artwork presence/dimensions, formatting, analyzer, focused interaction tests, full Flutter suite and diff hygiene all PASS.
+- Visual existence still does not create route authority; screens without an unambiguous approved parent entry remain intentionally unbound rather than attached to arbitrary hotspots.
+
 ## Current checkpoint
 
 - Baseline HEAD before ledger: `7484d52474203720f95ec063bd86465c693a7fd1`.
-- Last fully green behavioral Direct Validation: Run 262 at `aa90168126f0adca0f43910f81d96f9dc2328316`.
+- Last fully green behavioral Direct Validation: Run 266 at `dc8a55cdfc47a941cb6a35da106431d287112db4`.
 - `CURRENT_PROGRESS.md` is historical evidence and must not override this ordered ledger.
-- Active item: `P1-006`.
+- Active item: `P1-007`.
 
 ## Session checkpoint format
 
@@ -144,4 +154,4 @@ Every meaningful closeout transition must update the bottom of this file with:
 
 Current:
 
-`aa90168126f0adca0f43910f81d96f9dc2328316 | LAST_CLOSED=P1-005 | ACTIVE=P1-006 | NEXT=P1-007 | BLOCKER=none`
+`dc8a55cdfc47a941cb6a35da106431d287112db4 | LAST_CLOSED=P1-006 | ACTIVE=P1-007 | NEXT=P1-008 | BLOCKER=none`
