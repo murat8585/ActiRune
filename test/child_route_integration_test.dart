@@ -3,6 +3,7 @@ import 'package:actirune/features/hero/equipment_screen.dart';
 import 'package:actirune/features/hero/inventory_screen.dart';
 import 'package:actirune/features/hero/lumi_screen.dart';
 import 'package:actirune/features/hero/movement_mastery_screen.dart';
+import 'package:actirune/features/home/rune_shrine_ready_screen.dart';
 import 'package:actirune/features/profile/player_level_screen.dart';
 import 'package:actirune/features/profile/profile_history_screen.dart';
 import 'package:actirune/features/profile/profile_screen.dart';
@@ -31,6 +32,29 @@ void main() {
     );
     await tester.pumpAndSettle();
   }
+
+  testWidgets('Home Rewards opens Rune Shrine and root navigation exits child', (
+    tester,
+  ) async {
+    await tester.pumpWidget(const MaterialApp(home: MainShell()));
+    await tester.pumpAndSettle();
+
+    await tester.tap(
+      find.byKey(const ValueKey('artwork-hotspot-home.rewards')),
+    );
+    await tester.pumpAndSettle();
+    expect(find.byType(RuneShrineReadyScreen), findsOneWidget);
+
+    await tester.tap(
+      find.byKey(
+        const ValueKey('artwork-hotspot-rune-shrine-ready.nav-profile'),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byType(ProfileScreen), findsOneWidget);
+    expect(find.byType(RuneShrineReadyScreen), findsNothing);
+  });
 
   testWidgets('Hero Equipment opens Inventory and back preserves the stack', (
     tester,
