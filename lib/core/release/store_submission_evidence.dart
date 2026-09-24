@@ -9,7 +9,6 @@ enum StoreSubmissionIssue {
   iosBundleIdentifierMismatch,
   appleMetadataIncomplete,
   applePrivacyIncomplete,
-  appleExportComplianceIncomplete,
   appleReviewAccessIncomplete,
   appleMonetizationIncomplete,
   googlePlaySigningUnverified,
@@ -17,12 +16,13 @@ enum StoreSubmissionIssue {
   googlePlayAppContentIncomplete,
   googlePlayDataSafetyIncomplete,
   googlePlayReviewAccessIncomplete,
-  googlePlayProductionAccessIncomplete,
   googlePlayMonetizationIncomplete,
   appleNotSubmitted,
   appleSubmissionReferenceMissing,
+  appleRejected,
   googlePlayNotSubmitted,
   googlePlaySubmissionReferenceMissing,
+  googlePlayRejected,
 }
 
 final class AppleStoreEvidence {
@@ -274,9 +274,7 @@ final class StoreSubmissionReport {
   bool get isReadyForSubmission => issues.every(
     (issue) =>
         issue == StoreSubmissionIssue.appleNotSubmitted ||
-        issue == StoreSubmissionIssue.appleSubmissionReferenceMissing ||
-        issue == StoreSubmissionIssue.googlePlayNotSubmitted ||
-        issue == StoreSubmissionIssue.googlePlaySubmissionReferenceMissing,
+        issue == StoreSubmissionIssue.googlePlayNotSubmitted,
   );
 
   bool get hasValidSubmissionEvidence => issues.isEmpty;
@@ -303,25 +301,20 @@ abstract final class StoreSubmissionValidator {
     if (!apple.appPrivacyComplete) {
       issues.add(StoreSubmissionIssue.applePrivacyIncomplete);
     }
-    if (apple.exportCompliance == RequirementDisposition.complete ||
-        apple.exportCompliance == RequirementDisposition.notRequired) {
-      // Both values are explicit acceptable dispositions.
-    } else {
-      issues.add(StoreSubmissionIssue.appleExportComplianceIncomplete);
-    }
     if (!apple.reviewAccessComplete) {
       issues.add(StoreSubmissionIssue.appleReviewAccessIncomplete);
     }
     if (!apple.monetizationItemsReady) {
       issues.add(StoreSubmissionIssue.appleMonetizationIncomplete);
     }
-    if (apple.reviewState == StoreReviewState.notSubmitted) {
-      issues.add(StoreSubmissionIssue.appleNotSubmitted);
-    }
-    if (apple.reviewState != StoreReviewState.notSubmitted &&
-        apple.submissionReference == null) {
-      issues.add(StoreSubmissionIssue.appleSubmissionReferenceMissing);
-    }
+    _validateReviewState(
+      state: apple.reviewState,
+      submissionReference: apple.submissionReference,
+      notSubmitted: StoreSubmissionIssue.appleNotSubmitted,
+      missingReference: StoreSubmissionIssue.appleSubmissionReferenceMissing,
+      rejected: StoreSubmissionIssue.appleRejected,
+      issues: issues,
+    );
 
     final googlePlay = evidence.googlePlay;
     if (!googlePlay.playAppSigningVerified) {
@@ -339,24 +332,39 @@ abstract final class StoreSubmissionValidator {
     if (!googlePlay.reviewAccessComplete) {
       issues.add(StoreSubmissionIssue.googlePlayReviewAccessIncomplete);
     }
-    if (googlePlay.productionAccess == RequirementDisposition.complete ||
-        googlePlay.productionAccess == RequirementDisposition.notRequired) {
-      // Both values are explicit acceptable dispositions.
-    } else {
-      issues.add(StoreSubmissionIssue.googlePlayProductionAccessIncomplete);
-    }
     if (!googlePlay.monetizationItemsReady) {
       issues.add(StoreSubmissionIssue.googlePlayMonetizationIncomplete);
     }
-    if (googlePlay.reviewState == StoreReviewState.notSubmitted) {
-      issues.add(StoreSubmissionIssue.googlePlayNotSubmitted);
-    }
-    if (googlePlay.reviewState != StoreReviewState.notSubmitted &&
-        googlePlay.submissionReference == null) {
-      issues.add(StoreSubmissionIssue.googlePlaySubmissionReferenceMissing);
-    }
+    _validateReviewState(
+      state: googlePlay.reviewState,
+      submissionReference: googlePlay.submissionReference,
+      notSubmitted: StoreSubmissionIssue.googlePlayNotSubmitted,
+      missingReference: StoreSubmissionIssue.googlePlaySubmissionReferenceMissing,
+      rejected: StoreSubmissionIssue.googlePlayRejected,
+      issues: issues,
+    );
 
     return StoreSubmissionReport(issues: List.unmodifiable(issues));
+  }
+
+  static void _validateReviewState({
+    required StoreReviewState state,
+    required String? submissionReference,
+    required StoreSubmissionIssue notSubmitted,
+    required StoreSubmissionIssue missingReference,
+    required StoreSubmissionIssue rejected,
+    required List<StoreSubmissionIssue> issues,
+  }) {
+    if (state == StoreReviewState.notSubmitted) {
+      issues.add(notSubmitted);
+      return;
+    }
+    if (submissionReference == null) {
+      issues.add(missingReference);
+    }
+    if (state == StoreReviewState.rejected) {
+      issues.add(rejected);
+    }
   }
 }
 
