@@ -1,6 +1,8 @@
 # ActiRune release authority and evidence records
 
-This directory stores non-secret, auditable release authority/evidence metadata. It must never become a convenient dumping ground for credentials. Humans have invented password managers for a reason.
+This directory stores non-secret, auditable **production release** authority/evidence metadata. It must never become a convenient dumping ground for credentials. Humans have invented password managers for a reason.
+
+> This directory is not the Phase-1 internal closeout queue. Internal repository completion is governed by repository-root `PHASE1_CLOSEOUT.md` plus `ActiRune Direct Validation`. The checks described below deliberately remain blocked until real production identity, provider configuration and physical-device evidence exist. A blocked production-readiness result does not by itself reopen an internally closed P1 item.
 
 ## 1. Provider authority lock
 
@@ -89,16 +91,27 @@ Run:
 dart run tool/check_phase1_production_readiness.dart
 ```
 
-The checker evaluates all repository-declared release gates together:
+The checker evaluates all repository-declared **production** gates together:
 
 - Android/iOS production application identity and signing,
 - provider authority lock,
 - provider configuration evidence,
 - physical-device evidence completeness,
 - physical final review bound to the exact evidence blob/build,
-- aggregate Phase-1 release blockers.
+- aggregate production release blockers.
 
-It exits non-zero while any represented gate remains unresolved. A successful result still does not replace Apple/Google store review, credential/signing provenance or provider-console/live-service evidence that exists outside the repository.
+It exits non-zero while any represented production gate remains unresolved. With the repository's current placeholder identities and absent real evidence files, a non-zero result is expected and correct; do not weaken the gate to manufacture a green result for internal closeout.
+
+A successful result still does not replace Apple/Google store review, credential/signing provenance or provider-console/live-service evidence that exists outside the repository.
+
+## 5. Internal-versus-production checkpoint
+
+Use these sources for the two separate questions:
+
+- **Is Phase-1 repository work internally closed?** Read `PHASE1_CLOSEOUT.md` and the latest `ActiRune Direct Validation` evidence.
+- **Is the product ready for production distribution?** Use this directory, `Phase1ReleaseReadiness`, the production-readiness workflow, provider/platform readbacks and real-device/store evidence.
+
+Neither answer may be substituted for the other.
 
 ## Secret boundary
 
