@@ -33,7 +33,7 @@ Phase-1 internal scope is frozen at commit `034305744735afd9fef93488e7a81b73d87d
 |---|---|---|---|
 | P2-000 | CLOSED | Production closeout bootstrap | Dedicated production branch and ordered ledger created from the exact frozen Phase-1 HEAD. |
 | P2-001A | CLOSED | Identity migration safety prep | Typed platform-identity consistency guard, regressions and production-closeout CI are green. Production Closeout Validation Run 3 SUCCESS at exact HEAD `8717303a76b3853e4ca6c8cbfa8ce8765662df6f`. |
-| P2-001B | VERIFIED | Unified identity/release CLI binding | `tool/check_production_release_readiness.dart` now inspects Android namespace, applicationId, discovered MainActivity package, iOS app/test bundle relation, signing and Team state through both guards. Canonical CLI formatting is applied and the temporary formatter is removed. Exact-HEAD production validation for this checkpoint is required. |
+| P2-001B | CLOSED | Unified identity/release CLI binding | Unified CLI now evaluates both release state and platform-identity consistency as pure Dart. Production Closeout Validation Run 7 SUCCESS at exact HEAD `370b08093e338729af1836e986059a8aa487ed20`. This closure remains valid only if the Production Closeout Validation attached to the exact commit containing this ledger closure is also SUCCESS. |
 | P2-001 | BLOCKED_EXTERNAL | Final Android/iOS application identity authority | Android `applicationId`/namespace and iOS Runner bundle id remain `com.example.actirune`. No final production package/bundle decision is authoritative. |
 | P2-002 | BLOCKED_EXTERNAL | Android/iOS production signing ownership | Android release uses debug signing. No authoritative Apple Development Team/signing evidence exists. Requires P2-001 first. |
 | P2-003 | BLOCKED_EXTERNAL | Production provider authority lock | Firebase + RevenueCat + Google Mobile Ads + Firebase Analytics/optional BigQuery is recommended, not authoritative. Requires real identity/provider/account authority. |
@@ -82,12 +82,28 @@ Production Closeout Validation Run 3: SUCCESS on `8717303a76b3853e4ca6c8cbfa8ce8
 
 ## P2-001B evidence
 
-Runtime/tool integration commit: `61d4bb11255d885f8d380709383d18c49ed53176`.
+Initial runtime/tool integration commit: `61d4bb11255d885f8d380709383d18c49ed53176`.
 Production validation workflow update: `27bcaf3538f64e62e68207a0181f53597d5dd1a7`.
 Canonical CLI formatting commit: `c37de575d2013035ebfa78a0f39b7161d032cbd7`.
 Temporary CLI formatter removed: `cac5643901a633720ea86f23bfb11b8378f09c27`.
 
-The unified CLI now discovers the single Android `MainActivity.kt` under `android/app/src/main/kotlin`, so a future approved package migration is not tied to today's placeholder directory. It reports release issues and identity-consistency issues separately and exits `0` only when both reports are green. The persistent production-closeout workflow accepts either an evidence-backed PASS or an expected BLOCKED state, while rejecting tool/runtime errors.
+Run 5 proved format, analyzer and all 9 identity/release guard regressions PASS, then exposed one real tooling defect: invoking the CLI with `dart run` failed because both release guards imported Flutter foundation only for `@immutable`, pulling in unavailable `dart:ui` on the standalone Dart VM. This was not hidden or reclassified as success.
+
+Minimum fix:
+- `production_identity_guard.dart` converted to pure Dart at `34016962090cac716afee4d8b26a299c9f239a64`.
+- `production_release_guard.dart` converted to pure Dart at `370b08093e338729af1836e986059a8aa487ed20`.
+- No guard semantics were weakened; only unnecessary Flutter runtime coupling was removed.
+
+Production Closeout Validation Run 7 SUCCESS on exact HEAD `370b08093e338729af1836e986059a8aa487ed20`:
+- exact checkout PASS;
+- package-aware formatting PASS;
+- analyzer PASS;
+- 9 identity/release guard regressions PASS;
+- unified `dart run tool/check_production_release_readiness.dart` PASS as a gate execution while correctly returning repository state `RESULT: BLOCKED` for the real placeholder/signing/Team blockers rather than a false production-ready state.
+
+The unified CLI discovers the single Android `MainActivity.kt` under `android/app/src/main/kotlin`, so a future approved package migration is not tied to today's placeholder directory. It reports release and identity-consistency issues separately and exits `0` only when both reports are green. The persistent production-closeout workflow accepts an evidence-backed PASS or the current expected BLOCKED state while rejecting parser/runtime/tooling errors.
+
+**Self-validating closure rule:** P2-001B is CLOSED only while `ActiRune Production Closeout Validation` attached to the exact commit containing this section concludes SUCCESS. A failure automatically reopens P2-001B.
 
 ## Provider recommendation boundary
 
@@ -107,8 +123,8 @@ P2-005 Battle encounter/content authority may be resolved in parallel only when 
 
 ## Current checkpoint
 
-`BASE=034305744735afd9fef93488e7a81b73d87db7c0 | LAST_CLOSED=P2-001A | ACTIVE=P2-001B-VERIFY | FIRST_BLOCKER=P2-001 | NEXT_AFTER_AUTHORITY=P2-002`
+`BASE=034305744735afd9fef93488e7a81b73d87db7c0 | LAST_CLOSED=P2-001B | ACTIVE=none | FIRST_BLOCKER=P2-001 | NEXT_AFTER_AUTHORITY=P2-002`
 
 ## Hard boundary
 
-No next state-changing action may guess the final package/bundle identifiers, signing owner, provider projects/accounts, product ids, prices, ad-unit ids, credentials, physical-device results, or Battle content. Those require real owner/external evidence.
+Repository-safe identity preparation is complete. No next state-changing action may guess the final package/bundle identifiers, signing owner, provider projects/accounts, product ids, prices, ad-unit ids, credentials, physical-device results, or Battle content. Those require real owner/external evidence.
