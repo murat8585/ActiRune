@@ -30,35 +30,36 @@ jobs:
         run: flutter pub get
 
       - name: Apply route closure
-        shell: python
+        shell: bash
         run: |
+          python3 - <<'PY'
           from pathlib import Path
 
           shell_path = Path('lib/app/main_shell.dart')
           shell = shell_path.read_text(encoding='utf-8')
 
-          old_home = """        onEvents: () => _openEvents(context),
-                  onSettings: () => _openSettingsHub(context),
-                  onYesterdaySummary: () => _openDailySummary(context),
-"""
-          new_home = """        onEvents: () => _openEvents(context),
-                  onSettings: () => _openSettingsHub(context),
-                  onWorldMap: () => _openWorldProgression(context),
-                  onYesterdaySummary: () => _openDailySummary(context),
-"""
+          old_home = (
+              "        onSettings: () => _openSettingsHub(context),\n"
+              "        onYesterdaySummary: () => _openDailySummary(context),\n"
+          )
+          new_home = (
+              "        onSettings: () => _openSettingsHub(context),\n"
+              "        onWorldMap: () => _openWorldProgression(context),\n"
+              "        onYesterdaySummary: () => _openDailySummary(context),\n"
+          )
           if shell.count(old_home) != 1:
               raise SystemExit('Expected exactly one Home route anchor')
           shell = shell.replace(old_home, new_home)
 
-          old_profile = """        onProfileDetails: () => _openPlayerLevel(context),
-                  onBadges: () => _openAchievements(context),
-                  onWorldProgress: () => _openWorldProgression(context),
-"""
-          new_profile = """        onProfileDetails: () => _openPlayerLevel(context),
-                  onBadges: () => _openAchievements(context),
-                  onMovementMastery: () => _openMovementMastery(context),
-                  onWorldProgress: () => _openWorldProgression(context),
-"""
+          old_profile = (
+              "        onBadges: () => _openAchievements(context),\n"
+              "        onWorldProgress: () => _openWorldProgression(context),\n"
+          )
+          new_profile = (
+              "        onBadges: () => _openAchievements(context),\n"
+              "        onMovementMastery: () => _openMovementMastery(context),\n"
+              "        onWorldProgress: () => _openWorldProgression(context),\n"
+          )
           if shell.count(old_profile) != 1:
               raise SystemExit('Expected exactly one Profile route anchor')
           shell = shell.replace(old_profile, new_profile)
@@ -66,49 +67,49 @@ jobs:
 
           test_path = Path('test/child_route_integration_test.dart')
           tests = test_path.read_text(encoding='utf-8')
-
           import_anchor = "import 'package:actirune/features/hero/movement_mastery_screen.dart';\n"
-          import_addition = (
-              import_anchor
-              + "import 'package:actirune/features/adventure/world_progression_screen.dart';\n"
-          )
           if tests.count(import_anchor) != 1:
               raise SystemExit('Expected exactly one test import anchor')
-          tests = tests.replace(import_anchor, import_addition)
+          tests = tests.replace(
+              import_anchor,
+              "import 'package:actirune/features/adventure/world_progression_screen.dart';\n"
+              + import_anchor,
+          )
 
           insertion_anchor = "  testWidgets('Hero Equipment opens Inventory and back preserves the stack', (\n"
           addition = """  testWidgets('Home World Map opens World Progression child', (tester) async {
-              await tester.pumpWidget(const MaterialApp(home: MainShell()));
-              await tester.pumpAndSettle();
+            await tester.pumpWidget(const MaterialApp(home: MainShell()));
+            await tester.pumpAndSettle();
 
-              await tester.tap(
-                find.byKey(const ValueKey('artwork-hotspot-home.world-map')),
-              );
-              await tester.pumpAndSettle();
+            await tester.tap(
+              find.byKey(const ValueKey('artwork-hotspot-home.world-map')),
+            );
+            await tester.pumpAndSettle();
 
-              expect(find.byType(WorldProgressionScreen), findsOneWidget);
-            });
+            expect(find.byType(WorldProgressionScreen), findsOneWidget);
+          });
 
-            testWidgets('Profile Movement Mastery opens exact child', (tester) async {
-              await tester.pumpWidget(const MaterialApp(home: MainShell()));
-              await tester.pumpAndSettle();
-              await openProfile(tester);
+          testWidgets('Profile Movement Mastery opens exact child', (tester) async {
+            await tester.pumpWidget(const MaterialApp(home: MainShell()));
+            await tester.pumpAndSettle();
+            await openProfile(tester);
 
-              await tester.tap(
-                find.byKey(
-                  const ValueKey('artwork-hotspot-profile.movement-mastery'),
-                ),
-              );
-              await tester.pumpAndSettle();
+            await tester.tap(
+              find.byKey(
+                const ValueKey('artwork-hotspot-profile.movement-mastery'),
+              ),
+            );
+            await tester.pumpAndSettle();
 
-              expect(find.byType(MovementMasteryScreen), findsOneWidget);
-            });
+            expect(find.byType(MovementMasteryScreen), findsOneWidget);
+          });
 
 """
           if tests.count(insertion_anchor) != 1:
               raise SystemExit('Expected exactly one test insertion anchor')
           tests = tests.replace(insertion_anchor, addition + insertion_anchor)
           test_path.write_text(tests, encoding='utf-8')
+          PY
 
       - name: Apply canonical Dart format
         run: dart format lib/app/main_shell.dart test/child_route_integration_test.dart
