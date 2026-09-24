@@ -1,0 +1,47 @@
+name: ActiRune Provider Preflight Formatter
+
+on:
+  push:
+    branches:
+      - production/closeout-20260924
+    paths:
+      - '.github/workflows/actirune-provider-preflight-format-stage.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Checkout production closeout branch
+        uses: actions/checkout@v4
+        with:
+          ref: production/closeout-20260924
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Resolve dependencies before formatting
+        run: flutter pub get
+
+      - name: Apply canonical provider preflight formatting
+        run: dart format tool/validate_provider_configuration_evidence.dart
+
+      - name: Commit canonical formatting
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- tool/validate_provider_configuration_evidence.dart; then
+            echo 'No formatting change required.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add tool/validate_provider_configuration_evidence.dart
+          git commit -m 'Apply canonical provider preflight formatting'
+          git push origin HEAD:production/closeout-20260924
