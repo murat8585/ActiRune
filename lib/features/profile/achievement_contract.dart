@@ -41,10 +41,7 @@ class AchievementDefinition {
 
 @immutable
 class AchievementEvidence {
-  const AchievementEvidence({
-    required this.signal,
-    required this.evidenceId,
-  });
+  const AchievementEvidence({required this.signal, required this.evidenceId});
 
   final AchievementSignal signal;
   final String evidenceId;
