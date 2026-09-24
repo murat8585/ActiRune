@@ -33,28 +33,29 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  testWidgets('Home Rewards opens Rune Shrine and root navigation exits child', (
-    tester,
-  ) async {
-    await tester.pumpWidget(const MaterialApp(home: MainShell()));
-    await tester.pumpAndSettle();
+  testWidgets(
+    'Home Rewards opens Rune Shrine and root navigation exits child',
+    (tester) async {
+      await tester.pumpWidget(const MaterialApp(home: MainShell()));
+      await tester.pumpAndSettle();
 
-    await tester.tap(
-      find.byKey(const ValueKey('artwork-hotspot-home.rewards')),
-    );
-    await tester.pumpAndSettle();
-    expect(find.byType(RuneShrineReadyScreen), findsOneWidget);
+      await tester.tap(
+        find.byKey(const ValueKey('artwork-hotspot-home.rewards')),
+      );
+      await tester.pumpAndSettle();
+      expect(find.byType(RuneShrineReadyScreen), findsOneWidget);
 
-    await tester.tap(
-      find.byKey(
-        const ValueKey('artwork-hotspot-rune-shrine-ready.nav-profile'),
-      ),
-    );
-    await tester.pumpAndSettle();
+      await tester.tap(
+        find.byKey(
+          const ValueKey('artwork-hotspot-rune-shrine-ready.nav-profile'),
+        ),
+      );
+      await tester.pumpAndSettle();
 
-    expect(find.byType(ProfileScreen), findsOneWidget);
-    expect(find.byType(RuneShrineReadyScreen), findsNothing);
-  });
+      expect(find.byType(ProfileScreen), findsOneWidget);
+      expect(find.byType(RuneShrineReadyScreen), findsNothing);
+    },
+  );
 
   testWidgets('Hero Equipment opens Inventory and back preserves the stack', (
     tester,
