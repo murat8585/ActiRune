@@ -1,0 +1,67 @@
+name: ActiRune Production Closeout Validation
+
+on:
+  push:
+    branches:
+      - production/closeout-20260924
+    paths:
+      - 'lib/core/release/**'
+      - 'test/production_*'
+      - 'android/app/**'
+      - 'ios/Runner.xcodeproj/**'
+      - 'PRODUCTION_CLOSEOUT.md'
+      - 'docs/release/**'
+      - '.github/workflows/actirune-production-closeout-validation.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: actirune-production-closeout-validation
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout exact production-closeout HEAD
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Resolve dependencies
+        run: flutter pub get
+
+      - name: Verify production-closeout formatting
+        run: >-
+          dart format --output=none --set-exit-if-changed
+          lib/core/release/production_identity_guard.dart
+          lib/core/release/production_release_guard.dart
+          test/production_identity_guard_test.dart
+          test/production_release_guard_test.dart
+
+      - name: Analyze
+        run: flutter analyze
+
+      - name: Production identity and release guard regressions
+        run: >-
+          flutter test --no-pub
+          test/production_identity_guard_test.dart
+          test/production_release_guard_test.dart
+
+      - name: Confirm placeholder production identity still fails closed
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -F 'applicationId = "com.example.actirune"' android/app/build.gradle.kts
+          grep -F 'namespace = "com.example.actirune"' android/app/build.gradle.kts
+          grep -F 'package com.example.actirune' android/app/src/main/kotlin/com/example/actirune/MainActivity.kt
+          grep -F 'PRODUCT_BUNDLE_IDENTIFIER = com.example.actirune;' ios/Runner.xcodeproj/project.pbxproj
