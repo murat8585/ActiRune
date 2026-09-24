@@ -36,6 +36,6 @@ First screen: ActiRune onboarding screen rendered; no black screen
 Crash: none observed
 Flutter fatal: none observed
 Native fatal: none observed
-Important log errors: none; non-fatal emulator graphics warnings and skipped startup frames were logged
+Important log findings: non-fatal Android window/task transition warning and WindowOrganizerController error while the prior ActiRune task was hidden; SELinux denied app read of /proc/max_map_count; 107 startup frames skipped; MainActivity was fully drawn and remained foreground; no app fatal signature
 Screenshot: validation/emulator/20260924/ACTIRUNE_EMULATOR_FIRST_LAUNCH.png
 Launch log: validation/emulator/20260924/ACTIRUNE_EMULATOR_FIRST_LAUNCH_LOG.txt
