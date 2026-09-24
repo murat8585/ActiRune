@@ -12,6 +12,7 @@ import '../features/home/daily_summary_popup.dart';
 import '../features/home/event_detail_popup.dart';
 import '../features/home/events_screen.dart';
 import '../features/home/home_screen.dart';
+import '../features/home/rune_shrine_ready_screen.dart';
 import '../features/profile/achievements_screen.dart';
 import '../features/profile/player_level_screen.dart';
 import '../features/profile/profile_history_screen.dart';
@@ -197,6 +198,20 @@ class _MainShellState extends State<MainShell> {
           onHeroProfile: () => _closeChildStackAndSelect(routeContext, 'hero'),
           onNotifications: () => _openNotifications(routeContext),
           onSettings: () => _openSettingsHub(routeContext),
+          onRootNavigate: (next) =>
+              _closeChildStackAndSelect(routeContext, next.name),
+          battleRootEnabled: _battleAvailable,
+        ),
+      ),
+    );
+  }
+
+  Future<void> _openRuneShrine(BuildContext context) async {
+    await Navigator.of(context).push<void>(
+      MaterialPageRoute<void>(
+        builder: (routeContext) => RuneShrineReadyScreen(
+          onClose: () => Navigator.of(routeContext).pop(),
+          onNotNow: () => Navigator.of(routeContext).pop(),
           onRootNavigate: (next) =>
               _closeChildStackAndSelect(routeContext, next.name),
           battleRootEnabled: _battleAvailable,
@@ -399,6 +414,7 @@ class _MainShellState extends State<MainShell> {
         onSettings: () => _openSettingsHub(context),
         onWorldMap: () => _openWorldProgression(context),
         onYesterdaySummary: () => _openDailySummary(context),
+        onRewards: () => _openRuneShrine(context),
         onRootNavigate: _selectHomeRoot,
         battleRootEnabled: _battleAvailable,
       ),
