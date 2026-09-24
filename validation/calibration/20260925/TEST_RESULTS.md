@@ -5,7 +5,7 @@ Kaynak: production/closeout-20260924 @ 95d7a83a529bf7e04ca3939a85e65bd277de4f88
 Düzeltme dalı: fix/onboarding-calibration-wiring-20260925
 PHONE_BUILD: C:\Users\Murat\Desktop\ActiRune-Calibration-Fix-20260925-arm64-v8a-debug.apk
 GITHUB_BRANCH: fix/onboarding-calibration-wiring-20260925
-GITHUB_HEAD: kod düzeltme commit'i rapordaki son GitHub readback'inde yazılacak
+GITHUB_HEAD: f2bb9b4bf94fc884484933e41ed72f3e4212a315 (kod/test/build commit'i; bu satırın rapor düzeltmesi ayrı doküman commit'idir)
 RESULT: FAIL
 
 ## Doğrulama
@@ -15,8 +15,8 @@ RESULT: FAIL
 - flutter test --no-pub test/calibration_wiring_test.dart — 9 test başarılı.
 - flutter test --no-pub — 360 test başarılı, başarısız test yok.
 - git diff --check — temiz.
-- Android x86_64 debug APK — derlendi ve yalnızca ActiRune_Emulator'a kuruldu.
-- Android ARM64-v8a debug APK — derlendi; masaüstündeki kopya kaynak APK ile aynı SHA-256 değerine sahip.
+- flutter build apk --debug --split-per-abi --target-platform android-x64 — başarılı; APK yalnızca ActiRune_Emulator'a kuruldu.
+- flutter build apk --debug --split-per-abi --target-platform android-arm64 — başarılı; masaüstündeki kopya kaynak APK ile aynı SHA-256 değerine sahip.
 
 Yeni testler, istenen A-H kontrollerini kapsar: uygulama kökü bağlantısı; kamera izni reddinde bloklama; kısmi pose hazır oluşunda bloklama; hareket kanıtı yokken sonuç üretmeme; dört gerçek doğrulayıcıyla test sonucuna erişim; ürün Plank süresi yokken bloklama; doğrulanmamış alternatif gereksiniminde bloklama; boş/düşük güvenli pose karelerinde kanıt üretmeme. Ek regresyon testi, düşük güvenli karelerin Plank tutuş süresini yapay olarak tamamlamadığını doğrular. Testte açıkça verilen Plank süresi yalnızca test girdisidir.
 
