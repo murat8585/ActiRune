@@ -56,7 +56,10 @@ DEVELOPMENT_TEAM = ABC123XYZ9;
 PRODUCT_BUNDLE_IDENTIFIER = com.actirune.app;
 ''',
       gitignore: cleanGitignore,
-      trackedPaths: const <String>['lib/main.dart', 'android/app/build.gradle.kts'],
+      trackedPaths: const <String>[
+        'lib/main.dart',
+        'android/app/build.gradle.kts',
+      ],
     );
 
     expect(ProductionSigningHygieneGuard.evaluate(evidence).isReady, isTrue);
@@ -64,14 +67,10 @@ PRODUCT_BUNDLE_IDENTIFIER = com.actirune.app;
 
   test('tracked signing material fails closed', () {
     final evidence = ProductionSigningHygieneEvidence.fromRepositoryTexts(
-      androidGradle:
-          'signingConfig = signingConfigs.getByName("release")',
+      androidGradle: 'signingConfig = signingConfigs.getByName("release")',
       iosProject: 'DEVELOPMENT_TEAM = ABC123XYZ9;',
       gitignore: cleanGitignore,
-      trackedPaths: const <String>[
-        'android/upload-key.jks',
-        'ios/AuthKey.p12',
-      ],
+      trackedPaths: const <String>['android/upload-key.jks', 'ios/AuthKey.p12'],
     );
 
     expect(
@@ -82,8 +81,7 @@ PRODUCT_BUNDLE_IDENTIFIER = com.actirune.app;
 
   test('missing ignore coverage and malformed Apple team fail closed', () {
     final evidence = ProductionSigningHygieneEvidence.fromRepositoryTexts(
-      androidGradle:
-          'signingConfig = signingConfigs.getByName("release")',
+      androidGradle: 'signingConfig = signingConfigs.getByName("release")',
       iosProject: 'DEVELOPMENT_TEAM = TOO-SHORT;',
       gitignore: '*.jks\n',
       trackedPaths: const <String>[],
