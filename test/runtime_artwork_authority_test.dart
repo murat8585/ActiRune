@@ -81,7 +81,9 @@ void main() {
     for (final file in runtimeDartFiles()) {
       final source = file.readAsStringSync();
       for (final asset in finalP1AssetsIn(source)) {
-        usedAssets.putIfAbsent(asset, () => <String>[]).add(repositoryPath(file));
+        usedAssets
+            .putIfAbsent(asset, () => <String>[])
+            .add(repositoryPath(file));
       }
     }
 
@@ -94,11 +96,9 @@ void main() {
     );
 
     for (final entry in selectedP1RuntimeExceptions.entries) {
-      expect(
-        usedAssets[entry.key],
-        <String>[entry.value],
-        reason: '${entry.key} may only be owned by ${entry.value}.',
-      );
+      expect(usedAssets[entry.key], <String>[
+        entry.value,
+      ], reason: '${entry.key} may only be owned by ${entry.value}.');
     }
 
     const profileCandidate =
