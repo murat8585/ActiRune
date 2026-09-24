@@ -8,9 +8,11 @@ on:
       - 'lib/core/release/**'
       - 'test/production_*'
       - 'tool/check_production_release_readiness.dart'
+      - 'tool/check_production_signing_preflight.dart'
       - 'tool/plan_production_identity_migration.dart'
       - 'android/app/**'
       - 'ios/Runner.xcodeproj/**'
+      - '.gitignore'
       - 'PRODUCTION_CLOSEOUT.md'
       - 'docs/release/**'
       - '.github/workflows/actirune-production-closeout-validation.yml'
@@ -48,21 +50,47 @@ jobs:
           lib/core/release/production_identity_candidate.dart
           lib/core/release/production_identity_guard.dart
           lib/core/release/production_release_guard.dart
+          lib/core/release/production_signing_hygiene_guard.dart
           test/production_identity_candidate_test.dart
           test/production_identity_guard_test.dart
           test/production_release_guard_test.dart
+          test/production_signing_hygiene_guard_test.dart
           tool/check_production_release_readiness.dart
+          tool/check_production_signing_preflight.dart
           tool/plan_production_identity_migration.dart
 
       - name: Analyze
         run: flutter analyze
 
-      - name: Production identity and release guard regressions
+      - name: Production identity release and signing guard regressions
         run: >-
           flutter test --no-pub
           test/production_identity_candidate_test.dart
           test/production_identity_guard_test.dart
           test/production_release_guard_test.dart
+          test/production_signing_hygiene_guard_test.dart
+
+      - name: Exercise production signing preflight
+        shell: bash
+        run: |
+          set +e
+          output="$(dart run tool/check_production_signing_preflight.dart 2>&1)"
+          status=$?
+          set -e
+
+          printf '%s\n' "$output"
+          test "$status" -eq 1
+          grep -F 'androidDebugSigning' <<<"$output"
+          grep -F 'missingIosDevelopmentTeam' <<<"$output"
+          grep -F 'RESULT: BLOCKED' <<<"$output"
+          if grep -Fq 'trackedSigningMaterial' <<<"$output"; then
+            echo 'Tracked signing material detected.' >&2
+            exit 1
+          fi
+          if grep -Fq 'missingRequiredIgnorePattern' <<<"$output"; then
+            echo 'Signing ignore coverage regressed.' >&2
+            exit 1
+          fi
 
       - name: Exercise dry-run production identity migration planner
         shell: bash
