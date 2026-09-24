@@ -65,8 +65,8 @@ These areas may reopen only under the `REOPENED` rule above.
 | P1-001 | CLOSED | Flexible Activity integration truth | Verified staging implementation was integrated without its temporary workflow. Runtime `8aaab7130dacf829711f2cef2832f1c0db140d2b`; regression coverage `30f9d5b0614f69138f1da28596db0b218ef4e2cb`; Direct Validation Run 251 SUCCESS at `30f9d5b0614f69138f1da28596db0b218ef4e2cb`. |
 | P1-002 | CLOSED | Achievement contract semantics | Proven gap: signal equality was checked but category-to-signal compatibility was not enforced. Added fail-closed category validation and regression coverage; canonical formatting applied; temporary formatter removed. Final behavioral validation: Direct Validation Run 257 SUCCESS at `f0d27780edf944ba605123f0553df36f15e12d4e`. |
 | P1-003 | CLOSED | Progression ownership semantics | Four independent axes remain separate; Player Level permanence and visible-next-unlock principle are explicit; Lumi Bond source semantics and cosmetic/animation unlock are represented; Movement Mastery remains verified-movement-only and non-purchasable. Numeric balance and persistence were not invented. Direct Validation Run 259 SUCCESS at `5b58d731f0843cc683c441eecc7993633c08cf58`. |
-| P1-004 | IN_PROGRESS | Production Battle encounter authority | Verify whether an authoritative encounter/content owner now exists. If absent, preserve fail-closed behavior and classify the missing authority correctly rather than fabricating content. If present, bind it through the existing typed battle root seam and validate. |
-| P1-005 | TODO | Runtime route closure | Check implemented Shop, Pro, Rune Shrine, Pro Form Coach and other approved Phase-1 screens against actual `MainShell`/runtime reachability. Connect only approved missing routes and regression-test them. |
+| P1-004 | CLOSED — FAIL-CLOSED | Production Battle encounter authority | Current production `/app` constructs `MainShell` with no `battleRootBuilder`; no repository-owned encounter/content authority supplies unlocked encounter movement/target/duration/reward. Existing typed seam and navigation tests correctly keep Battle inaccessible until a real owner is injected. No fabricated encounter was added. |
+| P1-005 | IN_PROGRESS | Runtime route closure | Check implemented Shop, Pro, Rune Shrine, Pro Form Coach and other approved Phase-1 screens against actual `MainShell`/runtime reachability. Connect only approved missing routes and regression-test them. |
 | P1-006 | TODO | Visual authority closure | Verify canonical/current/near-final/legacy/superseded classifications and runtime references. Do not regenerate art merely to satisfy bookkeeping. Close when runtime uses only approved authority or documented exceptions. |
 | P1-007 | TODO | Phase-1 internal release gate | Reconcile the completed P1-001..P1-006 results with current release-gate code/docs. No broad feature re-audit. Any genuinely new internal blocker must have concrete code/test evidence. |
 | P1-008 | TODO | Phase-1 internal close | Require P1-001..P1-007 closed or correctly external-blocked, Direct Validation green for final internal HEAD, and an updated recovery checkpoint. Then freeze Phase-1 internal scope. |
@@ -111,12 +111,21 @@ These belong to a separate production closeout phase after Phase-1 internal clos
 - Current `pubspec.yaml` contains no critical progression persistence/backend provider, so numeric curves and durable persistence remain outside this internal semantic owner rather than being fabricated locally.
 - Direct Validation Run 259 SUCCESS at `5b58d731f0843cc683c441eecc7993633c08cf58`: formatting, analyzer, focused interaction tests, full Flutter suite and diff hygiene PASS.
 
+### P1-004 — Production Battle Encounter Authority
+- `ActiRuneApp` production route `/app` constructs `const MainShell()` with no `battleRootBuilder`.
+- `MainShell` exposes a typed `BattleRootBuilder`, computes Battle availability from builder presence, suppresses Battle navigation when absent, and renders an empty slot when no real root is injected.
+- `BattleFlowHost` consumes a caller-supplied `BattleSessionEngine`; it owns screen flow, not encounter content/balance.
+- `BattleSessionEngine` requires caller-prepared movement and rejects mismatched/unprepared verified movements; it does not own story encounter selection, enemy, target, duration or rewards.
+- `WorldProgressionScreen` explicitly leaves region/location/reward actions caller-owned; `QuestEngine` owns quest plans/reward-claim policy, not story encounters.
+- `main_shell_navigation_test.dart` already proves Battle remains inaccessible without a real encounter owner and becomes reachable only when a battle root is injected.
+- Therefore the correct internal closure is fail-closed with no runtime mutation. Missing real encounter/content authority remains a product-content boundary, not permission to hard-code a fake battle.
+
 ## Current checkpoint
 
 - Baseline HEAD before ledger: `7484d52474203720f95ec063bd86465c693a7fd1`.
 - Last fully green behavioral Direct Validation: Run 259 at `5b58d731f0843cc683c441eecc7993633c08cf58`.
 - `CURRENT_PROGRESS.md` is historical evidence and must not override this ordered ledger.
-- Active item: `P1-004`.
+- Active item: `P1-005`.
 
 ## Session checkpoint format
 
@@ -126,4 +135,4 @@ Every meaningful closeout transition must update the bottom of this file with:
 
 Current:
 
-`5b58d731f0843cc683c441eecc7993633c08cf58 | LAST_CLOSED=P1-003 | ACTIVE=P1-004 | NEXT=P1-005 | BLOCKER=none`
+`5b58d731f0843cc683c441eecc7993633c08cf58 | LAST_CLOSED=P1-004 | ACTIVE=P1-005 | NEXT=P1-006 | BLOCKER=none`
