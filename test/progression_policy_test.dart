@@ -21,6 +21,10 @@ void main() {
     expect(policy.playerLevelParticipatesInSeasonalReset, isFalse);
   });
 
+  test('Player Level keeps the next unlock visible', () {
+    expect(policy.playerLevelRequiresVisibleNextUnlock, isTrue);
+  });
+
   test('Player unlock contract contains only locked semantic categories', () {
     expect(ProgressionPolicy.playerUnlocks, {
       PlayerProgressionUnlock.systemFeature,
@@ -42,10 +46,18 @@ void main() {
     });
   });
 
-  test('Lumi Bond unlock contract stays separate from Hero and Player', () {
+  test('Lumi Bond advances only from locked product sources', () {
+    expect(ProgressionPolicy.lumiBondAdvanceSources, {
+      LumiBondAdvanceSource.realConsistency,
+      LumiBondAdvanceSource.questCompletion,
+    });
+  });
+
+  test('Lumi Bond unlock contract includes cosmetic animation', () {
     expect(ProgressionPolicy.lumiUnlocks, {
       LumiProgressionUnlock.supportEffect,
       LumiProgressionUnlock.visualEvolution,
+      LumiProgressionUnlock.cosmeticAnimation,
       LumiProgressionUnlock.combatUtility,
     });
   });
