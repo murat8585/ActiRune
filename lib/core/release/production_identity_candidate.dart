@@ -43,7 +43,9 @@ abstract final class ProductionIdentityCandidateGuard {
       issues.add(ProductionIdentityCandidateIssue.missingAndroidApplicationId);
     } else {
       if (!_androidApplicationIdPattern.hasMatch(android)) {
-        issues.add(ProductionIdentityCandidateIssue.invalidAndroidApplicationId);
+        issues.add(
+          ProductionIdentityCandidateIssue.invalidAndroidApplicationId,
+        );
       }
       if (_isPlaceholderIdentifier(android)) {
         issues.add(

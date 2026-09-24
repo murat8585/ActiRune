@@ -15,8 +15,12 @@ void main(List<String> args) {
 
   print('ActiRune production identity migration plan');
   print('Mode: DRY_RUN_ONLY');
-  print('Proposed Android applicationId: ${androidApplicationId ?? '<missing>'}');
-  print('Proposed iOS bundle identifier: ${iosBundleIdentifier ?? '<missing>'}');
+  print(
+    'Proposed Android applicationId: ${androidApplicationId ?? '<missing>'}',
+  );
+  print(
+    'Proposed iOS bundle identifier: ${iosBundleIdentifier ?? '<missing>'}',
+  );
 
   if (!candidateReport.isValid) {
     print('Candidate issues:');
@@ -35,7 +39,9 @@ void main(List<String> args) {
   if (!androidGradleFile.existsSync() ||
       !iosProjectFile.existsSync() ||
       mainActivityFile == null) {
-    stderr.writeln('Required platform identity files are missing or ambiguous.');
+    stderr.writeln(
+      'Required platform identity files are missing or ambiguous.',
+    );
     exitCode = 3;
     return;
   }
@@ -46,7 +52,9 @@ void main(List<String> args) {
     iosProject: iosProjectFile.readAsStringSync(),
   );
 
-  print('Current Android namespace: ${current.androidNamespace ?? '<missing>'}');
+  print(
+    'Current Android namespace: ${current.androidNamespace ?? '<missing>'}',
+  );
   print(
     'Current Android applicationId: '
     '${current.androidApplicationId ?? '<missing>'}',
@@ -62,15 +70,11 @@ void main(List<String> args) {
   );
 
   print('Planned repository mutations after explicit owner authority:');
-  print(
-    '- android/app/build.gradle.kts namespace -> $androidApplicationId',
-  );
+  print('- android/app/build.gradle.kts namespace -> $androidApplicationId');
   print(
     '- android/app/build.gradle.kts applicationId -> $androidApplicationId',
   );
-  print(
-    '- ${mainActivityFile.path} package -> $androidApplicationId',
-  );
+  print('- ${mainActivityFile.path} package -> $androidApplicationId');
   print(
     '- MainActivity path -> '
     'android/app/src/main/kotlin/${androidApplicationId!.replaceAll('.', '/')}/MainActivity.kt',
@@ -107,7 +111,9 @@ File? _discoverMainActivity() {
   final candidates = root
       .listSync(recursive: true, followLinks: false)
       .whereType<File>()
-      .where((file) => file.path.replaceAll('\\', '/').endsWith('/MainActivity.kt'))
+      .where(
+        (file) => file.path.replaceAll('\\', '/').endsWith('/MainActivity.kt'),
+      )
       .toList(growable: false);
 
   return candidates.length == 1 ? candidates.single : null;
