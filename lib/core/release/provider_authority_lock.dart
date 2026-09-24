@@ -1,5 +1,3 @@
-import 'package:flutter/foundation.dart';
-
 import 'production_release_guard.dart';
 
 enum ProviderAuthorityIssue {
@@ -9,7 +7,6 @@ enum ProviderAuthorityIssue {
   iosBundleIdentifierMismatch,
 }
 
-@immutable
 final class ProviderAuthorityLock {
   const ProviderAuthorityLock({
     required this.androidApplicationId,
@@ -62,7 +59,6 @@ final class ProviderAuthorityLock {
   final String analyticsProvider;
 }
 
-@immutable
 final class ProviderAuthorityReport {
   const ProviderAuthorityReport({required this.issues});
 
