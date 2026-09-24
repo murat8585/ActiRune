@@ -34,7 +34,9 @@ Phase-1 internal scope is frozen at commit `034305744735afd9fef93488e7a81b73d87d
 | P2-000 | CLOSED | Production closeout bootstrap | Dedicated production branch and ordered ledger created from the exact frozen Phase-1 HEAD. |
 | P2-001A | CLOSED | Identity migration safety prep | Typed platform-identity consistency guard, regressions and production-closeout CI are green. Production Closeout Validation Run 3 SUCCESS at exact HEAD `8717303a76b3853e4ca6c8cbfa8ce8765662df6f`. |
 | P2-001B | CLOSED | Unified identity/release CLI binding | Unified CLI evaluates both release state and platform-identity consistency as pure Dart. Production Closeout Validation Run 7 SUCCESS at exact HEAD `370b08093e338729af1836e986059a8aa487ed20`; closure commit Run 8 also succeeded. |
-| P2-001C | CLOSED | Dry-run identity authority migration planner | Candidate syntax/placeholder guard, regressions and the dry-run-only migration planner are green. Production Closeout Validation Run 13 SUCCESS at exact HEAD `93f057db81cac0aaacbe9dbdff6825a701d8e0ee`. This closure remains valid only if the validation attached to this exact ledger-closure commit also succeeds. |
+| P2-001C | CLOSED | Dry-run identity authority migration planner | Candidate syntax/placeholder guard, regressions and the dry-run-only migration planner are green. Production Closeout Validation Run 13 SUCCESS at exact HEAD `93f057db81cac0aaacbe9dbdff6825a701d8e0ee`; exact closure validation also succeeded. |
+| P2-002A | CLOSED | Production signing safety preflight | Signing hygiene guard, regressions and standalone signing preflight are green. Run 18 SUCCESS at checkpoint `65572971ef00685792dfd91536fd6f30db059945`; closure Run 19 SUCCESS at `582f6e232c0f99b80640aff3fa34cc4eadbba539`. No signing keys or secrets were created. |
+| P2-003A | CLOSED | Provider authority/configuration tooling preflight | Provider authority/configuration domain code is standalone-Dart-safe; configuration validator and CI preflight are green. Production Closeout Validation Run 23 SUCCESS at exact checkpoint `31729dc793c95ebaa9af55d60544f8a8bc52b2ea`. Real provider authority/configuration remains external. |
 | P2-001 | BLOCKED_EXTERNAL | Final Android/iOS application identity authority | Android `applicationId`/namespace and iOS Runner bundle id remain `com.example.actirune`. No final production package/bundle decision is authoritative. |
 | P2-002 | BLOCKED_EXTERNAL | Android/iOS production signing ownership | Android release uses debug signing. No authoritative Apple Development Team/signing evidence exists. Requires P2-001 first. |
 | P2-003 | BLOCKED_EXTERNAL | Production provider authority lock | Firebase + RevenueCat + Google Mobile Ads + Firebase Analytics/optional BigQuery is recommended, not authoritative. Requires real identity/provider/account authority. |
@@ -126,6 +128,7 @@ Validation history:
 - Run 12 passed formatter but correctly stopped at analyzer because a command-line reporting tool intentionally used stdout and inherited the app-level `avoid_print` lint. The fix was limited to file-level `// ignore_for_file: avoid_print`; planner behavior and guard semantics were unchanged.
 - Analyzer lint fix commit: `93f057db81cac0aaacbe9dbdff6825a701d8e0ee`.
 - Production Closeout Validation Run 13 SUCCESS on exact HEAD `93f057db81cac0aaacbe9dbdff6825a701d8e0ee`.
+- Exact closure validation also succeeded at commit `166f69a056853aa682f87d8759581383b1b7d1ce`.
 
 Run 13 proved:
 - exact checkout PASS;
@@ -136,7 +139,60 @@ Run 13 proved:
 - placeholder candidate rejection path PASS;
 - unified production identity/release gate PASS while the real repository correctly remains `BLOCKED` by placeholder identity/signing/Team authority.
 
-**Self-validating closure rule:** P2-001C is CLOSED only while `ActiRune Production Closeout Validation` attached to the exact commit containing this closure concludes SUCCESS. A failure automatically reopens P2-001C.
+## P2-002A evidence
+
+Persistent files:
+- `lib/core/release/production_signing_hygiene_guard.dart`
+- `test/production_signing_hygiene_guard_test.dart`
+- `tool/check_production_signing_preflight.dart`
+- `.github/workflows/actirune-production-closeout-validation.yml`
+
+Implementation history:
+- signing hygiene guard: `503e424e260c75e43bddf6bd06e45692b27d1547`;
+- signing regressions: `db336cea5eae20c76e3a735dabcedc91183eb4d5`;
+- standalone signing preflight CLI: `2eae218d06a6d9d931dc987850b0a00647170a51`;
+- CI validation wiring: `90963c24c6e88ccdce6096a4bf38d939e44bfd3b`;
+- canonical signing-test formatting: `9a641c282b49fb65c2739f511fa732edba4cc878`;
+- temporary signing formatter removed: `a089337499b28c4cf0a65c7d27fc75100e7f12e2`.
+
+Production Closeout Validation Run 18 SUCCESS at exact checkpoint `65572971ef00685792dfd91536fd6f30db059945`.
+Closure Run 19 SUCCESS at exact commit `582f6e232c0f99b80640aff3fa34cc4eadbba539`.
+
+The preflight proves repo safety and fail-closed signing state only. It does not create or claim Android signing keys, Apple certificates, provisioning profiles, Team ID or store signing authority. Real signing ownership remains `P2-002 BLOCKED_EXTERNAL`.
+
+## P2-003A evidence
+
+Persistent files:
+- `lib/core/release/provider_authority_lock.dart`
+- `lib/core/release/provider_configuration_evidence.dart`
+- `tool/validate_provider_authority_lock.dart`
+- `tool/validate_provider_configuration_evidence.dart`
+- `test/provider_authority_lock_test.dart`
+- `test/provider_configuration_evidence_test.dart`
+- `.github/workflows/actirune-production-closeout-validation.yml`
+- `docs/release/PROVIDER_PREFLIGHT_PREP_20260924.md`
+
+Implementation history:
+- provider authority domain decoupled from Flutter: `68f9c54993eb1a2d45e2b91a8a051574d027fc45`;
+- provider configuration evidence decoupled from Flutter: `10167cf18a89f5c8be9b950e36eec26894b4289f`;
+- standalone configuration validator: `a56d474ead440242e4669a3d296b8f9644688243`;
+- permanent provider CI/preflight wiring: `f023291ff555ba466c70f887c5c7dbccc4800bc0`;
+- Run 22 stopped only on canonical formatting before behavioral provider tests ran;
+- canonical provider preflight formatting: `7071ac5f1a3faf7246dea4190a16f14581e49d91`;
+- temporary formatter removed: `9bac733ea9871d52ab5159e01323ab69e9196dc7`;
+- exact provider checkpoint: `31729dc793c95ebaa9af55d60544f8a8bc52b2ea`.
+
+Production Closeout Validation Run 23 SUCCESS on exact checkpoint `31729dc793c95ebaa9af55d60544f8a8bc52b2ea`:
+- exact checkout PASS;
+- formatting PASS;
+- analyzer PASS;
+- identity/release/signing/provider regressions PASS;
+- signing preflight PASS as tooling;
+- provider authority/configuration preflight PASS as tooling while real provider files remain correctly blocked;
+- dry-run identity migration planner PASS;
+- unified production identity/release gate PASS as tooling without fabricating production readiness.
+
+This closes repository-safe provider tooling only. Real provider selection/authority and real provider configuration remain `P2-003` and `P2-004 BLOCKED_EXTERNAL`.
 
 ## Provider recommendation boundary
 
@@ -156,8 +212,8 @@ P2-005 Battle encounter/content authority may be resolved in parallel only when 
 
 ## Current checkpoint
 
-`BASE=034305744735afd9fef93488e7a81b73d87db7c0 | LAST_CLOSED=P2-001C | ACTIVE=none | FIRST_BLOCKER=P2-001 | NEXT_AFTER_AUTHORITY=P2-002`
+`BASE=034305744735afd9fef93488e7a81b73d87db7c0 | LAST_CLOSED=P2-003A | ACTIVE=none | FIRST_BLOCKER=P2-001 | NEXT_AFTER_AUTHORITY=P2-002`
 
 ## Hard boundary
 
-Repository-safe identity preparation is complete through a validated dry-run candidate/migration planner. No platform identity has been changed. No next state-changing action may guess the final package/bundle identifiers, signing owner, provider projects/accounts, product ids, prices, ad-unit ids, credentials, physical-device results, or Battle content. Those require real owner/external evidence.
+Repository-safe identity, signing and provider-preflight preparation is complete. No platform identity, signing owner, provider project/account, product id, price, ad-unit id, credential, physical-device result or Battle content has been fabricated or promoted to production authority. The first real blocker remains `P2-001` final Android/iOS identity authority; subsequent production state-changing work must use real owner/external evidence.
