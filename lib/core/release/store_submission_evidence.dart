@@ -2,13 +2,14 @@ import 'provider_authority_lock.dart';
 
 enum StoreReviewState { notSubmitted, submitted, inReview, approved, rejected }
 
-enum RequirementDisposition { notRequired, complete }
+enum RequirementDisposition { undecided, notRequired, complete }
 
 enum StoreSubmissionIssue {
   androidApplicationIdMismatch,
   iosBundleIdentifierMismatch,
   appleMetadataIncomplete,
   applePrivacyIncomplete,
+  appleExportComplianceUndecided,
   appleReviewAccessIncomplete,
   appleMonetizationIncomplete,
   googlePlaySigningUnverified,
@@ -16,6 +17,7 @@ enum StoreSubmissionIssue {
   googlePlayAppContentIncomplete,
   googlePlayDataSafetyIncomplete,
   googlePlayReviewAccessIncomplete,
+  googlePlayProductionAccessUndecided,
   googlePlayMonetizationIncomplete,
   appleNotSubmitted,
   appleSubmissionReferenceMissing,
@@ -301,6 +303,9 @@ abstract final class StoreSubmissionValidator {
     if (!apple.appPrivacyComplete) {
       issues.add(StoreSubmissionIssue.applePrivacyIncomplete);
     }
+    if (apple.exportCompliance == RequirementDisposition.undecided) {
+      issues.add(StoreSubmissionIssue.appleExportComplianceUndecided);
+    }
     if (!apple.reviewAccessComplete) {
       issues.add(StoreSubmissionIssue.appleReviewAccessIncomplete);
     }
@@ -331,6 +336,9 @@ abstract final class StoreSubmissionValidator {
     }
     if (!googlePlay.reviewAccessComplete) {
       issues.add(StoreSubmissionIssue.googlePlayReviewAccessIncomplete);
+    }
+    if (googlePlay.productionAccess == RequirementDisposition.undecided) {
+      issues.add(StoreSubmissionIssue.googlePlayProductionAccessUndecided);
     }
     if (!googlePlay.monetizationItemsReady) {
       issues.add(StoreSubmissionIssue.googlePlayMonetizationIncomplete);
