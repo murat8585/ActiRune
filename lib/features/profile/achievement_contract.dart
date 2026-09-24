@@ -131,26 +131,27 @@ bool _categoryMatchesSignal(
   AchievementCategory category,
   AchievementSignal signal,
 ) {
-  return switch (signal) {
-    AchievementSignal.firstBattleCompleted =>
-      category == AchievementCategory.battle,
-    AchievementSignal.firstBossCompleted =>
-      category == AchievementCategory.battle,
-    AchievementSignal.distanceMilestoneReached =>
-      category == AchievementCategory.exploration,
-    AchievementSignal.verifiedMovementMilestoneReached =>
-      category == AchievementCategory.movement,
-    AchievementSignal.highFormSeriesReached =>
-      category == AchievementCategory.form,
-    AchievementSignal.socialMilestoneReached =>
-      category == AchievementCategory.social,
-    AchievementSignal.lumiBondMilestoneReached =>
-      category == AchievementCategory.lumi,
-    AchievementSignal.worldCompletionReached =>
-      category == AchievementCategory.exploration,
-    AchievementSignal.hiddenAchievementDiscovered =>
-      category == AchievementCategory.hidden,
-  };
+  if (signal == AchievementSignal.firstBattleCompleted ||
+      signal == AchievementSignal.firstBossCompleted) {
+    return category == AchievementCategory.battle;
+  }
+  if (signal == AchievementSignal.distanceMilestoneReached ||
+      signal == AchievementSignal.worldCompletionReached) {
+    return category == AchievementCategory.exploration;
+  }
+  if (signal == AchievementSignal.verifiedMovementMilestoneReached) {
+    return category == AchievementCategory.movement;
+  }
+  if (signal == AchievementSignal.highFormSeriesReached) {
+    return category == AchievementCategory.form;
+  }
+  if (signal == AchievementSignal.socialMilestoneReached) {
+    return category == AchievementCategory.social;
+  }
+  if (signal == AchievementSignal.lumiBondMilestoneReached) {
+    return category == AchievementCategory.lumi;
+  }
+  return category == AchievementCategory.hidden;
 }
 
 void _requireStableId(String value, String fieldName) {
