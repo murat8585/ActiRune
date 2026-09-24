@@ -397,6 +397,7 @@ class _MainShellState extends State<MainShell> {
         onQuests: () => _openWeeklyQuests(context),
         onEvents: () => _openEvents(context),
         onSettings: () => _openSettingsHub(context),
+        onWorldMap: () => _openWorldProgression(context),
         onYesterdaySummary: () => _openDailySummary(context),
         onRootNavigate: _selectHomeRoot,
         battleRootEnabled: _battleAvailable,
@@ -424,6 +425,7 @@ class _MainShellState extends State<MainShell> {
       ProfileScreen(
         onProfileDetails: () => _openPlayerLevel(context),
         onBadges: () => _openAchievements(context),
+        onMovementMastery: () => _openMovementMastery(context),
         onWorldProgress: () => _openWorldProgression(context),
         onHistory: () => _openProfileHistory(context),
         onAccountInfo: () => _openAccount(context),
