@@ -7,6 +7,7 @@ on:
     paths:
       - 'lib/core/release/**'
       - 'test/production_*'
+      - 'tool/check_production_release_readiness.dart'
       - 'android/app/**'
       - 'ios/Runner.xcodeproj/**'
       - 'PRODUCTION_CLOSEOUT.md'
@@ -47,6 +48,7 @@ jobs:
           lib/core/release/production_release_guard.dart
           test/production_identity_guard_test.dart
           test/production_release_guard_test.dart
+          tool/check_production_release_readiness.dart
 
       - name: Analyze
         run: flutter analyze
@@ -57,11 +59,27 @@ jobs:
           test/production_identity_guard_test.dart
           test/production_release_guard_test.dart
 
-      - name: Confirm placeholder production identity still fails closed
+      - name: Exercise unified production identity and release gate
         shell: bash
         run: |
-          set -euo pipefail
-          grep -F 'applicationId = "com.example.actirune"' android/app/build.gradle.kts
-          grep -F 'namespace = "com.example.actirune"' android/app/build.gradle.kts
-          grep -F 'package com.example.actirune' android/app/src/main/kotlin/com/example/actirune/MainActivity.kt
-          grep -F 'PRODUCT_BUNDLE_IDENTIFIER = com.example.actirune;' ios/Runner.xcodeproj/project.pbxproj
+          set +e
+          output="$(dart run tool/check_production_release_readiness.dart 2>&1)"
+          status=$?
+          set -e
+
+          printf '%s\n' "$output"
+
+          if [ "$status" -eq 0 ]; then
+            grep -F 'RESULT: PASS' <<<"$output"
+          elif [ "$status" -eq 1 ]; then
+            grep -F 'RESULT: BLOCKED' <<<"$output"
+          else
+            echo "Unexpected production guard exit code: $status" >&2
+            exit "$status"
+          fi
+
+          if grep -Fq 'applicationId = "com.example.actirune"' android/app/build.gradle.kts; then
+            test "$status" -eq 1
+            grep -F 'release.placeholderAndroidApplicationId' <<<"$output"
+            grep -F 'identity.placeholderAndroidNamespace' <<<"$output"
+          fi
