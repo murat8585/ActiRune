@@ -1,3 +1,5 @@
+const double defaultPoseMinimumConfidence = .65;
+
 enum Joint {
   leftShoulder,
   rightShoulder,

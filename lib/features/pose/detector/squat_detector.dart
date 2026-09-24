@@ -9,7 +9,7 @@ enum SquatPhase { unknown, standing, descending, bottom, ascending }
 
 class SquatDetector implements PoseRepDetector {
   SquatDetector({
-    this.minimumConfidence = .65,
+    this.minimumConfidence = defaultPoseMinimumConfidence,
     this.standingAngle = 160,
     this.bottomAngle = 105,
     this.minimumBottomDuration = const Duration(milliseconds: 250),

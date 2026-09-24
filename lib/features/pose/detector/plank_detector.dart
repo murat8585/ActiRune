@@ -14,7 +14,7 @@ import 'verified_rep.dart';
 class PlankDetector implements PoseRepDetector {
   PlankDetector({
     required this.requiredHoldDuration,
-    this.minimumConfidence = .65,
+    this.minimumConfidence = defaultPoseMinimumConfidence,
     this.minimumBodyLineAngle = 155,
   }) : assert(requiredHoldDuration > Duration.zero);
 

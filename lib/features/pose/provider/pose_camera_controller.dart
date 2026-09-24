@@ -12,26 +12,44 @@ import 'pose_models.dart';
 /// Pure frame-dispatch boundary between normalized ML Kit pose frames and the
 /// movement detector selected by the authoritative encounter/task owner.
 class PoseRepDispatcher {
-  PoseRepDispatcher({required this.detector, required this.onVerifiedRep});
+  PoseRepDispatcher({
+    required this.detector,
+    required this.onVerifiedRep,
+    this.onPoseFrame,
+  });
 
   final PoseRepDetector detector;
   final void Function(VerifiedRep rep) onVerifiedRep;
+  final void Function(PoseFrame frame)? onPoseFrame;
 
   void accept(PoseFrame frame) {
     final rep = detector.process(frame);
+    onPoseFrame?.call(frame);
     if (rep != null) onVerifiedRep(rep);
   }
 }
 
-class PoseCameraController {
+abstract interface class PoseCameraSession {
+  CameraController? get camera;
+  bool get isReady;
+  Object? get error;
+
+  Future<void> start();
+  Future<void> stop();
+  Future<void> dispose();
+}
+
+class PoseCameraController implements PoseCameraSession {
   PoseCameraController({
     required PoseRepDetector detector,
     required void Function(VerifiedRep rep) onVerifiedRep,
+    void Function(PoseFrame frame)? onPoseFrame,
     MlKitPoseProvider? provider,
     this._adapter = const CameraInputAdapter(),
   }) : _dispatcher = PoseRepDispatcher(
          detector: detector,
          onVerifiedRep: onVerifiedRep,
+         onPoseFrame: onPoseFrame,
        ),
        _provider = provider ?? MlKitPoseProvider();
 
@@ -40,12 +58,18 @@ class PoseCameraController {
   final CameraInputAdapter _adapter;
   CameraController? _camera;
   StreamSubscription<PoseFrame>? _subscription;
+  @override
   Object? error;
 
+  @override
   CameraController? get camera => _camera;
+
+  @override
   bool get isReady => _camera?.value.isInitialized ?? false;
 
+  @override
   Future<void> start() async {
+    error = null;
     if (!Platform.isAndroid && !Platform.isIOS) {
       error = UnsupportedError('Pose camera requires Android or iOS.');
       return;
@@ -83,6 +107,7 @@ class PoseCameraController {
     }
   }
 
+  @override
   Future<void> stop() async {
     final controller = _camera;
     _camera = null;
@@ -95,6 +120,7 @@ class PoseCameraController {
     await controller?.dispose();
   }
 
+  @override
   Future<void> dispose() async {
     await stop();
     await _provider.dispose();

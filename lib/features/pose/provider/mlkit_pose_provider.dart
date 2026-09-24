@@ -49,7 +49,9 @@ class MlKitPoseProvider implements PoseProvider {
 
   Future<PoseFrame?> _inferWithMlKit(InputImage image) async {
     final poses = await _detector.processImage(image);
-    if (poses.isEmpty) return null;
+    if (poses.isEmpty) {
+      return PoseFrame(timestamp: DateTime.now(), joints: const {});
+    }
     final pose = poses.first;
     JointPoint? p(PoseLandmarkType type) {
       final l = pose.landmarks[type];

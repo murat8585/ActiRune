@@ -6,7 +6,7 @@ import 'first_calibration_engine.dart';
 import 'first_calibration_screen.dart';
 import 'onboarding_welcome_screen.dart';
 
-typedef CalibrationRunner = Future<FirstCalibrationAssessment> Function();
+typedef CalibrationRunner = Future<FirstCalibrationAssessment?> Function();
 
 enum _OnboardingPhase { welcome, firstCalibration, calibrationResult }
 
@@ -55,16 +55,26 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     if (runner == null || _calibrationInFlight) return;
 
     setState(() => _calibrationInFlight = true);
-    late final FirstCalibrationAssessment assessment;
+    FirstCalibrationAssessment? assessment;
     try {
       assessment = await runner();
+    } catch (error) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Kalibrasyon başlatılamadı. Yeniden deneyebilirsin.'),
+          ),
+        );
+      }
     } finally {
       if (mounted) {
         setState(() => _calibrationInFlight = false);
       }
     }
 
-    if (!mounted || !assessment.readyForStartingProfile) return;
+    if (!mounted || assessment == null || !assessment.readyForStartingProfile) {
+      return;
+    }
 
     final startingProfile = assessment.startingProfile;
     if (startingProfile == null) return;

@@ -12,7 +12,7 @@ enum PushUpPhase { unknown, top, descending, bottom, ascending }
 /// an observed body-line failure invalidates the current repetition.
 class PushUpDetector implements PoseRepDetector {
   PushUpDetector({
-    this.minimumConfidence = .65,
+    this.minimumConfidence = defaultPoseMinimumConfidence,
     this.topElbowAngle = 160,
     this.bottomElbowAngle = 100,
     this.minimumBodyLineAngle = 155,

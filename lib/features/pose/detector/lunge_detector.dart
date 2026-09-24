@@ -14,7 +14,7 @@ enum LungeSide { left, right }
 /// ML Kit validation are complete.
 class LungeDetector implements PoseRepDetector {
   LungeDetector({
-    this.minimumConfidence = .65,
+    this.minimumConfidence = defaultPoseMinimumConfidence,
     this.standingAngle = 160,
     this.bottomAngle = 105,
     this.minimumReturnDuration = const Duration(milliseconds: 250),
