@@ -7,9 +7,13 @@ on:
     paths:
       - 'lib/core/release/**'
       - 'test/production_*'
+      - 'test/provider_*'
       - 'tool/check_production_release_readiness.dart'
       - 'tool/check_production_signing_preflight.dart'
       - 'tool/plan_production_identity_migration.dart'
+      - 'tool/validate_provider_authority_lock.dart'
+      - 'tool/validate_provider_configuration_evidence.dart'
+      - 'validation/release/provider_*'
       - 'android/app/**'
       - 'ios/Runner.xcodeproj/**'
       - '.gitignore'
@@ -51,24 +55,32 @@ jobs:
           lib/core/release/production_identity_guard.dart
           lib/core/release/production_release_guard.dart
           lib/core/release/production_signing_hygiene_guard.dart
+          lib/core/release/provider_authority_lock.dart
+          lib/core/release/provider_configuration_evidence.dart
           test/production_identity_candidate_test.dart
           test/production_identity_guard_test.dart
           test/production_release_guard_test.dart
           test/production_signing_hygiene_guard_test.dart
+          test/provider_authority_lock_test.dart
+          test/provider_configuration_evidence_test.dart
           tool/check_production_release_readiness.dart
           tool/check_production_signing_preflight.dart
           tool/plan_production_identity_migration.dart
+          tool/validate_provider_authority_lock.dart
+          tool/validate_provider_configuration_evidence.dart
 
       - name: Analyze
         run: flutter analyze
 
-      - name: Production identity release and signing guard regressions
+      - name: Production identity release signing and provider regressions
         run: >-
           flutter test --no-pub
           test/production_identity_candidate_test.dart
           test/production_identity_guard_test.dart
           test/production_release_guard_test.dart
           test/production_signing_hygiene_guard_test.dart
+          test/provider_authority_lock_test.dart
+          test/provider_configuration_evidence_test.dart
 
       - name: Exercise production signing preflight
         shell: bash
@@ -91,6 +103,82 @@ jobs:
             echo 'Signing ignore coverage regressed.' >&2
             exit 1
           fi
+
+      - name: Exercise provider authority and configuration preflight
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          set +e
+          authority_missing="$(dart run tool/validate_provider_authority_lock.dart 2>&1)"
+          authority_status=$?
+          set -e
+          printf '%s\n' "$authority_missing"
+          test "$authority_status" -eq 1
+          grep -F 'RESULT: BLOCKED_PROVIDER_AUTHORITY_MISSING' <<<"$authority_missing"
+
+          set +e
+          config_missing="$(dart run tool/validate_provider_configuration_evidence.dart 2>&1)"
+          config_missing_status=$?
+          set -e
+          printf '%s\n' "$config_missing"
+          test "$config_missing_status" -eq 1
+          grep -F 'RESULT: BLOCKED_PROVIDER_AUTHORITY_MISSING' <<<"$config_missing"
+
+          temp_dir="$(mktemp -d)"
+          trap 'rm -rf "$temp_dir"' EXIT
+
+          cat > "$temp_dir/authority.json" <<'JSON'
+          {
+            "schemaVersion": 1,
+            "androidApplicationId": "com.actirune.synthetic",
+            "iosBundleIdentifier": "com.actirune.synthetic",
+            "backendProvider": "Synthetic Backend",
+            "billingProvider": "Synthetic Billing",
+            "rewardedAdsProvider": "Synthetic Ads",
+            "analyticsProvider": "Synthetic Analytics"
+          }
+          JSON
+
+          cat > "$temp_dir/configuration.json" <<'JSON'
+          {
+            "schemaVersion": 1,
+            "androidApplicationId": "com.actirune.synthetic",
+            "iosBundleIdentifier": "com.actirune.synthetic",
+            "releaseBuild": "synthetic-ci-fixture",
+            "backend": {
+              "providerName": "Synthetic Backend",
+              "publicReference": "synthetic-backend-public-reference",
+              "configured": true,
+              "verificationMethods": ["automatedApiReadback"]
+            },
+            "billing": {
+              "providerName": "Synthetic Billing",
+              "publicReference": "synthetic-billing-public-reference",
+              "configured": true,
+              "verificationMethods": ["automatedApiReadback"]
+            },
+            "rewardedAds": {
+              "providerName": "Synthetic Ads",
+              "publicReference": "synthetic-ads-public-reference",
+              "configured": true,
+              "verificationMethods": ["automatedApiReadback"]
+            },
+            "analytics": {
+              "providerName": "Synthetic Analytics",
+              "publicReference": "synthetic-analytics-public-reference",
+              "configured": true,
+              "verificationMethods": ["automatedApiReadback"]
+            }
+          }
+          JSON
+
+          config_valid="$(dart run tool/validate_provider_configuration_evidence.dart \
+            "$temp_dir/authority.json" "$temp_dir/configuration.json")"
+          printf '%s\n' "$config_valid"
+          grep -F 'RESULT: PROVIDER_CONFIGURATION_VALID' <<<"$config_valid"
+          grep -F 'Public references: NOT_PRINTED' <<<"$config_valid"
+          grep -F 'Credentials/secrets: NOT_SUPPORTED' <<<"$config_valid"
 
       - name: Exercise dry-run production identity migration planner
         shell: bash
