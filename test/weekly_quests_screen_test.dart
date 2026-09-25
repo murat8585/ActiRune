@@ -1,6 +1,6 @@
 import 'package:actirune/app/main_shell.dart';
 import 'package:actirune/core/widgets/artwork_interaction_surface.dart';
-import 'package:actirune/core/widgets/feature_unavailable_dialog.dart';
+import 'package:actirune/features/home/quest_center_preview_screen.dart';
 import 'package:actirune/features/quests/weekly_quests_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -153,7 +153,6 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byType(WeeklyQuestsScreen), findsNothing);
-    expect(find.byType(FeatureUnavailableDialog), findsOneWidget);
-    expect(find.text('Görevler'), findsOneWidget);
+    expect(find.byType(QuestCenterPreviewScreen), findsOneWidget);
   });
 }
