@@ -1,0 +1,196 @@
+name: ActiRune Ana Dunya Final Validation
+
+on:
+  push:
+    branches:
+      - fix/full-ui-interaction-wiring-20260925
+    paths:
+      - '.github/workflows/actirune-home-final-validation.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  validate-home:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - name: Checkout current Home branch
+        uses: actions/checkout@v4
+        with:
+          ref: fix/full-ui-interaction-wiring-20260925
+          fetch-depth: 0
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Resolve dependencies
+        run: flutter pub get
+
+      - name: Normalize Dart formatting on the exact validation tree
+        shell: bash
+        run: |
+          dart format lib test
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if ! git diff --quiet -- lib test; then
+            git add lib test
+            git diff --cached --check
+            git commit -m "Normalize Dart formatting before Home final validation"
+            git push origin HEAD:fix/full-ui-interaction-wiring-20260925
+          fi
+          echo "VALIDATED_SHA=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+          test -z "$(git status --porcelain -- lib test)"
+
+      - name: Python production interaction audit
+        run: python3 tool/interaction_audit.py
+
+      - name: Strict format idempotence
+        shell: bash
+        run: |
+          dart format lib test
+          test -z "$(git status --porcelain -- lib test)"
+
+      - name: Analyze
+        run: flutter analyze
+
+      - name: Ana Dunya subtree focused interaction and engine tests
+        run: >-
+          flutter test --no-pub
+          test/home_interaction_test.dart
+          test/home_hitbox_regression_test.dart
+          test/home_settings_route_test.dart
+          test/home_subtree_production_test.dart
+          test/home_permissions_production_test.dart
+          test/home_subtree_navigation_test.dart
+          test/home_subtree_auxiliary_navigation_test.dart
+          test/daily_quests_route_integration_test.dart
+          test/daily_quests_screen_test.dart
+          test/weekly_quests_screen_test.dart
+          test/events_route_integration_test.dart
+          test/event_detail_popup_test.dart
+          test/world_progression_route_integration_test.dart
+          test/world_progression_screen_test.dart
+          test/daily_summary_popup_test.dart
+          test/rune_shrine_ready_screen_test.dart
+          test/rune_shrine_result_test.dart
+          test/quest_engine_test.dart
+          test/progression_policy_test.dart
+          test/rewarded_ad_policy_test.dart
+          test/monetization_provider_contracts_test.dart
+          test/provider_authority_lock_test.dart
+
+      - name: Production interaction wiring regression
+        run: flutter test --no-pub test/production_interaction_wiring_test.dart
+
+      - name: Full Flutter regression suite
+        run: flutter test --no-pub
+
+      - name: Diff hygiene
+        run: git diff --check
+
+      - name: Record final Ana Dunya evidence and remove one-off workflow
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import os
+          from pathlib import Path
+
+          sha = os.environ['VALIDATED_SHA']
+          run_id = os.environ['GITHUB_RUN_ID']
+          lines = [
+              '# ActiRune — Ana Dünya Interaction + Engine Audit',
+              '',
+              'Date: 2026-09-25',
+              'Branch: `fix/full-ui-interaction-wiring-20260925`',
+              f'Validated source HEAD before this evidence commit: `{sha}`',
+              f'Validation run: `{run_id}`',
+              '',
+              '## Result',
+              '',
+              '`PASS_WITH_EXPLICIT_EXTERNAL_BLOCKERS`',
+              '',
+              'Ana Dünya production interaction layer, child navigation, hitboxes, implemented policy engines, analyzer, production wiring regression, and the complete Flutter regression suite passed on the exact source HEAD above.',
+              '',
+              '## Ana Dünya interaction matrix',
+              '',
+              '| Control | Production outcome | Interaction | Engine/data status |',
+              '| --- | --- | --- | --- |',
+              '| Günlük Seri | Visible controlled unavailable response; does NOT misroute to Daily Quests | PASS | BLOCKED — Product Bible defines a separate 7-day flexible streak system; dedicated runtime streak engine/persistence owner is not implemented. |',
+              '| Mesajlar | Visible `Rune Gelen Kutusu` unavailable response | PASS | BLOCKED — no production inbox/message owner is implemented. |',
+              '| Görevler | Visible controlled unavailable response; does NOT misroute to Weekly Quests | PASS | PARTIAL/BLOCKED — Daily/Weekly quest policy engines are tested, but the truthful Görevler parent plus live persisted quest/reward owner are not implemented. |',
+              '| Etkinlikler | Opens Events; event cards/featured entry open Event Detail; unsupported mutations fail visibly | PASS | PARTIAL — no authoritative live event state/repository owner. |',
+              '| Ayarlar | Opens Settings Hub and child sections; Permissions reaches platform app settings | PASS | PARTIAL — several preference/account mutations have no persistence owner and fail visibly. |',
+              '| Dünya Haritası | Opens World Progression; child hotspots respond or fail visibly | PASS | PARTIAL — progression policy is tested; live region/node/boss persistence owner is absent. |',
+              '| Dünün Özeti | Opens Daily Summary; close/continue/adventure/details behavior is observable | PASS | PARTIAL — no authoritative live summary-data owner. |',
+              '| Ödüller | Opens Rune Shrine Ready; gift cannot fake a reward without provider/owner | PASS | EXTERNAL/PARTIAL — rewarded-ad policy/contracts are tested; live authorized provider and persistent grant/history owner are absent. |',
+              '| Ana Dünya | Remains/returns to Home | PASS | N/A |',
+              '| Macera | Opens Adventure root | PASS | N/A |',
+              '| Savaş | Visible locked response while real encounter authority is absent | PASS | EXTERNAL_BLOCKED |',
+              '| Kahraman | Opens Hero root | PASS | N/A |',
+              '| Profil | Opens Profile root | PASS | N/A |',
+              '',
+              '## Child interaction coverage',
+              '',
+              '- Events + Event Detail',
+              '- World Progression',
+              '- Daily Summary',
+              '- Rune Shrine Ready / reward-policy boundary',
+              '- Settings Hub',
+              '- Account',
+              '- Notifications',
+              '- Privacy',
+              '- Permissions',
+              '- Accessibility',
+              '- root navigation and Battle fail-closed behavior from Home subtree',
+              '- Daily/Weekly quest child screens and quest policy engines are regression-tested, but are not falsely presented as direct Home destinations',
+              '',
+              '## Corrections made during this audit',
+              '',
+              '1. Removed the false `Günlük Seri -> DailyQuestsScreen` production route.',
+              '2. Removed the false `Görevler -> WeeklyQuestsScreen` production route.',
+              '3. Updated Home regression tests so those incorrect routes cannot return unnoticed.',
+              '4. Updated screen reachability authority so `WeeklyQuestsScreen` is not falsely classified as a direct MainShell/Home production route.',
+              '5. Preserved Daily/Weekly quest policy tests and did not invent live persistence, rewards, streak state, events, ads, or message state.',
+              '6. Preserved phone hitbox regression coverage for every visible Home hotspot.',
+              '',
+              '## Validation gate',
+              '',
+              f'GitHub Actions run `{run_id}` on source `{sha}` passed:',
+              '',
+              '- Python production interaction audit',
+              '- strict Dart format idempotence',
+              '- `flutter analyze`',
+              '- Ana Dünya focused interaction + hitbox + route + engine/policy tests',
+              '- production interaction wiring regression',
+              '- full Flutter regression suite',
+              '- diff hygiene',
+              '',
+              '## Final classification',
+              '',
+              '- HOME_VISIBLE_TAPS: `PASS`',
+              '- HOME_PHONE_HITBOXES: `PASS`',
+              '- HOME_ROUTE_TRUTHFULNESS: `PASS`',
+              '- HOME_CHILD_NAVIGATION: `PASS`',
+              '- HOME_PRODUCTION_WIRING: `PASS`',
+              '- HOME_ENGINE_POLICIES: `PASS_WHERE_IMPLEMENTED`',
+              '- HOME_LIVE_ENGINE_INTEGRATION: `PARTIAL_WITH_EXPLICIT_OWNERS_MISSING`',
+              '- SILENT_DEAD_TAPS_IN_VALIDATED_HOME_SUBTREE: `NONE_KNOWN`',
+              '- RESULT: `PASS_WITH_EXPLICIT_EXTERNAL_BLOCKERS`',
+              '',
+              'Missing external/live owners are deliberately not replaced by fixtures, fake success, hard-coded rewards, fake streaks, fake event completion, or fake persisted player state.',
+          ]
+          path = Path('validation/interactions/20260925/HOME_WORLD_INTERACTION_RESULT.md')
+          path.parent.mkdir(parents=True, exist_ok=True)
+          path.write_text('\n'.join(lines) + '\n', encoding='utf-8')
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm .github/workflows/actirune-home-final-validation.yml
+          git add validation/interactions/20260925/HOME_WORLD_INTERACTION_RESULT.md
+          git diff --cached --check
+          git commit -m "Record final Ana Dunya interaction validation"
+          git push origin HEAD:fix/full-ui-interaction-wiring-20260925
