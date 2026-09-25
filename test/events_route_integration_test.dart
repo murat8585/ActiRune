@@ -1,5 +1,7 @@
 import 'package:actirune/app/main_shell.dart';
+import 'package:actirune/core/widgets/feature_unavailable_dialog.dart';
 import 'package:actirune/features/home/events_screen.dart';
+import 'package:actirune/features/home/home_preview_dialog.dart';
 import 'package:actirune/features/home/home_screen.dart';
 import 'package:actirune/features/profile/profile_screen.dart';
 import 'package:flutter/material.dart';
@@ -68,11 +70,47 @@ void main() {
     );
     await tester.pump();
     expect(selectedFilter, EventsFilter.upcoming);
+    expect(
+      find.byKey(
+        const ValueKey('artwork-overlay-events.filter-selection-upcoming'),
+      ),
+      findsOneWidget,
+    );
 
     await tester.tap(
       find.byKey(const ValueKey('artwork-hotspot-events.event-2')),
     );
     await tester.pump();
     expect(selectedEvent, 2);
+  });
+
+  testWidgets('Home Events info and filters use local preview behavior', (
+    tester,
+  ) async {
+    await tester.pumpWidget(const MaterialApp(home: MainShell()));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(const ValueKey('artwork-hotspot-home.events')));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(const ValueKey('artwork-hotspot-events.info')));
+    await tester.pumpAndSettle();
+    expect(find.byType(HomePreviewDialog), findsOneWidget);
+    expect(find.byType(FeatureUnavailableDialog), findsNothing);
+
+    await tester.tap(find.byKey(const ValueKey('home-preview-dialog-close')));
+    await tester.pumpAndSettle();
+
+    await tester.tap(
+      find.byKey(const ValueKey('artwork-hotspot-events.filter-completed')),
+    );
+    await tester.pump();
+    expect(
+      find.byKey(
+        const ValueKey('artwork-overlay-events.filter-selection-completed'),
+      ),
+      findsOneWidget,
+    );
+    expect(find.byType(FeatureUnavailableDialog), findsNothing);
   });
 }
