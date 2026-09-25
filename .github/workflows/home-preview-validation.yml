@@ -1,5 +1,6 @@
 name: ActiRune Home Preview Validation
 
+# Revalidation trigger after bounded Home preview formatting.
 on:
   push:
     branches:
