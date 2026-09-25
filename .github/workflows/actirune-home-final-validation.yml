@@ -35,7 +35,7 @@ permissions:
 jobs:
   validate-home:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 50
     steps:
       - name: Checkout tested commit
         uses: actions/checkout@v4
@@ -58,38 +58,50 @@ jobs:
       - name: Analyze
         run: flutter analyze
 
-      - name: Ana Dunya isolated interaction and engine tests
-        shell: bash
-        run: |
-          set -euo pipefail
-          tests=(
-            test/home_interaction_test.dart
-            test/home_hitbox_regression_test.dart
-            test/home_settings_route_test.dart
-            test/home_subtree_production_test.dart
-            test/home_permissions_production_test.dart
-            test/home_subtree_navigation_test.dart
-            test/home_subtree_auxiliary_navigation_test.dart
-            test/daily_quests_route_integration_test.dart
-            test/daily_quests_screen_test.dart
-            test/weekly_quests_screen_test.dart
-            test/events_route_integration_test.dart
-            test/event_detail_popup_test.dart
-            test/world_progression_route_integration_test.dart
-            test/world_progression_screen_test.dart
-            test/daily_summary_popup_test.dart
-            test/rune_shrine_ready_screen_test.dart
-            test/rune_shrine_result_test.dart
-            test/quest_engine_test.dart
-            test/progression_policy_test.dart
-            test/rewarded_ad_policy_test.dart
-            test/monetization_provider_contracts_test.dart
-            test/provider_authority_lock_test.dart
-          )
-          for test_file in "${tests[@]}"; do
-            echo "=== $test_file ==="
-            flutter test --no-pub "$test_file"
-          done
+      - name: 01 Home interaction
+        run: flutter test --no-pub test/home_interaction_test.dart
+      - name: 02 Home phone hitboxes
+        run: flutter test --no-pub test/home_hitbox_regression_test.dart
+      - name: 03 Home settings route
+        run: flutter test --no-pub test/home_settings_route_test.dart
+      - name: 04 Home subtree production
+        run: flutter test --no-pub test/home_subtree_production_test.dart
+      - name: 05 Home permissions platform path
+        run: flutter test --no-pub test/home_permissions_production_test.dart
+      - name: 06 Home subtree root navigation
+        run: flutter test --no-pub test/home_subtree_navigation_test.dart
+      - name: 07 Home subtree auxiliary navigation
+        run: flutter test --no-pub test/home_subtree_auxiliary_navigation_test.dart
+      - name: 08 Daily quests route integration
+        run: flutter test --no-pub test/daily_quests_route_integration_test.dart
+      - name: 09 Daily quests screen
+        run: flutter test --no-pub test/daily_quests_screen_test.dart
+      - name: 10 Weekly quests screen
+        run: flutter test --no-pub test/weekly_quests_screen_test.dart
+      - name: 11 Events route integration
+        run: flutter test --no-pub test/events_route_integration_test.dart
+      - name: 12 Event detail popup
+        run: flutter test --no-pub test/event_detail_popup_test.dart
+      - name: 13 World progression route integration
+        run: flutter test --no-pub test/world_progression_route_integration_test.dart
+      - name: 14 World progression screen
+        run: flutter test --no-pub test/world_progression_screen_test.dart
+      - name: 15 Daily summary popup
+        run: flutter test --no-pub test/daily_summary_popup_test.dart
+      - name: 16 Rune shrine ready
+        run: flutter test --no-pub test/rune_shrine_ready_screen_test.dart
+      - name: 17 Rune shrine result
+        run: flutter test --no-pub test/rune_shrine_result_test.dart
+      - name: 18 Quest engine
+        run: flutter test --no-pub test/quest_engine_test.dart
+      - name: 19 Progression policy
+        run: flutter test --no-pub test/progression_policy_test.dart
+      - name: 20 Rewarded ad policy
+        run: flutter test --no-pub test/rewarded_ad_policy_test.dart
+      - name: 21 Monetization provider contracts
+        run: flutter test --no-pub test/monetization_provider_contracts_test.dart
+      - name: 22 Provider authority lock
+        run: flutter test --no-pub test/provider_authority_lock_test.dart
 
       - name: Production interaction wiring regression
         run: flutter test --no-pub test/production_interaction_wiring_test.dart
