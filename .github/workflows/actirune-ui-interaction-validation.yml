@@ -1,6 +1,6 @@
 name: ActiRune UI Interaction Validation
 
-# Revalidation trigger after Home reachability audit correction.
+# Revalidation trigger after Home formatting normalization.
 on:
   push:
     branches:
