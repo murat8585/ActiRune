@@ -1,5 +1,6 @@
 import 'package:actirune/app/main_shell.dart';
 import 'package:actirune/core/widgets/artwork_interaction_surface.dart';
+import 'package:actirune/core/widgets/feature_unavailable_dialog.dart';
 import 'package:actirune/features/adventure/adventure_screen.dart';
 import 'package:actirune/features/hero/hero_screen.dart';
 import 'package:actirune/features/quests/quest_chain_screen.dart';
@@ -192,7 +193,7 @@ void main() {
     expect(find.byType(AdventureScreen), findsOneWidget);
   });
 
-  testWidgets('Hero Character Story opens the authoritative Quest Chain', (
+  testWidgets('Hero Character Story never impersonates Quest Chain', (
     tester,
   ) async {
     await tester.pumpWidget(const MaterialApp(home: MainShell()));
@@ -208,7 +209,10 @@ void main() {
       find.byKey(const ValueKey('artwork-hotspot-hero.character-story')),
     );
     await tester.pumpAndSettle();
-    expect(find.byType(QuestChainScreen), findsOneWidget);
+
+    expect(find.byType(QuestChainScreen), findsNothing);
+    expect(find.byType(FeatureUnavailableDialog), findsOneWidget);
+    expect(find.text('Karakter Hikayesi'), findsOneWidget);
   });
 
   testWidgets('Active quest enters Battle only when a real owner exists', (
