@@ -37,9 +37,7 @@ void main() {
   Future<void> expectBattleLocked(WidgetTester tester) async {
     expect(find.byType(FeatureUnavailableDialog), findsOneWidget);
     expect(find.text('Savaş'), findsOneWidget);
-    await tester.tap(
-      find.byKey(const ValueKey('feature-unavailable-close')),
-    );
+    await tester.tap(find.byKey(const ValueKey('feature-unavailable-close')));
     await tester.pumpAndSettle();
   }
 
