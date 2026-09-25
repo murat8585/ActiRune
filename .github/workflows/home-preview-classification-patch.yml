@@ -1,0 +1,131 @@
+name: Classify Home Preview Routes
+
+on:
+  push:
+    branches:
+      - fix/real-ui-navigation-20260925
+    paths:
+      - .github/workflows/home-preview-classification-patch.yml
+
+permissions:
+  contents: write
+
+jobs:
+  classify-home-previews:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/real-ui-navigation-20260925
+          fetch-depth: 0
+
+      - name: Patch audit and reachability matrix
+        shell: python
+        run: |
+          from pathlib import Path
+          import json
+
+          audit = Path('tool/interaction_audit.py')
+          text = audit.read_text(encoding='utf-8')
+
+          old_screens = '    "HomeScreen": "lib/features/home/home_screen.dart",\n'
+          new_screens = '''    "HomeScreen": "lib/features/home/home_screen.dart",
+              "DailyStreakPreviewScreen": "lib/features/home/daily_streak_preview_screen.dart",
+              "RuneInboxPreviewScreen": "lib/features/home/rune_inbox_preview_screen.dart",
+              "QuestCenterPreviewScreen": "lib/features/home/quest_center_preview_screen.dart",
+          '''
+          if old_screens not in text:
+              raise SystemExit('SCREENS Home marker not found')
+          text = text.replace(old_screens, new_screens, 1)
+
+          old_statuses = '''    "authority_blocked",
+              "legacy_unrouted",
+          }'''
+          new_statuses = '''    "authority_blocked",
+              "legacy_unrouted",
+              "preview_route",
+          }'''
+          if old_statuses not in text:
+              raise SystemExit('ALLOWED_STATUSES marker not found')
+          text = text.replace(old_statuses, new_statuses, 1)
+
+          old_test_guard = '''        if status in {"production_route", "onboarding_route", "external_blocker"} and not tested:
+                      failures.append(f"{class_name} has no test reference")
+          '''
+          new_test_guard = '''        if status in {"production_route", "onboarding_route", "external_blocker", "preview_route"} and not tested:
+                      failures.append(f"{class_name} has no test reference")
+          '''
+          if old_test_guard not in text:
+              raise SystemExit('test-reference guard marker not found')
+          text = text.replace(old_test_guard, new_test_guard, 1)
+
+          old_route_guard = '''        elif status == "onboarding_route":
+                      expected_owner_source = app_root if owner == "actirune_app" else onboarding
+          '''
+          new_route_guard = '''        elif status == "preview_route":
+                      if owner != "main_shell":
+                          failures.append(f"{class_name} preview_route owner must be main_shell")
+                      if not class_constructed(main_shell, class_name):
+                          failures.append(
+                              f"{class_name} is classified preview_route but MainShell does not construct it"
+                          )
+                  elif status == "onboarding_route":
+                      expected_owner_source = app_root if owner == "actirune_app" else onboarding
+          '''
+          if old_route_guard not in text:
+              raise SystemExit('route guard marker not found')
+          text = text.replace(old_route_guard, new_route_guard, 1)
+          audit.write_text(text, encoding='utf-8')
+
+          matrix = Path('validation/interactions/screen_reachability.json')
+          payload = json.loads(matrix.read_text(encoding='utf-8'))
+          rows = payload['screens']
+          additions = [
+              {
+                  'path': 'lib/features/home/daily_streak_preview_screen.dart',
+                  'class': 'DailyStreakPreviewScreen',
+                  'status': 'preview_route',
+                  'owner': 'main_shell',
+                  'quality': 'preview_fixture',
+                  'note': 'Home-only device preview for the locked flexible streak model; live activity owner is intentionally not claimed.'
+              },
+              {
+                  'path': 'lib/features/home/rune_inbox_preview_screen.dart',
+                  'class': 'RuneInboxPreviewScreen',
+                  'status': 'preview_route',
+                  'owner': 'main_shell',
+                  'quality': 'approved_reference_preview',
+                  'note': 'Home > Mesajlar device preview using the approved social reference; live inbox ownership remains unconnected.'
+              },
+              {
+                  'path': 'lib/features/home/quest_center_preview_screen.dart',
+                  'class': 'QuestCenterPreviewScreen',
+                  'status': 'preview_route',
+                  'owner': 'main_shell',
+                  'quality': 'strong_reference_preview',
+                  'note': 'Home > Görevler device preview using the current strong parent reference; live quest-center ownership remains unconnected.'
+              },
+          ]
+          existing = {row['path'] for row in rows}
+          for row in additions:
+              if row['path'] in existing:
+                  raise SystemExit(f"preview row already exists: {row['path']}")
+              rows.append(row)
+          rows.sort(key=lambda row: row['path'])
+          matrix.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+
+      - name: Assert bounded classification patch
+        shell: bash
+        run: |
+          git diff --check
+          test "$(git diff --name-only | sort | tr '\n' ' ')" = "tool/interaction_audit.py validation/interactions/screen_reachability.json "
+          python3 tool/interaction_audit.py
+
+      - name: Commit preview classification
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add tool/interaction_audit.py validation/interactions/screen_reachability.json
+          git commit -m "Classify Home preview routes explicitly"
+          git push origin HEAD:fix/real-ui-navigation-20260925
