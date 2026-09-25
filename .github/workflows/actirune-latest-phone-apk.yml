@@ -11,6 +11,7 @@ on:
 permissions:
   contents: read
 
+# Final APK trigger after full-suite test alignment.
 jobs:
   build-phone-arm64:
     runs-on: ubuntu-latest
