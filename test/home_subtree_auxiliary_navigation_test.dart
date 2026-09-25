@@ -42,30 +42,31 @@ void main() {
     expect(find.byType(HomeScreen), findsOneWidget);
   });
 
-  testWidgets('World Progression back, hero, settings and notifications route correctly', (
-    tester,
-  ) async {
-    await pumpHome(tester);
-    await tapHotspot(tester, 'home.world-map');
-    expect(find.byType(WorldProgressionScreen), findsOneWidget);
-    await tapHotspot(tester, 'world-progression.back');
-    expect(find.byType(HomeScreen), findsOneWidget);
+  testWidgets(
+    'World Progression back, hero, settings and notifications route correctly',
+    (tester) async {
+      await pumpHome(tester);
+      await tapHotspot(tester, 'home.world-map');
+      expect(find.byType(WorldProgressionScreen), findsOneWidget);
+      await tapHotspot(tester, 'world-progression.back');
+      expect(find.byType(HomeScreen), findsOneWidget);
 
-    await pumpHome(tester);
-    await tapHotspot(tester, 'home.world-map');
-    await tapHotspot(tester, 'world-progression.hero-profile');
-    expect(find.byType(HeroScreen), findsOneWidget);
+      await pumpHome(tester);
+      await tapHotspot(tester, 'home.world-map');
+      await tapHotspot(tester, 'world-progression.hero-profile');
+      expect(find.byType(HeroScreen), findsOneWidget);
 
-    await pumpHome(tester);
-    await tapHotspot(tester, 'home.world-map');
-    await tapHotspot(tester, 'world-progression.settings');
-    expect(find.byType(SettingsHubScreen), findsOneWidget);
+      await pumpHome(tester);
+      await tapHotspot(tester, 'home.world-map');
+      await tapHotspot(tester, 'world-progression.settings');
+      expect(find.byType(SettingsHubScreen), findsOneWidget);
 
-    await pumpHome(tester);
-    await tapHotspot(tester, 'home.world-map');
-    await tapHotspot(tester, 'world-progression.notifications');
-    expect(find.byType(SettingsNotificationsScreen), findsOneWidget);
-  });
+      await pumpHome(tester);
+      await tapHotspot(tester, 'home.world-map');
+      await tapHotspot(tester, 'world-progression.notifications');
+      expect(find.byType(SettingsNotificationsScreen), findsOneWidget);
+    },
+  );
 
   testWidgets('Daily Summary close returns to Home without changing root', (
     tester,
