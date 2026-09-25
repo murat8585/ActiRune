@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 
 import '../../core/widgets/artwork_interaction_surface.dart';
+import 'home_preview_dialog.dart';
 
 enum EventsRootDestination { home, adventure, battle, hero, profile }
 
 enum EventsFilter { active, upcoming, completed }
 
-class EventsScreen extends StatelessWidget {
+class EventsScreen extends StatefulWidget {
   const EventsScreen({
     super.key,
     this.onBack,
@@ -30,6 +31,38 @@ class EventsScreen extends StatelessWidget {
   final ValueChanged<EventsRootDestination>? onRootNavigate;
   final bool battleRootEnabled;
 
+  @override
+  State<EventsScreen> createState() => _EventsScreenState();
+}
+
+class _EventsScreenState extends State<EventsScreen> {
+  EventsFilter selectedFilter = EventsFilter.active;
+
+  Rect _filterRect(EventsFilter filter) {
+    return switch (filter) {
+      EventsFilter.active => const Rect.fromLTWH(0.020, 0.465, 0.306, 0.057),
+      EventsFilter.upcoming => const Rect.fromLTWH(0.330, 0.465, 0.320, 0.057),
+      EventsFilter.completed => const Rect.fromLTWH(0.655, 0.465, 0.312, 0.057),
+    };
+  }
+
+  void _selectFilter(EventsFilter filter) {
+    if (selectedFilter != filter) {
+      setState(() => selectedFilter = filter);
+    }
+    widget.onFilter?.call(filter);
+  }
+
+  void _showInfo() {
+    widget.onInfo?.call();
+    HomePreviewDialog.show(
+      context,
+      title: 'Etkinlikler',
+      message:
+          'Etkinlikler süreli hareket hedeflerini, özel görevleri ve dönemsel ödülleri bir araya getirir. Bu önizlemede kartlar ve filtre seçimi denenebilir; canlı katılım ve ödül sahipliği henüz bağlanmamıştır.',
+    );
+  }
+
   ArtworkHotspot _hotspot({
     required String id,
     required String semanticLabel,
@@ -48,15 +81,12 @@ class EventsScreen extends StatelessWidget {
   ArtworkHotspot _filterHotspot({
     required EventsFilter filter,
     required String semanticLabel,
-    required Rect normalizedRect,
   }) {
-    final callback = onFilter;
     return ArtworkHotspot(
       id: 'events.filter-${filter.name}',
       semanticLabel: semanticLabel,
-      normalizedRect: normalizedRect,
-      enabled: callback != null,
-      onTap: callback == null ? () {} : () => callback(filter),
+      normalizedRect: _filterRect(filter),
+      onTap: () => _selectFilter(filter),
     );
   }
 
@@ -65,7 +95,7 @@ class EventsScreen extends StatelessWidget {
     required String semanticLabel,
     required Rect normalizedRect,
   }) {
-    final callback = onEvent;
+    final callback = widget.onEvent;
     return ArtworkHotspot(
       id: 'events.event-$index',
       semanticLabel: semanticLabel,
@@ -80,10 +110,11 @@ class EventsScreen extends StatelessWidget {
     required String semanticLabel,
     required Rect normalizedRect,
   }) {
-    final callback = onRootNavigate;
+    final callback = widget.onRootNavigate;
     final enabled =
         callback != null &&
-        (destination != EventsRootDestination.battle || battleRootEnabled);
+        (destination != EventsRootDestination.battle ||
+            widget.battleRootEnabled);
     return ArtworkHotspot(
       id: 'events.nav-${destination.name}',
       semanticLabel: semanticLabel,
@@ -101,41 +132,54 @@ class EventsScreen extends StatelessWidget {
         top: false,
         bottom: false,
         child: ArtworkInteractionSurface(
-          assetPath: artworkAsset,
-          sourceSize: artworkSize,
+          assetPath: EventsScreen.artworkAsset,
+          sourceSize: EventsScreen.artworkSize,
+          overlays: [
+            ArtworkOverlay(
+              id: 'events.filter-selection-${selectedFilter.name}',
+              normalizedRect: _filterRect(selectedFilter),
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  color: const Color(0x1200D9FF),
+                  border: Border.all(
+                    color: const Color(0xFF55E5FF),
+                    width: 2,
+                  ),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+            ),
+          ],
           hotspots: [
             _hotspot(
               id: 'events.back',
               semanticLabel: 'Geri',
               normalizedRect: const Rect.fromLTWH(0.016, 0.012, 0.095, 0.055),
-              callback: onBack,
+              callback: widget.onBack,
             ),
             _hotspot(
               id: 'events.info',
               semanticLabel: 'Bilgi',
               normalizedRect: const Rect.fromLTWH(0.893, 0.012, 0.083, 0.055),
-              callback: onInfo,
+              callback: _showInfo,
             ),
             _hotspot(
               id: 'events.featured',
               semanticLabel: 'Rune Fırtınası Etkinliğini Gör',
               normalizedRect: const Rect.fromLTWH(0.535, 0.385, 0.414, 0.066),
-              callback: onFeaturedEvent,
+              callback: widget.onFeaturedEvent,
             ),
             _filterHotspot(
               filter: EventsFilter.active,
               semanticLabel: 'Aktif Etkinlikler',
-              normalizedRect: const Rect.fromLTWH(0.020, 0.465, 0.306, 0.057),
             ),
             _filterHotspot(
               filter: EventsFilter.upcoming,
               semanticLabel: 'Yaklaşan Etkinlikler',
-              normalizedRect: const Rect.fromLTWH(0.330, 0.465, 0.320, 0.057),
             ),
             _filterHotspot(
               filter: EventsFilter.completed,
               semanticLabel: 'Tamamlanan Etkinlikler',
-              normalizedRect: const Rect.fromLTWH(0.655, 0.465, 0.312, 0.057),
             ),
             _eventHotspot(
               index: 0,
