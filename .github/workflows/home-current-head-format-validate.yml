@@ -1,0 +1,79 @@
+name: Format And Validate Current Home Head
+
+on:
+  push:
+    branches:
+      - fix/real-ui-navigation-20260925
+    paths:
+      - .github/workflows/home-current-head-format-validate.yml
+
+permissions:
+  contents: write
+
+jobs:
+  format-and-validate-home:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - name: Checkout current Home branch
+        uses: actions/checkout@v4
+        with:
+          ref: fix/real-ui-navigation-20260925
+          fetch-depth: 0
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Resolve dependencies
+        run: flutter pub get
+
+      - name: Format MainShell with current stable formatter
+        run: dart format lib/app/main_shell.dart
+
+      - name: Assert formatting scope
+        shell: bash
+        run: |
+          git diff --check
+          changed="$(git diff --name-only -- lib test | sort | tr '\n' ' ')"
+          echo "Formatted lib/test changes: $changed"
+          test "$changed" = "lib/app/main_shell.dart "
+
+      - name: Interaction audit
+        run: python3 tool/interaction_audit.py
+
+      - name: Analyze
+        run: flutter analyze
+
+      - name: Home focused tests
+        run: >-
+          flutter test --no-pub
+          test/home_interaction_test.dart
+          test/home_hitbox_regression_test.dart
+          test/home_settings_route_test.dart
+          test/home_subtree_production_test.dart
+          test/home_permissions_production_test.dart
+          test/home_subtree_navigation_test.dart
+          test/home_subtree_auxiliary_navigation_test.dart
+          test/daily_quests_route_integration_test.dart
+          test/events_route_integration_test.dart
+          test/event_detail_popup_test.dart
+          test/world_progression_route_integration_test.dart
+          test/world_progression_screen_test.dart
+          test/daily_summary_popup_test.dart
+          test/rune_shrine_ready_screen_test.dart
+
+      - name: Commit validated formatter output
+        shell: bash
+        run: |
+          if git diff --quiet -- lib/app/main_shell.dart; then
+            echo 'MainShell already formatted.'
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add lib/app/main_shell.dart
+          git commit -m "Format validated Home MainShell"
+          git push origin HEAD:fix/real-ui-navigation-20260925
