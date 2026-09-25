@@ -1,0 +1,53 @@
+name: ActiRune Ana Dunya Focused Diagnostic
+
+on:
+  push:
+    branches:
+      - fix/full-ui-interaction-wiring-20260925
+    paths:
+      - '.github/workflows/actirune-home-focused-diagnostic.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: fix/full-ui-interaction-wiring-20260925
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Pub get
+        run: flutter pub get
+
+      - { name: '01 home interaction', run: 'flutter test --no-pub test/home_interaction_test.dart', continue-on-error: true }
+      - { name: '02 home hitbox', run: 'flutter test --no-pub test/home_hitbox_regression_test.dart', continue-on-error: true }
+      - { name: '03 home settings route', run: 'flutter test --no-pub test/home_settings_route_test.dart', continue-on-error: true }
+      - { name: '04 home subtree production', run: 'flutter test --no-pub test/home_subtree_production_test.dart', continue-on-error: true }
+      - { name: '05 home permissions', run: 'flutter test --no-pub test/home_permissions_production_test.dart', continue-on-error: true }
+      - { name: '06 home subtree navigation', run: 'flutter test --no-pub test/home_subtree_navigation_test.dart', continue-on-error: true }
+      - { name: '07 home subtree auxiliary', run: 'flutter test --no-pub test/home_subtree_auxiliary_navigation_test.dart', continue-on-error: true }
+      - { name: '08 daily quests route', run: 'flutter test --no-pub test/daily_quests_route_integration_test.dart', continue-on-error: true }
+      - { name: '09 daily quests screen', run: 'flutter test --no-pub test/daily_quests_screen_test.dart', continue-on-error: true }
+      - { name: '10 weekly quests screen', run: 'flutter test --no-pub test/weekly_quests_screen_test.dart', continue-on-error: true }
+      - { name: '11 events route', run: 'flutter test --no-pub test/events_route_integration_test.dart', continue-on-error: true }
+      - { name: '12 event detail popup', run: 'flutter test --no-pub test/event_detail_popup_test.dart', continue-on-error: true }
+      - { name: '13 world progression route', run: 'flutter test --no-pub test/world_progression_route_integration_test.dart', continue-on-error: true }
+      - { name: '14 world progression screen', run: 'flutter test --no-pub test/world_progression_screen_test.dart', continue-on-error: true }
+      - { name: '15 daily summary popup', run: 'flutter test --no-pub test/daily_summary_popup_test.dart', continue-on-error: true }
+      - { name: '16 rune shrine ready', run: 'flutter test --no-pub test/rune_shrine_ready_screen_test.dart', continue-on-error: true }
+      - { name: '17 rune shrine result', run: 'flutter test --no-pub test/rune_shrine_result_test.dart', continue-on-error: true }
+      - { name: '18 quest engine', run: 'flutter test --no-pub test/quest_engine_test.dart', continue-on-error: true }
+      - { name: '19 progression policy', run: 'flutter test --no-pub test/progression_policy_test.dart', continue-on-error: true }
+      - { name: '20 rewarded ad policy', run: 'flutter test --no-pub test/rewarded_ad_policy_test.dart', continue-on-error: true }
+      - { name: '21 monetization provider contracts', run: 'flutter test --no-pub test/monetization_provider_contracts_test.dart', continue-on-error: true }
+      - { name: '22 provider authority lock', run: 'flutter test --no-pub test/provider_authority_lock_test.dart', continue-on-error: true }
