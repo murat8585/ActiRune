@@ -14,6 +14,8 @@ void main() {
       find.byKey(ValueKey<String>('artwork-hotspot-$id'));
 
   Future<void> pumpHome(WidgetTester tester) async {
+    await tester.pumpWidget(const SizedBox.shrink());
+    await tester.pump();
     await tester.pumpWidget(const MaterialApp(home: MainShell()));
     await tester.pumpAndSettle();
   }
