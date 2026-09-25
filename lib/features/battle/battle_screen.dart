@@ -122,8 +122,7 @@ class _BattleScreenState extends State<BattleScreen> {
     if (request == null) {
       _showUnavailable(
         'Son Bir Şans',
-        message:
-            'Ödüllü tekrar sahibi bağlanmadan yeni savaş hakkı verilemez.',
+        message: 'Ödüllü tekrar sahibi bağlanmadan yeni savaş hakkı verilemez.',
       );
       return;
     }

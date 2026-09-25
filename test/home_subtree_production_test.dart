@@ -37,32 +37,26 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  Future<void> expectUnavailable(
-    WidgetTester tester,
-    String feature,
-  ) async {
+  Future<void> expectUnavailable(WidgetTester tester, String feature) async {
     expect(
       find.byKey(const ValueKey('feature-unavailable-dialog')),
       findsOneWidget,
     );
     expect(find.text(feature), findsOneWidget);
-    await tester.tap(
-      find.byKey(const ValueKey('feature-unavailable-close')),
-    );
+    await tester.tap(find.byKey(const ValueKey('feature-unavailable-close')));
     await tester.pumpAndSettle();
   }
 
-  Future<void> openSettingsSection(
-    WidgetTester tester,
-    String section,
-  ) async {
+  Future<void> openSettingsSection(WidgetTester tester, String section) async {
     await pumpHome(tester);
     await tapHotspot(tester, 'home.settings');
     expect(find.byType(SettingsHubScreen), findsOneWidget);
     await tapHotspot(tester, 'settings.section-$section');
   }
 
-  testWidgets('Home direct actions reach their production owner', (tester) async {
+  testWidgets('Home direct actions reach their production owner', (
+    tester,
+  ) async {
     await pumpHome(tester);
     await tapHotspot(tester, 'home.daily-streak');
     expect(find.byType(DailyQuestsScreen), findsOneWidget);
@@ -136,85 +130,88 @@ void main() {
     }
   });
 
-  testWidgets('Weekly Quests links to daily quests and exposes reward owner state', (
-    tester,
-  ) async {
-    await pumpHome(tester);
-    await tapHotspot(tester, 'home.quests');
-    expect(find.byType(WeeklyQuestsScreen), findsOneWidget);
+  testWidgets(
+    'Weekly Quests links to daily quests and exposes reward owner state',
+    (tester) async {
+      await pumpHome(tester);
+      await tapHotspot(tester, 'home.quests');
+      expect(find.byType(WeeklyQuestsScreen), findsOneWidget);
 
-    await tapHotspot(tester, 'weekly-quests.claim-quest-chain');
-    await expectUnavailable(tester, 'Görev Zinciri Ödülü');
+      await tapHotspot(tester, 'weekly-quests.claim-quest-chain');
+      await expectUnavailable(tester, 'Görev Zinciri Ödülü');
 
-    await tapHotspot(tester, 'weekly-quests.daily-streak');
-    expect(find.byType(DailyQuestsScreen), findsOneWidget);
-  });
+      await tapHotspot(tester, 'weekly-quests.daily-streak');
+      expect(find.byType(DailyQuestsScreen), findsOneWidget);
+    },
+  );
 
-  testWidgets('Events list and detail actions have observable production outcomes', (
-    tester,
-  ) async {
-    await pumpHome(tester);
-    await tapHotspot(tester, 'home.events');
+  testWidgets(
+    'Events list and detail actions have observable production outcomes',
+    (tester) async {
+      await pumpHome(tester);
+      await tapHotspot(tester, 'home.events');
 
-    await tapHotspot(tester, 'events.info');
-    await expectUnavailable(tester, 'Etkinlik Bilgisi');
+      await tapHotspot(tester, 'events.info');
+      await expectUnavailable(tester, 'Etkinlik Bilgisi');
 
-    for (final filter in <String>['active', 'upcoming', 'completed']) {
-      await tapHotspot(tester, 'events.filter-$filter');
-      await expectUnavailable(tester, 'Etkinlik Filtresi');
-    }
+      for (final filter in <String>['active', 'upcoming', 'completed']) {
+        await tapHotspot(tester, 'events.filter-$filter');
+        await expectUnavailable(tester, 'Etkinlik Filtresi');
+      }
 
-    await tapHotspot(tester, 'events.featured');
-    expect(find.byType(EventDetailPopup), findsOneWidget);
-
-    for (final entry in <String, String>{
-      'event-detail.task-verifiedBattles': 'Etkinlik Görevi',
-      'event-detail.task-eventGoal': 'Etkinlik Görevi',
-      'event-detail.join': 'Etkinliğe Katıl',
-      'event-detail.view-tasks': 'Etkinlik Görevleri',
-    }.entries) {
-      await tapHotspot(tester, entry.key);
-      await expectUnavailable(tester, entry.value);
+      await tapHotspot(tester, 'events.featured');
       expect(find.byType(EventDetailPopup), findsOneWidget);
-    }
 
-    await tapHotspot(tester, 'event-detail.close');
-    expect(find.byType(EventsScreen), findsOneWidget);
+      for (final entry in <String, String>{
+        'event-detail.task-verifiedBattles': 'Etkinlik Görevi',
+        'event-detail.task-eventGoal': 'Etkinlik Görevi',
+        'event-detail.join': 'Etkinliğe Katıl',
+        'event-detail.view-tasks': 'Etkinlik Görevleri',
+      }.entries) {
+        await tapHotspot(tester, entry.key);
+        await expectUnavailable(tester, entry.value);
+        expect(find.byType(EventDetailPopup), findsOneWidget);
+      }
 
-    for (final index in <int>[0, 1, 2]) {
-      await tapHotspot(tester, 'events.event-$index');
-      expect(find.byType(EventDetailPopup), findsOneWidget);
       await tapHotspot(tester, 'event-detail.close');
       expect(find.byType(EventsScreen), findsOneWidget);
-    }
-  });
 
-  testWidgets('World Progression visible actions respond including locked boss', (
-    tester,
-  ) async {
-    await pumpHome(tester);
-    await tapHotspot(tester, 'home.world-map');
-    expect(find.byType(WorldProgressionScreen), findsOneWidget);
+      for (final index in <int>[0, 1, 2]) {
+        await tapHotspot(tester, 'events.event-$index');
+        expect(find.byType(EventDetailPopup), findsOneWidget);
+        await tapHotspot(tester, 'event-detail.close');
+        expect(find.byType(EventsScreen), findsOneWidget);
+      }
+    },
+  );
 
-    const unavailable = <String, String>{
-      'world-progression.region-select': 'Bölge Seçimi',
-      'world-progression.ancient-tree': 'Kadim Ağaç',
-      'world-progression.lost-rune-cave': 'Kayıp Rün Mağarası',
-      'world-progression.waterfall-temple': 'Şelale Tapınağı',
-      'world-progression.wind-cliffs': 'Rüzgar Kayalıkları',
-      'world-progression.show-next-target': 'Sonraki Hedef',
-      'world-progression.boss-preview': 'Boss Ön İzleme',
-      'world-progression.reward-preview': 'Ödül Ön İzleme',
-    };
-    for (final entry in unavailable.entries) {
-      await tapHotspot(tester, entry.key);
-      await expectUnavailable(tester, entry.value);
+  testWidgets(
+    'World Progression visible actions respond including locked boss',
+    (tester) async {
+      await pumpHome(tester);
+      await tapHotspot(tester, 'home.world-map');
       expect(find.byType(WorldProgressionScreen), findsOneWidget);
-    }
 
-    await tapHotspot(tester, 'world-progression.notifications');
-    expect(find.byType(SettingsNotificationsScreen), findsOneWidget);
-  });
+      const unavailable = <String, String>{
+        'world-progression.region-select': 'Bölge Seçimi',
+        'world-progression.ancient-tree': 'Kadim Ağaç',
+        'world-progression.lost-rune-cave': 'Kayıp Rün Mağarası',
+        'world-progression.waterfall-temple': 'Şelale Tapınağı',
+        'world-progression.wind-cliffs': 'Rüzgar Kayalıkları',
+        'world-progression.show-next-target': 'Sonraki Hedef',
+        'world-progression.boss-preview': 'Boss Ön İzleme',
+        'world-progression.reward-preview': 'Ödül Ön İzleme',
+      };
+      for (final entry in unavailable.entries) {
+        await tapHotspot(tester, entry.key);
+        await expectUnavailable(tester, entry.value);
+        expect(find.byType(WorldProgressionScreen), findsOneWidget);
+      }
+
+      await tapHotspot(tester, 'world-progression.notifications');
+      expect(find.byType(SettingsNotificationsScreen), findsOneWidget);
+    },
+  );
 
   testWidgets('Daily Summary actions close, continue, route and fail closed', (
     tester,
@@ -248,7 +245,9 @@ void main() {
     expect(find.byType(RuneShrineReadyScreen), findsNothing);
   });
 
-  testWidgets('Settings Hub opens every canonical settings child', (tester) async {
+  testWidgets('Settings Hub opens every canonical settings child', (
+    tester,
+  ) async {
     const sections = <String, Type>{
       'account': SettingsAccountScreen,
       'notifications': SettingsNotificationsScreen,

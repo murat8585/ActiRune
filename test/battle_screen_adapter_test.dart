@@ -101,18 +101,19 @@ void main() {
     expect(find.byType(BattlePrepScreen), findsNothing);
   });
 
-  testWidgets('unowned Battle Prep controls fail closed with visible feedback', (
-    tester,
-  ) async {
-    await tester.pumpWidget(buildSubject());
-    await tester.pump();
+  testWidgets(
+    'unowned Battle Prep controls fail closed with visible feedback',
+    (tester) async {
+      await tester.pumpWidget(buildSubject());
+      await tester.pump();
 
-    await tester.tap(
-      find.byKey(const ValueKey('artwork-hotspot-battle-prep.equipment')),
-    );
-    await tester.pumpAndSettle();
+      await tester.tap(
+        find.byKey(const ValueKey('artwork-hotspot-battle-prep.equipment')),
+      );
+      await tester.pumpAndSettle();
 
-    expect(find.byType(FeatureUnavailableDialog), findsOneWidget);
-    expect(find.text('Savaş Ekipmanı'), findsOneWidget);
-  });
+      expect(find.byType(FeatureUnavailableDialog), findsOneWidget);
+      expect(find.text('Savaş Ekipmanı'), findsOneWidget);
+    },
+  );
 }
