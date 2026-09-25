@@ -1,19 +1,33 @@
 #!/usr/bin/env python3
-"""Fail when production artwork screens expose callbacks that MainShell leaves dead.
+"""Audit ActiRune production interaction ownership and screen reachability.
 
-This is intentionally a small source-level guard, not a Dart parser. It checks
-constructor callback contracts for the production screens MainShell owns and
-makes missing wiring visible in CI before an APK is produced.
+This is intentionally a source-level CI guard, not a Dart parser. It combines:
+1. callback-contract checks for artwork screens owned by MainShell,
+2. a complete inventory of every lib/features/**/*_screen.dart file,
+3. production/onboarding/Battle reachability assertions,
+4. test-reference evidence for every reachable or externally blocked screen,
+5. fail-closed checks that prevent Battle from silently swallowing owner actions.
+
+The machine-readable classification lives in
+validation/interactions/screen_reachability.json. Adding or deleting a screen
+without classifying it makes this audit fail.
 """
 
 from __future__ import annotations
 
+import json
 import re
 import sys
+from collections import Counter
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 MAIN_SHELL = ROOT / "lib" / "app" / "main_shell.dart"
+APP_ROOT = ROOT / "lib" / "app" / "actirune_app.dart"
+ONBOARDING = ROOT / "lib" / "features" / "onboarding" / "onboarding_screen.dart"
+BATTLE_FLOW_HOST = ROOT / "lib" / "features" / "battle" / "battle_flow_host.dart"
+BATTLE_SCREEN = ROOT / "lib" / "features" / "battle" / "battle_screen.dart"
+MATRIX = ROOT / "validation" / "interactions" / "screen_reachability.json"
 
 SCREENS = {
     "HomeScreen": "lib/features/home/home_screen.dart",
@@ -51,9 +65,21 @@ ALLOW_MISSING = {
     ("AchievementsScreen", "onFilterChanged"),
 }
 
+ALLOWED_STATUSES = {
+    "production_route",
+    "onboarding_route",
+    "external_blocker",
+    "authority_blocked",
+    "legacy_unrouted",
+}
+
 CALLBACK_DECL = re.compile(
     r"final\s+(?:VoidCallback|ValueChanged<[^>]+>)\?\s+(on[A-Za-z0-9_]+)\s*;"
 )
+
+
+def read(path: Path) -> str:
+    return path.read_text(encoding="utf-8")
 
 
 def extract_call(source: str, class_name: str) -> str:
@@ -87,13 +113,170 @@ def extract_call(source: str, class_name: str) -> str:
     raise ValueError(f"{class_name} constructor call is not balanced")
 
 
+def load_matrix(failures: list[str]) -> list[dict[str, str]]:
+    try:
+        payload = json.loads(read(MATRIX))
+    except (OSError, json.JSONDecodeError) as error:
+        failures.append(f"screen reachability matrix cannot be read: {error}")
+        return []
+
+    if payload.get("schema_version") != 1:
+        failures.append("screen reachability matrix schema_version must be 1")
+
+    rows = payload.get("screens")
+    if not isinstance(rows, list):
+        failures.append("screen reachability matrix screens must be a list")
+        return []
+
+    normalized: list[dict[str, str]] = []
+    seen_paths: set[str] = set()
+    seen_classes: set[str] = set()
+    for index, row in enumerate(rows):
+        if not isinstance(row, dict):
+            failures.append(f"matrix row {index} is not an object")
+            continue
+        path = row.get("path")
+        class_name = row.get("class")
+        status = row.get("status")
+        owner = row.get("owner")
+        if not all(isinstance(value, str) and value for value in (path, class_name, status, owner)):
+            failures.append(f"matrix row {index} is missing path/class/status/owner")
+            continue
+        if status not in ALLOWED_STATUSES:
+            failures.append(f"{path} has unsupported status {status}")
+        if path in seen_paths:
+            failures.append(f"duplicate screen path in matrix: {path}")
+        if class_name in seen_classes:
+            failures.append(f"duplicate screen class in matrix: {class_name}")
+        seen_paths.add(path)
+        seen_classes.add(class_name)
+        normalized.append(row)
+
+    return normalized
+
+
+def audit_screen_inventory(
+    failures: list[str],
+    rows: list[dict[str, str]],
+    main_shell: str,
+    app_root: str,
+    onboarding: str,
+    battle_flow_host: str,
+    battle_screen: str,
+) -> None:
+    discovered = {
+        path.relative_to(ROOT).as_posix()
+        for path in ROOT.glob("lib/features/**/*_screen.dart")
+    }
+    classified = {row["path"] for row in rows}
+
+    for path in sorted(discovered - classified):
+        failures.append(f"unclassified screen file: {path}")
+    for path in sorted(classified - discovered):
+        failures.append(f"classified screen file does not exist: {path}")
+
+    test_corpus = "\n".join(read(path) for path in ROOT.glob("test/**/*.dart"))
+    production_sources = "\n".join((main_shell, app_root, onboarding))
+    battle_sources = "\n".join((battle_flow_host, battle_screen))
+
+    print("\nSCREEN_REACHABILITY")
+    print("SCREEN|STATUS|OWNER|TEST_REFERENCE|QUALITY")
+    for row in sorted(rows, key=lambda item: item["path"]):
+        path = row["path"]
+        class_name = row["class"]
+        status = row["status"]
+        owner = row["owner"]
+        quality = row.get("quality", "canonical_or_structural")
+
+        source_path = ROOT / path
+        if source_path.exists():
+            source = read(source_path)
+            if re.search(rf"\bclass\s+{re.escape(class_name)}\b", source) is None:
+                failures.append(f"{path} does not declare expected class {class_name}")
+
+        tested = class_name in test_corpus
+        print(
+            f"{class_name}|{status}|{owner}|"
+            f"{'YES' if tested else 'NO'}|{quality}"
+        )
+
+        if status in {"production_route", "onboarding_route", "external_blocker"} and not tested:
+            failures.append(f"{class_name} has no test reference")
+
+        if status == "production_route":
+            if owner != "main_shell":
+                failures.append(f"{class_name} production_route owner must be main_shell")
+            if class_name not in main_shell:
+                failures.append(f"{class_name} is classified production_route but MainShell does not reference it")
+        elif status == "onboarding_route":
+            expected_owner_source = app_root if owner == "actirune_app" else onboarding
+            if class_name not in expected_owner_source:
+                failures.append(
+                    f"{class_name} onboarding owner {owner} does not reference the screen"
+                )
+        elif status == "external_blocker":
+            if class_name != "BattleScreen" and class_name not in battle_sources:
+                failures.append(f"{class_name} is not owned by the Battle adapter/host")
+            if class_name in production_sources:
+                failures.append(f"{class_name} must stay out of production roots until encounter authority exists")
+        elif status in {"authority_blocked", "legacy_unrouted"}:
+            if class_name in production_sources:
+                failures.append(f"{class_name} is {status} but is referenced by a production root")
+
+    counts = Counter(row["status"] for row in rows)
+    print("\nSCREEN_COUNTS")
+    for status in sorted(counts):
+        print(f"{status}={counts[status]}")
+    print(f"total={len(rows)}")
+
+
+def audit_battle_fail_closed(
+    failures: list[str], app_root: str, main_shell: str, battle_screen: str
+) -> None:
+    if "const MainShell()" not in app_root:
+        failures.append("production /app route is no longer the canonical MainShell")
+    if "battleRootBuilder:" in app_root:
+        failures.append("production app must not inject a Battle builder before encounter authority")
+    if "bool get _battleAvailable => widget.battleRootBuilder != null;" not in main_shell:
+        failures.append("MainShell Battle availability gate is missing")
+    if "Gerçek karşılaşma içeriği" not in main_shell:
+        failures.append("MainShell Battle fail-closed explanation is missing")
+    if "FeatureUnavailableDialog.show" not in battle_screen:
+        failures.append("BattleScreen must provide visible fail-closed feedback for unowned actions")
+
+    silent_forwarding = (
+        "onBattlePrepInfo",
+        "onEquipment",
+        "onRunes",
+        "onCompanion",
+        "onAbilities",
+        "onBattleTips",
+        "onCameraPrepInfo",
+        "onCameraRecheck",
+        "onVictoryReplay",
+        "onVictoryViewRewards",
+        "onDefeatViewTactics",
+    )
+    for callback in silent_forwarding:
+        pattern = rf"\b{callback}\s*:\s*widget\.{callback}\s*,"
+        if re.search(pattern, battle_screen):
+            failures.append(f"BattleScreen silently forwards nullable {callback}")
+
+    if "if (request == null)" not in battle_screen or "Son Bir Şans" not in battle_screen:
+        failures.append("Battle rewarded retry must visibly fail closed when no owner exists")
+
+
 def main() -> int:
-    main_shell = MAIN_SHELL.read_text(encoding="utf-8")
+    main_shell = read(MAIN_SHELL)
+    app_root = read(APP_ROOT)
+    onboarding = read(ONBOARDING)
+    battle_flow_host = read(BATTLE_FLOW_HOST)
+    battle_screen = read(BATTLE_SCREEN)
     failures: list[str] = []
-    rows: list[tuple[str, str, str]] = []
+    callback_rows: list[tuple[str, str, str]] = []
 
     for class_name, relative_path in SCREENS.items():
-        screen_source = (ROOT / relative_path).read_text(encoding="utf-8")
+        screen_source = read(ROOT / relative_path)
         callbacks = sorted(set(CALLBACK_DECL.findall(screen_source)))
         try:
             call = extract_call(main_shell, class_name)
@@ -103,11 +286,11 @@ def main() -> int:
 
         for callback in callbacks:
             if (class_name, callback) in ALLOW_MISSING:
-                rows.append((class_name, callback, "LOCAL_OWNER"))
+                callback_rows.append((class_name, callback, "LOCAL_OWNER"))
                 continue
             connected = re.search(rf"\b{re.escape(callback)}\s*:", call) is not None
             status = "CONNECTED" if connected else "MISSING"
-            rows.append((class_name, callback, status))
+            callback_rows.append((class_name, callback, status))
             if not connected:
                 failures.append(f"{class_name}.{callback} is not wired in MainShell")
 
@@ -119,8 +302,21 @@ def main() -> int:
         if re.search(pattern, main_shell):
             failures.append(label)
 
+    matrix_rows = load_matrix(failures)
+    audit_screen_inventory(
+        failures,
+        matrix_rows,
+        main_shell,
+        app_root,
+        onboarding,
+        battle_flow_host,
+        battle_screen,
+    )
+    audit_battle_fail_closed(failures, app_root, main_shell, battle_screen)
+
+    print("SCREEN_CALLBACKS")
     print("SCREEN|CALLBACK|STATUS")
-    for row in rows:
+    for row in callback_rows:
         print("|".join(row))
 
     if failures:
@@ -129,7 +325,10 @@ def main() -> int:
             print(f"- {failure}", file=sys.stderr)
         return 1
 
-    print(f"\nINTERACTION AUDIT: PASS ({len(rows)} callback contracts checked)")
+    print(
+        f"\nINTERACTION AUDIT: PASS "
+        f"({len(callback_rows)} callback contracts; {len(matrix_rows)} screens classified)"
+    )
     return 0
 
 
