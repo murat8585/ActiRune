@@ -38,6 +38,7 @@ void main() {
   }
 
   Future<void> expectUnavailable(WidgetTester tester, String feature) async {
+    expect(find.byType(FeatureUnavailableDialog), findsOneWidget);
     expect(
       find.byKey(const ValueKey('feature-unavailable-dialog')),
       findsOneWidget,
