@@ -14,8 +14,6 @@ import 'package:actirune/features/profile/settings_hub_screen.dart';
 import 'package:actirune/features/profile/settings_notifications_screen.dart';
 import 'package:actirune/features/profile/settings_permissions_screen.dart';
 import 'package:actirune/features/profile/settings_privacy_screen.dart';
-import 'package:actirune/features/quests/daily_quests_screen.dart';
-import 'package:actirune/features/quests/weekly_quests_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -62,7 +60,7 @@ void main() {
   ) async {
     await pumpHome(tester);
     await tapHotspot(tester, 'home.daily-streak');
-    expect(find.byType(DailyQuestsScreen), findsOneWidget);
+    await expectUnavailable(tester, 'Günlük Seri');
 
     await pumpHome(tester);
     await tapHotspot(tester, 'home.messages');
@@ -70,7 +68,7 @@ void main() {
 
     await pumpHome(tester);
     await tapHotspot(tester, 'home.quests');
-    expect(find.byType(WeeklyQuestsScreen), findsOneWidget);
+    await expectUnavailable(tester, 'Görevler');
 
     await pumpHome(tester);
     await tapHotspot(tester, 'home.events');
@@ -112,41 +110,6 @@ void main() {
     await tapHotspot(tester, 'home.nav-battle');
     await expectUnavailable(tester, 'Savaş');
   });
-
-  testWidgets('Daily Quests production actions never fail silently', (
-    tester,
-  ) async {
-    await pumpHome(tester);
-    await tapHotspot(tester, 'home.daily-streak');
-
-    const unavailable = <String, String>{
-      'daily-quests.progress-reward': 'Günlük Rün Sandığı',
-      'daily-quests.claim-explore': 'Keşif Ödülü',
-      'daily-quests.claim-battle': 'Savaş Ödülü',
-      'daily-quests.free-change': 'Görev Değiştirme',
-      'daily-quests.change-help': 'Görev Değiştirme Yardımı',
-    };
-    for (final entry in unavailable.entries) {
-      await tapHotspot(tester, entry.key);
-      await expectUnavailable(tester, entry.value);
-      expect(find.byType(DailyQuestsScreen), findsOneWidget);
-    }
-  });
-
-  testWidgets(
-    'Weekly Quests links to daily quests and exposes reward owner state',
-    (tester) async {
-      await pumpHome(tester);
-      await tapHotspot(tester, 'home.quests');
-      expect(find.byType(WeeklyQuestsScreen), findsOneWidget);
-
-      await tapHotspot(tester, 'weekly-quests.claim-quest-chain');
-      await expectUnavailable(tester, 'Görev Zinciri Ödülü');
-
-      await tapHotspot(tester, 'weekly-quests.daily-streak');
-      expect(find.byType(DailyQuestsScreen), findsOneWidget);
-    },
-  );
 
   testWidgets(
     'Events list and detail actions have observable production outcomes',

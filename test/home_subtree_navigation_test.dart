@@ -74,8 +74,6 @@ void main() {
   });
 
   final childRoots = <String, List<String>>{
-    'daily-quests': ['home.daily-streak'],
-    'weekly-quests': ['home.quests'],
     'events': ['home.events'],
     'world-progression': ['home.world-map'],
     'rune-shrine-ready': ['home.rewards'],
