@@ -31,6 +31,9 @@ MATRIX = ROOT / "validation" / "interactions" / "screen_reachability.json"
 
 SCREENS = {
     "HomeScreen": "lib/features/home/home_screen.dart",
+    "DailyStreakPreviewScreen": "lib/features/home/daily_streak_preview_screen.dart",
+    "RuneInboxPreviewScreen": "lib/features/home/rune_inbox_preview_screen.dart",
+    "QuestCenterPreviewScreen": "lib/features/home/quest_center_preview_screen.dart",
     "AdventureScreen": "lib/features/adventure/adventure_screen.dart",
     "HeroScreen": "lib/features/hero/hero_screen.dart",
     "ProfileScreen": "lib/features/profile/profile_screen.dart",
@@ -70,6 +73,7 @@ ALLOWED_STATUSES = {
     "external_blocker",
     "authority_blocked",
     "legacy_unrouted",
+    "preview_route",
 }
 
 CALLBACK_DECL = re.compile(
@@ -277,7 +281,7 @@ def audit_screen_inventory(
             f"{'YES' if tested else 'NO'}|{quality}"
         )
 
-        if status in {"production_route", "onboarding_route", "external_blocker"} and not tested:
+        if status in {"production_route", "onboarding_route", "external_blocker", "preview_route"} and not tested:
             failures.append(f"{class_name} has no test reference")
 
         if status == "production_route":
@@ -285,6 +289,13 @@ def audit_screen_inventory(
                 failures.append(f"{class_name} production_route owner must be main_shell")
             if not class_constructed(main_shell, class_name):
                 failures.append(f"{class_name} is classified production_route but MainShell does not construct it")
+        elif status == "preview_route":
+            if owner != "main_shell":
+                failures.append(f"{class_name} preview_route owner must be main_shell")
+            if not class_constructed(main_shell, class_name):
+                failures.append(
+                    f"{class_name} is classified preview_route but MainShell does not construct it"
+                )
         elif status == "onboarding_route":
             expected_owner_source = app_root if owner == "actirune_app" else onboarding
             if not class_constructed(expected_owner_source, class_name):

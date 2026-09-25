@@ -121,6 +121,14 @@
       "note": "Screen source explicitly states cooldown/reward engine and proven parent entry route are not authoritative yet."
     },
     {
+      "path": "lib/features/home/daily_streak_preview_screen.dart",
+      "class": "DailyStreakPreviewScreen",
+      "status": "preview_route",
+      "owner": "main_shell",
+      "quality": "preview_fixture",
+      "note": "Home-only device preview for the locked flexible streak model; live activity owner is intentionally not claimed."
+    },
+    {
       "path": "lib/features/home/events_screen.dart",
       "class": "EventsScreen",
       "status": "production_route",
@@ -133,6 +141,22 @@
       "status": "production_route",
       "owner": "main_shell",
       "note": "Home root in MainShell."
+    },
+    {
+      "path": "lib/features/home/quest_center_preview_screen.dart",
+      "class": "QuestCenterPreviewScreen",
+      "status": "preview_route",
+      "owner": "main_shell",
+      "quality": "strong_reference_preview",
+      "note": "Home > Görevler device preview using the current strong parent reference; live quest-center ownership remains unconnected."
+    },
+    {
+      "path": "lib/features/home/rune_inbox_preview_screen.dart",
+      "class": "RuneInboxPreviewScreen",
+      "status": "preview_route",
+      "owner": "main_shell",
+      "quality": "approved_reference_preview",
+      "note": "Home > Mesajlar device preview using the approved social reference; live inbox ownership remains unconnected."
     },
     {
       "path": "lib/features/home/rune_shrine_ready_screen.dart",
