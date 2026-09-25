@@ -1,6 +1,6 @@
 import 'package:actirune/app/main_shell.dart';
 import 'package:actirune/core/widgets/artwork_interaction_surface.dart';
-import 'package:actirune/features/quests/daily_quests_screen.dart';
+import 'package:actirune/core/widgets/feature_unavailable_dialog.dart';
 import 'package:actirune/features/quests/weekly_quests_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -143,44 +143,17 @@ void main() {
     expect(routed, isNull);
   });
 
-  testWidgets('Home Quests opens Weekly and Weekly streak opens Daily', (
+  testWidgets('Home Görevler never misroutes directly to Weekly Quests', (
     tester,
   ) async {
     await tester.pumpWidget(const MaterialApp(home: MainShell()));
-    await tester.pump();
+    await tester.pumpAndSettle();
 
     await tester.tap(find.byKey(const ValueKey('artwork-hotspot-home.quests')));
     await tester.pumpAndSettle();
-    expect(find.byType(WeeklyQuestsScreen), findsOneWidget);
 
-    await tester.tap(
-      find.byKey(const ValueKey('artwork-hotspot-weekly-quests.daily-streak')),
-    );
-    await tester.pumpAndSettle();
-    expect(find.byType(DailyQuestsScreen), findsOneWidget);
+    expect(find.byType(WeeklyQuestsScreen), findsNothing);
+    expect(find.byType(FeatureUnavailableDialog), findsOneWidget);
+    expect(find.text('Görevler'), findsOneWidget);
   });
-
-  testWidgets(
-    'MainShell exposes weekly reward only when an owner supplies it',
-    (tester) async {
-      var claimed = 0;
-      await tester.pumpWidget(
-        MaterialApp(home: MainShell(onWeeklyQuestChainReward: () => claimed++)),
-      );
-      await tester.pump();
-
-      await tester.tap(
-        find.byKey(const ValueKey('artwork-hotspot-home.quests')),
-      );
-      await tester.pumpAndSettle();
-      await tester.tap(
-        find.byKey(
-          const ValueKey('artwork-hotspot-weekly-quests.claim-quest-chain'),
-        ),
-      );
-      await tester.pump();
-
-      expect(claimed, 1);
-    },
-  );
 }
