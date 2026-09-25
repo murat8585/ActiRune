@@ -1,5 +1,6 @@
 name: ActiRune UI Interaction Validation
 
+# Revalidation trigger for corrected Home streak/quests semantics.
 on:
   push:
     branches:
