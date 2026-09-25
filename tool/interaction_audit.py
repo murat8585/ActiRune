@@ -82,6 +82,14 @@ def read(path: Path) -> str:
     return path.read_text(encoding="utf-8")
 
 
+def class_token_present(source: str, class_name: str) -> bool:
+    return re.search(rf"\b{re.escape(class_name)}\b", source) is not None
+
+
+def class_constructed(source: str, class_name: str) -> bool:
+    return re.search(rf"\b{re.escape(class_name)}\s*\(", source) is not None
+
+
 def extract_call(source: str, class_name: str) -> str:
     needle = class_name + "("
     start = source.find(needle)
@@ -194,7 +202,7 @@ def audit_screen_inventory(
             if re.search(rf"\bclass\s+{re.escape(class_name)}\b", source) is None:
                 failures.append(f"{path} does not declare expected class {class_name}")
 
-        tested = class_name in test_corpus
+        tested = class_token_present(test_corpus, class_name)
         print(
             f"{class_name}|{status}|{owner}|"
             f"{'YES' if tested else 'NO'}|{quality}"
@@ -206,22 +214,22 @@ def audit_screen_inventory(
         if status == "production_route":
             if owner != "main_shell":
                 failures.append(f"{class_name} production_route owner must be main_shell")
-            if class_name not in main_shell:
-                failures.append(f"{class_name} is classified production_route but MainShell does not reference it")
+            if not class_constructed(main_shell, class_name):
+                failures.append(f"{class_name} is classified production_route but MainShell does not construct it")
         elif status == "onboarding_route":
             expected_owner_source = app_root if owner == "actirune_app" else onboarding
-            if class_name not in expected_owner_source:
+            if not class_constructed(expected_owner_source, class_name):
                 failures.append(
-                    f"{class_name} onboarding owner {owner} does not reference the screen"
+                    f"{class_name} onboarding owner {owner} does not construct the screen"
                 )
         elif status == "external_blocker":
-            if class_name != "BattleScreen" and class_name not in battle_sources:
+            if class_name != "BattleScreen" and not class_constructed(battle_sources, class_name):
                 failures.append(f"{class_name} is not owned by the Battle adapter/host")
-            if class_name in production_sources:
+            if class_constructed(production_sources, class_name):
                 failures.append(f"{class_name} must stay out of production roots until encounter authority exists")
         elif status in {"authority_blocked", "legacy_unrouted"}:
-            if class_name in production_sources:
-                failures.append(f"{class_name} is {status} but is referenced by a production root")
+            if class_constructed(production_sources, class_name):
+                failures.append(f"{class_name} is {status} but is constructed by a production root")
 
     counts = Counter(row["status"] for row in rows)
     print("\nSCREEN_COUNTS")
