@@ -1,0 +1,212 @@
+name: ActiRune Home Route Correction
+
+on:
+  push:
+    branches:
+      - fix/full-ui-interaction-wiring-20260925
+    paths:
+      - '.github/workflows/actirune-home-route-correction.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+        with:
+          ref: fix/full-ui-interaction-wiring-20260925
+          fetch-depth: 0
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Correct Home route semantics and tests
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          def replace_once(text: str, old: str, new: str, label: str) -> str:
+              count = text.count(old)
+              if count != 1:
+                  raise SystemExit(f'{label}: expected exactly 1 match, found {count}')
+              return text.replace(old, new, 1)
+
+          main_path = Path('lib/app/main_shell.dart')
+          main = main_path.read_text(encoding='utf-8')
+          main = replace_once(
+              main,
+              "import '../features/quests/weekly_quests_screen.dart';\n",
+              '',
+              'weekly quests import',
+          )
+          start_marker = "\n  Future<void> _openWeeklyQuests(BuildContext context) async {"
+          end_marker = "\n  Future<void> _openQuestChain(BuildContext context) async {"
+          start = main.find(start_marker)
+          end = main.find(end_marker)
+          if start < 0 or end < 0 or end <= start:
+              raise SystemExit('weekly quests helper markers not found exactly as expected')
+          main = main[:start] + '\n' + main[end:]
+          main = replace_once(
+              main,
+              """        onDailyStreak: () => _openDailyQuests(context),
+        onMessages: () => _showUnavailable(context, 'Rune Gelen Kutusu'),
+        onQuests: () => _openWeeklyQuests(context),
+""",
+              """        onDailyStreak: () => _showUnavailable(
+          context,
+          'Günlük Seri',
+          message:
+              '7 günlük esnek seri sistemi canlı aktivite verisine bağlandığında bu alan açılacak.',
+        ),
+        onMessages: () => _showUnavailable(context, 'Rune Gelen Kutusu'),
+        onQuests: () => _showUnavailable(
+          context,
+          'Görevler',
+          message:
+              'Görevler ana merkezi ve canlı ilerleme durumu tamamlandığında bu alan açılacak.',
+        ),
+""",
+              'Home daily streak / quests callbacks',
+          )
+          main_path.write_text(main, encoding='utf-8')
+
+          prod_path = Path('test/home_subtree_production_test.dart')
+          prod = prod_path.read_text(encoding='utf-8')
+          prod = replace_once(
+              prod,
+              "import 'package:actirune/features/quests/daily_quests_screen.dart';\n",
+              '',
+              'daily quests import in Home subtree test',
+          )
+          prod = replace_once(
+              prod,
+              "import 'package:actirune/features/quests/weekly_quests_screen.dart';\n",
+              '',
+              'weekly quests import in Home subtree test',
+          )
+          prod = replace_once(
+              prod,
+              """    await pumpHome(tester);
+    await tapHotspot(tester, 'home.daily-streak');
+    expect(find.byType(DailyQuestsScreen), findsOneWidget);
+""",
+              """    await pumpHome(tester);
+    await tapHotspot(tester, 'home.daily-streak');
+    await expectUnavailable(tester, 'Günlük Seri');
+""",
+              'Home daily streak production expectation',
+          )
+          prod = replace_once(
+              prod,
+              """    await pumpHome(tester);
+    await tapHotspot(tester, 'home.quests');
+    expect(find.byType(WeeklyQuestsScreen), findsOneWidget);
+""",
+              """    await pumpHome(tester);
+    await tapHotspot(tester, 'home.quests');
+    await expectUnavailable(tester, 'Görevler');
+""",
+              'Home quests production expectation',
+          )
+          block_start = prod.find("  testWidgets('Daily Quests production actions never fail silently', (")
+          block_end_marker = "  testWidgets(\n    'Events list and detail actions have observable production outcomes',"
+          block_end = prod.find(block_end_marker)
+          if block_start < 0 or block_end < 0 or block_end <= block_start:
+              raise SystemExit('Home subtree daily/weekly descendant block markers not found')
+          prod = prod[:block_start] + prod[block_end:]
+          prod_path.write_text(prod, encoding='utf-8')
+
+          nav_path = Path('test/home_subtree_navigation_test.dart')
+          nav = nav_path.read_text(encoding='utf-8')
+          nav = replace_once(
+              nav,
+              "    'daily-quests': ['home.daily-streak'],\n",
+              '',
+              'daily quests Home child root entry',
+          )
+          nav = replace_once(
+              nav,
+              "    'weekly-quests': ['home.quests'],\n",
+              '',
+              'weekly quests Home child root entry',
+          )
+          nav_path.write_text(nav, encoding='utf-8')
+
+          daily_route = Path('test/daily_quests_route_integration_test.dart')
+          daily_route.write_text("""import 'package:actirune/app/main_shell.dart';
+import 'package:actirune/core/widgets/feature_unavailable_dialog.dart';
+import 'package:actirune/features/home/home_screen.dart';
+import 'package:actirune/features/quests/daily_quests_screen.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
+  testWidgets(
+    'Home Daily Streak stays truthful until the real streak owner exists',
+    (tester) async {
+      await tester.pumpWidget(const MaterialApp(home: MainShell()));
+      await tester.pumpAndSettle();
+
+      await tester.tap(
+        find.byKey(const ValueKey('artwork-hotspot-home.daily-streak')),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byType(FeatureUnavailableDialog), findsOneWidget);
+      expect(find.text('Günlük Seri'), findsOneWidget);
+      expect(find.byType(DailyQuestsScreen), findsNothing);
+      expect(
+        find.text(
+          '7 günlük esnek seri sistemi canlı aktivite verisine bağlandığında bu alan açılacak.',
+        ),
+        findsOneWidget,
+      );
+
+      await tester.tap(
+        find.byKey(const ValueKey('feature-unavailable-close')),
+      );
+      await tester.pumpAndSettle();
+      expect(find.byType(HomeScreen), findsOneWidget);
+    },
+  );
+}
+""", encoding='utf-8')
+          PY
+
+          dart format \
+            lib/app/main_shell.dart \
+            test/home_subtree_production_test.dart \
+            test/home_subtree_navigation_test.dart \
+            test/daily_quests_route_integration_test.dart
+
+      - name: Verify focused Home tests before commit
+        run: |
+          flutter pub get
+          flutter test --no-pub \
+            test/home_interaction_test.dart \
+            test/home_hitbox_regression_test.dart \
+            test/home_subtree_navigation_test.dart \
+            test/home_subtree_auxiliary_navigation_test.dart \
+            test/home_subtree_production_test.dart \
+            test/daily_quests_route_integration_test.dart \
+            test/quest_engine_test.dart
+
+      - name: Commit corrected Home routes
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm .github/workflows/actirune-home-route-correction.yml
+          git add lib/app/main_shell.dart test/home_subtree_production_test.dart test/home_subtree_navigation_test.dart test/daily_quests_route_integration_test.dart
+          git diff --cached --check
+          git commit -m "Correct Home streak and quests route semantics"
+          git push origin HEAD:fix/full-ui-interaction-wiring-20260925
