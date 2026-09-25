@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "screens": [
+    {"path":"lib/features/adventure/adventure_screen.dart","class":"AdventureScreen","status":"production_route","owner":"main_shell","note":"Adventure root in MainShell."},
+    {"path":"lib/features/adventure/personal_daily_adventure_screen.dart","class":"PersonalDailyAdventureScreen","status":"authority_blocked","owner":"personal_adventure_engine","note":"Approved shell exists, but personalized targets, encounter and reward owner are not authoritative yet."},
+    {"path":"lib/features/adventure/world_progression_screen.dart","class":"WorldProgressionScreen","status":"production_route","owner":"main_shell","note":"Opened from Home/Adventure/Profile flows."},
+
+    {"path":"lib/features/battle/battle_prep_screen.dart","class":"BattlePrepScreen","status":"external_blocker","owner":"battle_flow","note":"Battle subtree is intentionally unavailable from production MainShell until encounter authority is supplied."},
+    {"path":"lib/features/battle/battle_screen.dart","class":"BattleScreen","status":"external_blocker","owner":"battle_flow","note":"Canonical encounter route adapter; production builder is intentionally absent."},
+    {"path":"lib/features/battle/camera_prep_screen.dart","class":"CameraPrepScreen","status":"external_blocker","owner":"battle_flow","note":"Owned by BattleFlowHost after a real encounter is selected."},
+    {"path":"lib/features/battle/defeat_screen.dart","class":"DefeatScreen","status":"external_blocker","owner":"battle_flow","note":"Owned by BattleFlowHost result phase."},
+    {"path":"lib/features/battle/form_coach_screen.dart","class":"FormCoachScreen","status":"external_blocker","owner":"battle_flow","note":"Free real-time Battle form coach, owned by BattleFlowHost."},
+    {"path":"lib/features/battle/live_battle_screen.dart","class":"LiveBattleScreen","status":"external_blocker","owner":"battle_flow","note":"Owned by BattleFlowHost after camera readiness."},
+    {"path":"lib/features/battle/victory_screen.dart","class":"VictoryScreen","status":"external_blocker","owner":"battle_flow","note":"Owned by BattleFlowHost result phase."},
+
+    {"path":"lib/features/hero/crafting_screen.dart","class":"CraftingScreen","status":"authority_blocked","owner":"crafting_engine","note":"Approved shell exists; inventory spend, crafting grants and material source authority are intentionally not invented."},
+    {"path":"lib/features/hero/equipment_screen.dart","class":"EquipmentScreen","status":"production_route","owner":"main_shell","note":"Opened from Hero and wired back to Inventory/root navigation."},
+    {"path":"lib/features/hero/hero_screen.dart","class":"HeroScreen","status":"production_route","owner":"main_shell","note":"Hero root in MainShell."},
+    {"path":"lib/features/hero/inventory_screen.dart","class":"InventoryScreen","status":"production_route","owner":"main_shell","note":"Opened from Equipment and production callbacks fail closed when no detail owner exists."},
+    {"path":"lib/features/hero/lumi_screen.dart","class":"LumiScreen","status":"production_route","owner":"main_shell","note":"Opened from Hero companion controls."},
+    {"path":"lib/features/hero/movement_mastery_screen.dart","class":"MovementMasteryScreen","status":"production_route","owner":"main_shell","note":"Opened from Hero/Profile."},
+    {"path":"lib/features/hero/rune_shrine_result_screen.dart","class":"RuneShrineResultScreen","status":"authority_blocked","owner":"rune_shrine_reward_engine","note":"Screen source explicitly states cooldown/reward engine and proven parent entry route are not authoritative yet."},
+
+    {"path":"lib/features/home/events_screen.dart","class":"EventsScreen","status":"production_route","owner":"main_shell","note":"Opened from Home/Adventure and routes into EventDetailPopup."},
+    {"path":"lib/features/home/home_screen.dart","class":"HomeScreen","status":"production_route","owner":"main_shell","note":"Home root in MainShell."},
+    {"path":"lib/features/home/rune_shrine_ready_screen.dart","class":"RuneShrineReadyScreen","status":"production_route","owner":"main_shell","note":"Reward action fails closed until rewarded-ad/reward owner exists."},
+
+    {"path":"lib/features/onboarding/calibration_result_screen.dart","class":"CalibrationResultScreen","status":"onboarding_route","owner":"onboarding","note":"Shown only after a ready typed calibration assessment."},
+    {"path":"lib/features/onboarding/first_calibration_flow_screen.dart","class":"FirstCalibrationFlowScreen","status":"onboarding_route","owner":"actirune_app","note":"Real camera/pose calibration flow opened from OnboardingScreen."},
+    {"path":"lib/features/onboarding/first_calibration_screen.dart","class":"FirstCalibrationScreen","status":"onboarding_route","owner":"onboarding","note":"Onboarding phase before real calibration runner."},
+    {"path":"lib/features/onboarding/onboarding_screen.dart","class":"OnboardingScreen","status":"onboarding_route","owner":"actirune_app","note":"Initial /onboarding route."},
+    {"path":"lib/features/onboarding/onboarding_welcome_screen.dart","class":"OnboardingWelcomeScreen","status":"onboarding_route","owner":"onboarding","note":"Initial onboarding phase; Language/Accessibility receive visible fail-closed callbacks from ActiRuneApp."},
+
+    {"path":"lib/features/profile/achievements_screen.dart","class":"AchievementsScreen","status":"production_route","owner":"main_shell","note":"Opened from Profile badges."},
+    {"path":"lib/features/profile/player_level_screen.dart","class":"PlayerLevelScreen","status":"production_route","owner":"main_shell","note":"Opened from Profile details."},
+    {"path":"lib/features/profile/pro_form_coach_screen.dart","class":"ProFormCoachScreen","status":"authority_blocked","owner":"pro_analytics_engine","note":"Long-term Pro analytics shell exists but analytics/entitlement owner is deliberately absent."},
+    {"path":"lib/features/profile/profile_history_screen.dart","class":"ProfileHistoryScreen","status":"production_route","owner":"main_shell","note":"Opened from Profile history."},
+    {"path":"lib/features/profile/profile_screen.dart","class":"ProfileScreen","status":"production_route","owner":"main_shell","note":"Profile root in MainShell."},
+    {"path":"lib/features/profile/settings_accessibility_screen.dart","class":"SettingsAccessibilityScreen","status":"production_route","owner":"main_shell","note":"Opened from Settings Hub."},
+    {"path":"lib/features/profile/settings_account_screen.dart","class":"SettingsAccountScreen","status":"production_route","owner":"main_shell","note":"Opened from Settings Hub/Profile."},
+    {"path":"lib/features/profile/settings_hub_screen.dart","class":"SettingsHubScreen","status":"production_route","owner":"main_shell","note":"Opened from multiple production roots."},
+    {"path":"lib/features/profile/settings_notifications_screen.dart","class":"SettingsNotificationsScreen","status":"production_route","owner":"main_shell","note":"Opened from Settings Hub and other production flows."},
+    {"path":"lib/features/profile/settings_permissions_screen.dart","class":"SettingsPermissionsScreen","status":"production_route","owner":"main_shell","note":"Manage actions use the app-settings platform launcher."},
+    {"path":"lib/features/profile/settings_privacy_screen.dart","class":"SettingsPrivacyScreen","status":"production_route","owner":"main_shell","note":"Opened from Settings Hub/Profile."},
+
+    {"path":"lib/features/quests/daily_quests_screen.dart","class":"DailyQuestsScreen","status":"production_route","owner":"main_shell","note":"Opened from streak/daily quest entries."},
+    {"path":"lib/features/quests/quest_chain_screen.dart","class":"QuestChainScreen","status":"production_route","owner":"main_shell","note":"Opened from Adventure quest chain; no longer misused for Character Story."},
+    {"path":"lib/features/quests/quests_screen.dart","class":"QuestsScreen","status":"legacy_unrouted","owner":"none","note":"Legacy generic scaffold; production uses DailyQuestsScreen, WeeklyQuestsScreen and QuestChainScreen instead."},
+    {"path":"lib/features/quests/weekly_quests_screen.dart","class":"WeeklyQuestsScreen","status":"production_route","owner":"main_shell","note":"Opened from Home quest entry."},
+
+    {"path":"lib/features/shop/pro_paywall_screen.dart","class":"ProPaywallScreen","status":"production_route","owner":"main_shell","note":"Opened from Shop Pro entries; purchase remains fail closed without commerce authority."},
+    {"path":"lib/features/shop/shop_screen.dart","class":"ShopScreen","status":"production_route","owner":"main_shell","note":"Opened from production reward/currency entry points."},
+
+    {"path":"lib/features/social/social_screen.dart","class":"SocialScreen","status":"production_route","owner":"main_shell","quality":"placeholder_layout","note":"Profile Friends reaches this screen, but it is still a generic scaffold and not the approved social visual family implementation."}
+  ]
+}
