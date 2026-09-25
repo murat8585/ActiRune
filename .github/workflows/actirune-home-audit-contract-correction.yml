@@ -1,0 +1,70 @@
+name: ActiRune Home Audit Contract Correction
+
+on:
+  push:
+    branches:
+      - fix/full-ui-interaction-wiring-20260925
+    paths:
+      - '.github/workflows/actirune-home-audit-contract-correction.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+        with:
+          ref: fix/full-ui-interaction-wiring-20260925
+          fetch-depth: 0
+
+      - name: Align interaction audit ownership
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          tool_path = Path('tool/interaction_audit.py')
+          tool = tool_path.read_text(encoding='utf-8')
+          old = '    "WeeklyQuestsScreen": "lib/features/quests/weekly_quests_screen.dart",\n'
+          if tool.count(old) != 1:
+              raise SystemExit(f'WeeklyQuestsScreen audit mapping expected once, found {tool.count(old)}')
+          tool = tool.replace(old, '', 1)
+          tool_path.write_text(tool, encoding='utf-8')
+
+          matrix_path = Path('validation/interactions/screen_reachability.json')
+          payload = json.loads(matrix_path.read_text(encoding='utf-8'))
+          rows = [row for row in payload['screens'] if row.get('class') == 'WeeklyQuestsScreen']
+          if len(rows) != 1:
+              raise SystemExit(f'WeeklyQuestsScreen matrix row expected once, found {len(rows)}')
+          row = rows[0]
+          if row.get('status') != 'production_route' or row.get('owner') != 'main_shell':
+              raise SystemExit(f'Unexpected existing WeeklyQuestsScreen ownership: {row}')
+          row['status'] = 'authority_blocked'
+          row['owner'] = 'quests_parent'
+          row['note'] = (
+              'Canonical weekly quest child remains tested, but no truthful production parent route exists '
+              'until the real Görevler center and live quest-state owner are connected.'
+          )
+          matrix_path.write_text(
+              json.dumps(payload, ensure_ascii=False, indent=2) + '\n',
+              encoding='utf-8',
+          )
+          PY
+
+      - name: Verify corrected static interaction audit
+        run: python3 tool/interaction_audit.py
+
+      - name: Commit audit contract correction
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm .github/workflows/actirune-home-audit-contract-correction.yml
+          git add tool/interaction_audit.py validation/interactions/screen_reachability.json
+          git diff --cached --check
+          git commit -m "Align Home quest reachability audit"
+          git push origin HEAD:fix/full-ui-interaction-wiring-20260925
