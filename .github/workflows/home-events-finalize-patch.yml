@@ -70,14 +70,15 @@ jobs:
                   1,
               )
 
-          old_expectations = '''      await tapHotspot(tester, 'events.info');
-              await expectUnavailable(tester, 'Etkinlik Bilgisi');
+          start_marker = "      await tapHotspot(tester, 'events.info');\n"
+          end_marker = "      await tapHotspot(tester, 'events.featured');\n"
+          start = text.find(start_marker)
+          if start < 0:
+              raise SystemExit('Events production expectation start marker not found')
+          end = text.find(end_marker, start)
+          if end < 0:
+              raise SystemExit('Events production expectation end marker not found')
 
-              for (final filter in <String>['active', 'upcoming', 'completed']) {
-                await tapHotspot(tester, 'events.filter-$filter');
-                await expectUnavailable(tester, 'Etkinlik Filtresi');
-              }
-          '''
           new_expectations = '''      await tapHotspot(tester, 'events.info');
               expect(find.byType(HomePreviewDialog), findsOneWidget);
               expect(find.byType(FeatureUnavailableDialog), findsNothing);
@@ -94,10 +95,10 @@ jobs:
                 );
                 expect(find.byType(FeatureUnavailableDialog), findsNothing);
               }
+
           '''
-          if old_expectations not in text:
-              raise SystemExit('Old Events production expectations not found')
-          test.write_text(text.replace(old_expectations, new_expectations, 1), encoding='utf-8')
+          text = text[:start] + new_expectations + text[end:]
+          test.write_text(text, encoding='utf-8')
 
       - name: Format bounded files
         run: >-
