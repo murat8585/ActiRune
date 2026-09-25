@@ -1,0 +1,89 @@
+name: Open Home Daily Summary Details Preview
+
+on:
+  push:
+    branches:
+      - fix/real-ui-navigation-20260925
+    paths:
+      - .github/workflows/home-daily-summary-preview-patch.yml
+
+permissions:
+  contents: write
+
+jobs:
+  patch-daily-summary:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - name: Checkout current Home branch
+        uses: actions/checkout@v4
+        with:
+          ref: fix/real-ui-navigation-20260925
+          fetch-depth: 0
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Resolve dependencies
+        run: flutter pub get
+
+      - name: Patch Daily Summary preview behavior
+        shell: python
+        run: |
+          from pathlib import Path
+
+          shell = Path('lib/app/main_shell.dart')
+          text = shell.read_text(encoding='utf-8')
+          old = "            _showUnavailable(context, 'Günlük Özet Detayları');\n"
+          new = "            _showHomePreview(\n              context,\n              'Günlük Özet Detayları',\n              'Canlı ayrıntılı istatistik sahibi henüz bağlı değil. Bu önizleme Dünün Özeti akışını kapatmadan ayrıntı alanını test etmek içindir.',\n            );\n"
+          if old not in text:
+              raise SystemExit('Daily Summary fallback marker not found')
+          shell.write_text(text.replace(old, new, 1), encoding='utf-8')
+
+          test = Path('test/home_subtree_production_test.dart')
+          text = test.read_text(encoding='utf-8')
+          old = "    await expectUnavailable(tester, 'Günlük Özet Detayları');\n"
+          new = "    expect(find.byType(HomePreviewDialog), findsOneWidget);\n    expect(find.byType(FeatureUnavailableDialog), findsNothing);\n    await tester.tap(find.byKey(const ValueKey('home-preview-dialog-close')));\n    await tester.pumpAndSettle();\n"
+          if old not in text:
+              raise SystemExit('Daily Summary test expectation marker not found')
+          test.write_text(text.replace(old, new, 1), encoding='utf-8')
+
+      - name: Format bounded files
+        run: dart format lib/app/main_shell.dart test/home_subtree_production_test.dart
+
+      - name: Assert bounded patch
+        shell: bash
+        run: |
+          git diff --check
+          changed="$(git diff --name-only -- lib test tool | sort | tr '\n' ' ')"
+          echo "Changed lib/test/tool files: $changed"
+          for path in $(git diff --name-only -- lib test tool); do
+            case "$path" in
+              lib/app/main_shell.dart|test/home_subtree_production_test.dart) ;;
+              *) echo "Unexpected Daily Summary patch file: $path"; exit 1 ;;
+            esac
+          done
+
+      - name: Interaction audit
+        run: python3 tool/interaction_audit.py
+
+      - name: Analyze
+        run: flutter analyze
+
+      - name: Daily Summary and Home tests
+        run: >-
+          flutter test --no-pub
+          test/daily_summary_popup_test.dart
+          test/home_subtree_production_test.dart
+
+      - name: Commit validated Daily Summary preview
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add lib/app/main_shell.dart test/home_subtree_production_test.dart
+          git commit -m "Open Home Daily Summary details preview"
+          git push origin HEAD:fix/real-ui-navigation-20260925
