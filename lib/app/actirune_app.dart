@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../core/design/actirune_theme.dart';
+import '../core/widgets/feature_unavailable_dialog.dart';
 import '../features/onboarding/first_calibration_engine.dart';
 import '../features/onboarding/first_calibration_flow_screen.dart';
 import '../features/onboarding/onboarding_screen.dart';
@@ -10,12 +13,12 @@ import 'main_shell.dart';
 class ActiRuneApp extends StatefulWidget {
   const ActiRuneApp({
     super.key,
-    this.requiredPlankHoldDuration,
+    this.requiredPlankHoldDuration = const Duration(seconds: 10),
     this.calibrationCameraSessionFactory =
         createProductionCalibrationCameraSession,
   });
 
-  /// Product-owned target. An unset value keeps Plank verification blocked.
+  /// Product-owned first-calibration Plank target.
   final Duration? requiredPlankHoldDuration;
   final CalibrationCameraSessionFactory calibrationCameraSessionFactory;
 
@@ -30,6 +33,21 @@ class _ActiRuneAppState extends State<ActiRuneApp> {
       GoRoute(
         path: '/onboarding',
         builder: (context, _) => OnboardingScreen(
+          onLanguage: () => unawaited(
+            FeatureUnavailableDialog.show(
+              context,
+              feature: 'Dil Seçimi',
+              message: 'Dil seçimi henüz kullanıma açılmadı.',
+            ),
+          ),
+          onAccessibility: () => unawaited(
+            FeatureUnavailableDialog.show(
+              context,
+              feature: 'Erişilebilirlik',
+              message:
+                  'Erişilebilirlik ayarlarına uygulama içinden erişim henüz açılmadı.',
+            ),
+          ),
           onRunCalibration: () =>
               Navigator.of(context).push<FirstCalibrationAssessment>(
                 MaterialPageRoute(
