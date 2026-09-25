@@ -255,7 +255,9 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    final hub = tester.widget<SettingsHubScreen>(find.byType(SettingsHubScreen));
+    final hub = tester.widget<SettingsHubScreen>(
+      find.byType(SettingsHubScreen),
+    );
     expect(hub.onBack, isNotNull);
     expect(hub.onSection, isNotNull);
     expect(hub.onRootNavigate, isNotNull);
@@ -291,9 +293,7 @@ void main() {
     expect(notifications.onToggle, isNotNull);
     expect(notifications.onReminderHours, isNotNull);
     await tester.tap(
-      find.byKey(
-        const ValueKey('artwork-hotspot-settings-notifications.back'),
-      ),
+      find.byKey(const ValueKey('artwork-hotspot-settings-notifications.back')),
     );
     await tester.pumpAndSettle();
 

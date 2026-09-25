@@ -229,11 +229,11 @@ class _MainShellState extends State<MainShell> {
           onActiveQuest: _battleAvailable
               ? () => _closeChildStackAndSelect(routeContext, 'battle')
               : () => _showUnavailable(
-                    routeContext,
-                    'Aktif Görev',
-                    message:
-                        'Gerçek karşılaşma içeriği bağlanmadan aktif görev Savaş akışını başlatamaz.',
-                  ),
+                  routeContext,
+                  'Aktif Görev',
+                  message:
+                      'Gerçek karşılaşma içeriği bağlanmadan aktif görev Savaş akışını başlatamaz.',
+                ),
           onCompletionRewards: () {
             final callback = widget.onQuestChainCompletionRewards;
             if (callback != null) {
@@ -275,8 +275,7 @@ class _MainShellState extends State<MainShell> {
           onHeroProfile: () => _closeChildStackAndSelect(routeContext, 'hero'),
           onNotifications: () => _openNotifications(routeContext),
           onSettings: () => _openSettingsHub(routeContext),
-          onRegionSelect: () =>
-              _showUnavailable(routeContext, 'Bölge Seçimi'),
+          onRegionSelect: () => _showUnavailable(routeContext, 'Bölge Seçimi'),
           onAncientTree: () => _showUnavailable(routeContext, 'Kadim Ağaç'),
           onLostRuneCave: () =>
               _showUnavailable(routeContext, 'Kayıp Rün Mağarası'),
@@ -352,7 +351,8 @@ class _MainShellState extends State<MainShell> {
           onSelectedItem: () =>
               _showUnavailable(routeContext, 'Seçili Eşya Detayı'),
           onInventory: () => _openInventory(routeContext),
-          onPresets: () => _showUnavailable(routeContext, 'Ekipman Ön Ayarları'),
+          onPresets: () =>
+              _showUnavailable(routeContext, 'Ekipman Ön Ayarları'),
           onRootNavigate: (next) =>
               _closeChildStackAndSelect(routeContext, next.name),
           battleRootEnabled: true,
@@ -390,7 +390,8 @@ class _MainShellState extends State<MainShell> {
       MaterialPageRoute<void>(
         builder: (routeContext) => MovementMasteryScreen(
           onBack: () => Navigator.of(routeContext).pop(),
-          onHelp: () => _showUnavailable(routeContext, 'Hareket Ustalığı Yardımı'),
+          onHelp: () =>
+              _showUnavailable(routeContext, 'Hareket Ustalığı Yardımı'),
           onMasteryInfo: () =>
               _showUnavailable(routeContext, 'Hareket Ustalığı Bilgisi'),
           onMovement: (_) =>
@@ -410,7 +411,8 @@ class _MainShellState extends State<MainShell> {
       MaterialPageRoute<void>(
         builder: (routeContext) => PlayerLevelScreen(
           onBack: () => Navigator.of(routeContext).pop(),
-          onHelp: () => _showUnavailable(routeContext, 'Oyuncu Seviyesi Yardımı'),
+          onHelp: () =>
+              _showUnavailable(routeContext, 'Oyuncu Seviyesi Yardımı'),
           onClaimMilestone: () =>
               _showUnavailable(routeContext, 'Seviye Ödülü'),
           onAbout: () =>
@@ -461,7 +463,8 @@ class _MainShellState extends State<MainShell> {
       MaterialPageRoute<void>(
         builder: (routeContext) => SettingsAccountScreen(
           onBack: () => Navigator.of(routeContext).pop(),
-          onEditProfile: () => _showUnavailable(routeContext, 'Profili Düzenle'),
+          onEditProfile: () =>
+              _showUnavailable(routeContext, 'Profili Düzenle'),
           onCopyRuneId: () => _showUnavailable(routeContext, 'Rune ID'),
           onLinkedAccount: (_) =>
               _showUnavailable(routeContext, 'Bağlı Hesaplar'),
@@ -481,8 +484,7 @@ class _MainShellState extends State<MainShell> {
       MaterialPageRoute<void>(
         builder: (routeContext) => SettingsNotificationsScreen(
           onBack: () => Navigator.of(routeContext).pop(),
-          onToggle: (_) =>
-              _showUnavailable(routeContext, 'Bildirim Tercihi'),
+          onToggle: (_) => _showUnavailable(routeContext, 'Bildirim Tercihi'),
           onReminderHours: () =>
               _showUnavailable(routeContext, 'Hatırlatma Saatleri'),
           onRootNavigate: (next) =>
@@ -503,7 +505,8 @@ class _MainShellState extends State<MainShell> {
           onToggle: (_) => _showUnavailable(routeContext, 'Gizlilik Tercihi'),
           onBlockedPlayers: () =>
               _showUnavailable(routeContext, 'Engellenen Oyuncular'),
-          onDataPrivacy: () => _showUnavailable(routeContext, 'Veri ve Gizlilik'),
+          onDataPrivacy: () =>
+              _showUnavailable(routeContext, 'Veri ve Gizlilik'),
           onRootNavigate: (next) =>
               _closeChildStackAndSelect(routeContext, next.name),
           battleRootEnabled: true,
@@ -583,9 +586,9 @@ class _MainShellState extends State<MainShell> {
   }
 
   Future<void> _openSocial(BuildContext context) async {
-    await Navigator.of(context).push<void>(
-      MaterialPageRoute<void>(builder: (_) => const SocialScreen()),
-    );
+    await Navigator.of(
+      context,
+    ).push<void>(MaterialPageRoute<void>(builder: (_) => const SocialScreen()));
   }
 
   Future<void> _openProPaywall(BuildContext context) async {
@@ -623,8 +626,7 @@ class _MainShellState extends State<MainShell> {
               _showUnavailable(routeContext, 'Öne Çıkan Ürünler'),
           onProductSelected: (_) =>
               _showUnavailable(routeContext, 'Mağaza Ürünü'),
-          onRuneThemes: () =>
-              _showUnavailable(routeContext, 'Rün Temaları'),
+          onRuneThemes: () => _showUnavailable(routeContext, 'Rün Temaları'),
           onCrystalPacks: () =>
               _showUnavailable(routeContext, 'Kristal Paketleri'),
           onPro: () => _openProPaywall(routeContext),
@@ -681,7 +683,8 @@ class _MainShellState extends State<MainShell> {
         onCharacterStory: () => _showUnavailable(context, 'Karakter Hikayesi'),
         onCompanionDetails: () => _openLumi(context),
         onRuneDetails: () => _showUnavailable(context, 'Rune Detayları'),
-        onDetailedStats: () => _showUnavailable(context, 'Detaylı İstatistikler'),
+        onDetailedStats: () =>
+            _showUnavailable(context, 'Detaylı İstatistikler'),
         onMovementMastery: () => _openMovementMastery(context),
         onRootNavigate: (next) => _selectRoot(context, next.name),
         battleRootEnabled: true,

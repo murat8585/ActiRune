@@ -22,10 +22,8 @@ class FeatureUnavailableDialog extends StatelessWidget {
   }) {
     return showDialog<void>(
       context: context,
-      builder: (_) => FeatureUnavailableDialog(
-        feature: feature,
-        message: message,
-      ),
+      builder: (_) =>
+          FeatureUnavailableDialog(feature: feature, message: message),
     );
   }
 
