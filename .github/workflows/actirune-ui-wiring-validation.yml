@@ -1,0 +1,26 @@
+name: ActiRune UI Wiring Validation
+
+on:
+  push:
+    branches:
+      - fix/real-ui-navigation-20260925
+    paths:
+      - 'tool/interaction_audit.py'
+      - 'lib/**'
+      - 'validation/interactions/**'
+      - '.github/workflows/actirune-ui-wiring-validation.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  interaction-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout exact commit
+        uses: actions/checkout@v4
+
+      - name: Run production interaction audit
+        run: python3 tool/interaction_audit.py
