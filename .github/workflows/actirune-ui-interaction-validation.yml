@@ -1,0 +1,55 @@
+name: ActiRune UI Interaction Validation
+
+on:
+  push:
+    branches:
+      - fix/full-ui-interaction-wiring-20260925
+    paths:
+      - 'lib/**'
+      - 'test/**'
+      - 'tool/interaction_audit.py'
+      - 'pubspec.yaml'
+      - '.github/workflows/actirune-ui-interaction-validation.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: actirune-ui-interaction-validation
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - name: Checkout tested commit
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Resolve dependencies
+        run: flutter pub get
+
+      - name: Python production interaction audit
+        run: python3 tool/interaction_audit.py
+
+      - name: Verify formatting
+        run: dart format --output=none --set-exit-if-changed lib test
+
+      - name: Analyze
+        run: flutter analyze
+
+      - name: Production interaction wiring tests
+        run: flutter test --no-pub test/production_interaction_wiring_test.dart
+
+      - name: Full Flutter tests
+        run: flutter test --no-pub
+
+      - name: Diff hygiene
+        run: git diff --check
