@@ -177,7 +177,7 @@ void main() {
       await tapHotspot(tester, 'home.world-map');
       expect(find.byType(WorldProgressionScreen), findsOneWidget);
 
-      const unavailable = <String, String>{
+      const previews = <String, String>{
         'world-progression.region-select': 'Bölge Seçimi',
         'world-progression.ancient-tree': 'Kadim Ağaç',
         'world-progression.lost-rune-cave': 'Kayıp Rün Mağarası',
@@ -187,10 +187,16 @@ void main() {
         'world-progression.boss-preview': 'Boss Ön İzleme',
         'world-progression.reward-preview': 'Ödül Ön İzleme',
       };
-      for (final entry in unavailable.entries) {
+      for (final entry in previews.entries) {
         await tapHotspot(tester, entry.key);
-        await expectUnavailable(tester, entry.value);
+        expect(find.byType(HomePreviewDialog), findsOneWidget);
+        expect(find.text(entry.value), findsOneWidget);
+        expect(find.byType(FeatureUnavailableDialog), findsNothing);
         expect(find.byType(WorldProgressionScreen), findsOneWidget);
+        await tester.tap(
+          find.byKey(const ValueKey('home-preview-dialog-close')),
+        );
+        await tester.pumpAndSettle();
       }
 
       await tapHotspot(tester, 'world-progression.notifications');

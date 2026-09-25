@@ -17,6 +17,7 @@ import '../features/home/daily_summary_popup.dart';
 import '../features/home/event_detail_popup.dart';
 import '../features/home/events_screen.dart';
 import '../features/home/home_screen.dart';
+import '../features/home/home_preview_dialog.dart';
 import '../features/home/quest_center_preview_screen.dart';
 import '../features/home/rune_inbox_preview_screen.dart';
 import '../features/home/rune_shrine_ready_screen.dart';
@@ -81,6 +82,10 @@ class _MainShellState extends State<MainShell> {
         message: message,
       ),
     );
+  }
+
+  void _showHomePreview(BuildContext context, String title, String message) {
+    unawaited(HomePreviewDialog.show(context, title: title, message: message));
   }
 
   void _select(_ShellDestination next) {
@@ -284,19 +289,46 @@ class _MainShellState extends State<MainShell> {
           onHeroProfile: () => _closeChildStackAndSelect(routeContext, 'hero'),
           onNotifications: () => _openNotifications(routeContext),
           onSettings: () => _openSettingsHub(routeContext),
-          onRegionSelect: () => _showUnavailable(routeContext, 'Bölge Seçimi'),
-          onAncientTree: () => _showUnavailable(routeContext, 'Kadim Ağaç'),
-          onLostRuneCave: () =>
-              _showUnavailable(routeContext, 'Kayıp Rün Mağarası'),
-          onWaterfallTemple: () =>
-              _showUnavailable(routeContext, 'Şelale Tapınağı'),
-          onWindCliffs: () =>
-              _showUnavailable(routeContext, 'Rüzgar Kayalıkları'),
-          onShowNextTarget: () =>
-              _showUnavailable(routeContext, 'Sonraki Hedef'),
-          onBossPreview: () => _showUnavailable(routeContext, 'Boss Ön İzleme'),
-          onRewardPreview: () =>
-              _showUnavailable(routeContext, 'Ödül Ön İzleme'),
+          onRegionSelect: () => _showHomePreview(
+            routeContext,
+            'Bölge Seçimi',
+            'Bölge seçimi önizlemesi açık. Canlı bölge sahipliği bağlanmadığı için bu test sürümünde harita kalıcı olarak değiştirilmiyor.',
+          ),
+          onAncientTree: () => _showHomePreview(
+            routeContext,
+            'Kadim Ağaç',
+            'Kadim Ağaç keşif noktası önizlemesi. Canlı ilerleme bağlandığında görev ve karşılaşma ayrıntıları burada açılacak.',
+          ),
+          onLostRuneCave: () => _showHomePreview(
+            routeContext,
+            'Kayıp Rün Mağarası',
+            'Kayıp Rün Mağarası keşif noktası önizlemesi. Canlı ilerleme ve ödül sahipliği bu önizlemede değiştirilmez.',
+          ),
+          onWaterfallTemple: () => _showHomePreview(
+            routeContext,
+            'Şelale Tapınağı',
+            'Şelale Tapınağı keşif noktası önizlemesi. Bu ekran salt okunurdur; görev veya ödül durumu değiştirilmez.',
+          ),
+          onWindCliffs: () => _showHomePreview(
+            routeContext,
+            'Rüzgar Kayalıkları',
+            'Rüzgar Kayalıkları keşif noktası önizlemesi. Canlı progression owner bağlanana kadar yalnız bilgi gösterilir.',
+          ),
+          onShowNextTarget: () => _showHomePreview(
+            routeContext,
+            'Sonraki Hedef',
+            'Sonraki hedef önizlemesi. Canlı progression owner bağlanmadığından haritada kalıcı seçim yapılmıyor.',
+          ),
+          onBossPreview: () => _showHomePreview(
+            routeContext,
+            'Boss Ön İzleme',
+            'Boss şu anda kilitli. Bu önizleme yalnız kilit durumunu gösterir; savaş başlatılmaz ve boss açılmaz.',
+          ),
+          onRewardPreview: () => _showHomePreview(
+            routeContext,
+            'Ödül Ön İzleme',
+            'Bölge ödülü önizlemesi. Gerçek ödül sahibi bağlanmadan hiçbir ödül verilmez veya envanter değiştirilmez.',
+          ),
           onRootNavigate: (next) =>
               _closeChildStackAndSelect(routeContext, next.name),
           bossUnlocked: false,
