@@ -120,6 +120,76 @@ def extract_call(source: str, class_name: str) -> str:
     raise ValueError(f"{class_name} constructor call is not balanced")
 
 
+def extract_named_argument(call: str, callback: str) -> str | None:
+    """Return one named Dart argument without parsing the whole language."""
+    match = re.search(rf"\b{re.escape(callback)}\s*:\s*", call)
+    if match is None:
+        return None
+
+    start = match.end()
+    depth = 0
+    in_string: str | None = None
+    escaped = False
+    for index in range(start, len(call)):
+        char = call[index]
+        if in_string:
+            if escaped:
+                escaped = False
+            elif char == "\\":
+                escaped = True
+            elif char == in_string:
+                in_string = None
+            continue
+        if char in ("'", '"'):
+            in_string = char
+            continue
+        if char in "([{":
+            depth += 1
+            continue
+        if char in ")]}" and depth > 0:
+            depth -= 1
+            continue
+        if char == "," and depth == 0:
+            return call[start:index].strip()
+    return call[start:].strip()
+
+
+def classify_callback_binding(call: str, callback: str) -> str:
+    argument = extract_named_argument(call, callback)
+    if argument is None:
+        return "MISSING"
+
+    # Only a direct/sole lambda to the visible unavailable dialog is blocked.
+    # Conditional callbacks that can take a real route stay CONNECTED because
+    # they contain real owner logic as well as fail-closed feedback.
+    direct_unavailable = re.match(
+        r"^(?:\([^)]*\)|[A-Za-z_]\w*)\s*=>\s*_showUnavailable\s*\(",
+        argument,
+        flags=re.DOTALL,
+    )
+    return "BLOCKED_FEEDBACK" if direct_unavailable else "CONNECTED"
+
+
+def audit_callback_classifier(failures: list[str]) -> None:
+    fixtures = (
+        ("HomeScreen(onMessages: () => _showUnavailable(context, 'Inbox'))", "onMessages", "BLOCKED_FEEDBACK"),
+        ("HomeScreen(onQuests: (_) =>\n  _showUnavailable(context, 'Quests'))", "onQuests", "BLOCKED_FEEDBACK"),
+        ("HomeScreen(onEvents: () => _openEvents(context))", "onEvents", "CONNECTED"),
+        (
+            "QuestChainScreen(onActiveQuest: ready ? () => _openBattle() : () => _showUnavailable(context, 'Battle'))",
+            "onActiveQuest",
+            "CONNECTED",
+        ),
+        ("HomeScreen(onEvents: () => _openEvents(context))", "onMissing", "MISSING"),
+    )
+    for call, callback, expected in fixtures:
+        actual = classify_callback_binding(call, callback)
+        if actual != expected:
+            failures.append(
+                f"callback classifier regression for {callback}: expected {expected}, got {actual}"
+            )
+
+
 def load_matrix(failures: list[str]) -> list[dict[str, str]]:
     try:
         payload = json.loads(read(MATRIX))
@@ -282,6 +352,8 @@ def main() -> int:
     failures: list[str] = []
     callback_rows: list[tuple[str, str, str]] = []
 
+    audit_callback_classifier(failures)
+
     for class_name, relative_path in SCREENS.items():
         screen_source = read(ROOT / relative_path)
         callbacks = sorted(set(CALLBACK_DECL.findall(screen_source)))
@@ -295,10 +367,9 @@ def main() -> int:
             if (class_name, callback) in ALLOW_MISSING:
                 callback_rows.append((class_name, callback, "LOCAL_OWNER"))
                 continue
-            connected = re.search(rf"\b{re.escape(callback)}\s*:", call) is not None
-            status = "CONNECTED" if connected else "MISSING"
+            status = classify_callback_binding(call, callback)
             callback_rows.append((class_name, callback, status))
-            if not connected:
+            if status == "MISSING":
                 failures.append(f"{class_name}.{callback} is not wired in MainShell")
 
     forbidden = {
@@ -326,6 +397,12 @@ def main() -> int:
     for row in callback_rows:
         print("|".join(row))
 
+    callback_counts = Counter(status for _, _, status in callback_rows)
+    print("\nCALLBACK_COUNTS")
+    for status in sorted(callback_counts):
+        print(f"{status}={callback_counts[status]}")
+    print(f"total={len(callback_rows)}")
+
     if failures:
         print("\nINTERACTION AUDIT: FAIL", file=sys.stderr)
         for failure in failures:
@@ -334,7 +411,8 @@ def main() -> int:
 
     print(
         f"\nINTERACTION AUDIT: PASS "
-        f"({len(callback_rows)} callback contracts; {len(matrix_rows)} screens classified)"
+        f"({len(callback_rows)} callback contracts; {len(matrix_rows)} screens classified; "
+        f"{callback_counts.get('BLOCKED_FEEDBACK', 0)} blocked with visible feedback)"
     )
     return 0
 
