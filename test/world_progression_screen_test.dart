@@ -25,7 +25,7 @@ void main() {
   }
 
   testWidgets(
-    'World Progression uses canonical artwork and locked boss action',
+    'World Progression keeps locked boss control responsive for fail-closed feedback',
     (tester) async {
       var bossTaps = 0;
       await tester.pumpWidget(
@@ -48,13 +48,13 @@ void main() {
         const ValueKey('artwork-hotspot-world-progression.boss-preview'),
       );
       expect(boss, findsOneWidget);
-      await tester.tap(boss, warnIfMissed: false);
+      await tester.tap(boss);
       await tester.pump();
-      expect(bossTaps, 0);
+      expect(bossTaps, 1);
     },
   );
 
-  testWidgets('boss preview dispatches only after product unlock', (
+  testWidgets('boss preview remains responsive after product unlock', (
     tester,
   ) async {
     var bossTaps = 0;
