@@ -208,7 +208,9 @@ class WorldProgressionScreen extends StatelessWidget {
             ),
             _hotspot(
               id: 'world-progression.boss-preview',
-              semanticLabel: "Boss'u İncele",
+              semanticLabel: bossUnlocked
+                  ? "Boss'u İncele"
+                  : "Boss'u İncele (Kilitli)",
               normalizedRect: const Rect.fromLTWH(
                 0.6500,
                 0.7420,
@@ -216,7 +218,6 @@ class WorldProgressionScreen extends StatelessWidget {
                 0.0330,
               ),
               callback: onBossPreview,
-              enabled: bossUnlocked,
             ),
             _hotspot(
               id: 'world-progression.reward-preview',
