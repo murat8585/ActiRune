@@ -130,15 +130,14 @@ void main() {
   });
 
   test('JSON parser accepts privacy-safe auditable review metadata', () {
-    final record = PhysicalValidationFinalReviewRecord.fromJson(
-      const <String, Object?>{
-        'schemaVersion': 1,
-        'disposition': 'passed',
-        'evidenceGitBlobSha': evidenceSha,
-        'reviewReference': 'release-review-001',
-        'reviewedBuild': '1.0.0+100',
-      },
-    );
+    final record =
+        PhysicalValidationFinalReviewRecord.fromJson(const <String, Object?>{
+          'schemaVersion': 1,
+          'disposition': 'passed',
+          'evidenceGitBlobSha': evidenceSha,
+          'reviewReference': 'release-review-001',
+          'reviewedBuild': '1.0.0+100',
+        });
 
     expect(record.disposition, PhysicalFinalReviewDisposition.passed);
     expect(record.evidenceGitBlobSha, evidenceSha);

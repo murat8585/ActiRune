@@ -95,7 +95,5 @@ class MlKitPoseProvider implements PoseProvider {
   }
 }
 
-typedef PoseFrameInference = Future<PoseFrame?> Function(
-  InputImage image,
-  DateTime timestamp,
-);
+typedef PoseFrameInference =
+    Future<PoseFrame?> Function(InputImage image, DateTime timestamp);

@@ -349,11 +349,9 @@ Future<void> _pumpApp(
   await tester.pumpWidget(
     ActiRuneApp(
       requiredPlankHoldDuration: _testPlankDuration,
-      calibrationCameraSessionFactory: ({
-        required detector,
-        required onVerifiedRep,
-        required onPoseFrame,
-      }) => sessionBuilder(detector, onVerifiedRep, onPoseFrame),
+      calibrationCameraSessionFactory:
+          ({required detector, required onVerifiedRep, required onPoseFrame}) =>
+              sessionBuilder(detector, onVerifiedRep, onPoseFrame),
     ),
   );
   await tester.pumpAndSettle();

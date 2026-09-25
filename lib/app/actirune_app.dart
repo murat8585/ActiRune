@@ -44,11 +44,12 @@ class _ActiRuneAppState extends State<ActiRuneApp> {
             FeatureUnavailableDialog.show(
               context,
               feature: 'Erişilebilirlik',
-              message: 'Erişilebilirlik ayarlarına uygulama içinden erişim henüz açılmadı.',
+              message:
+                  'Erişilebilirlik ayarlarına uygulama içinden erişim henüz açılmadı.',
             ),
           ),
-          onRunCalibration: () => Navigator.of(context)
-              .push<FirstCalibrationAssessment>(
+          onRunCalibration: () =>
+              Navigator.of(context).push<FirstCalibrationAssessment>(
                 MaterialPageRoute(
                   builder: (_) => FirstCalibrationFlowScreen(
                     requiredPlankHoldDuration: widget.requiredPlankHoldDuration,

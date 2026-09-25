@@ -35,10 +35,11 @@ import '../features/social/social_screen.dart';
 
 enum _ShellDestination { home, adventure, battle, hero, profile }
 
-typedef BattleRootBuilder = Widget Function(
-  BuildContext context,
-  ValueChanged<BattlePrepRootDestination> onRootNavigate,
-);
+typedef BattleRootBuilder =
+    Widget Function(
+      BuildContext context,
+      ValueChanged<BattlePrepRootDestination> onRootNavigate,
+    );
 
 class MainShell extends StatefulWidget {
   const MainShell({
@@ -101,7 +102,8 @@ class _MainShellState extends State<MainShell> {
       _showUnavailable(
         context,
         'Savaş',
-        message: 'Gerçek karşılaşma içeriği henüz bağlı olmadığı için Savaş şu anda kilitli.',
+        message:
+            'Gerçek karşılaşma içeriği henüz bağlı olmadığı için Savaş şu anda kilitli.',
       );
       return;
     }
@@ -114,7 +116,8 @@ class _MainShellState extends State<MainShell> {
       _showUnavailable(
         routeContext,
         'Savaş',
-        message: 'Gerçek karşılaşma içeriği henüz bağlı olmadığı için Savaş şu anda kilitli.',
+        message:
+            'Gerçek karşılaşma içeriği henüz bağlı olmadığı için Savaş şu anda kilitli.',
       );
       return;
     }
@@ -206,7 +209,8 @@ class _MainShellState extends State<MainShell> {
               : () => _showUnavailable(
                   routeContext,
                   'Aktif Görev',
-                  message: 'Gerçek karşılaşma içeriği bağlanmadan aktif görev Savaş akışını başlatamaz.',
+                  message:
+                      'Gerçek karşılaşma içeriği bağlanmadan aktif görev Savaş akışını başlatamaz.',
                 ),
           onCompletionRewards: () {
             final callback = widget.onQuestChainCompletionRewards;
@@ -279,7 +283,8 @@ class _MainShellState extends State<MainShell> {
           onOpenGift: () => _showUnavailable(
             routeContext,
             'Rün Hediyesi',
-            message: 'Ödüllü reklam ve gerçek ödül sahibi bağlanmadan hediye verilemez.',
+            message:
+                'Ödüllü reklam ve gerçek ödül sahibi bağlanmadan hediye verilemez.',
           ),
           onNotNow: () => Navigator.of(routeContext).pop(),
           onRootNavigate: (next) =>
@@ -617,13 +622,15 @@ class _MainShellState extends State<MainShell> {
         onDailyStreak: () => _showUnavailable(
           context,
           'Günlük Seri',
-          message: '7 günlük esnek seri sistemi canlı aktivite verisine bağlandığında bu alan açılacak.',
+          message:
+              '7 günlük esnek seri sistemi canlı aktivite verisine bağlandığında bu alan açılacak.',
         ),
         onMessages: () => _showUnavailable(context, 'Rune Gelen Kutusu'),
         onQuests: () => _showUnavailable(
           context,
           'Görevler',
-          message: 'Görevler ana merkezi ve canlı ilerleme durumu tamamlandığında bu alan açılacak.',
+          message:
+              'Görevler ana merkezi ve canlı ilerleme durumu tamamlandığında bu alan açılacak.',
         ),
         onEvents: () => _openEvents(context),
         onSettings: () => _openSettingsHub(context),
@@ -643,7 +650,8 @@ class _MainShellState extends State<MainShell> {
         onEncounterPreview: () => _showUnavailable(
           context,
           'Hazır Ol',
-          message: 'Bu karşılaşma henüz açılmadı. Gerçek encounter durumu açıldığında Savaş hazırlığına geçecek.',
+          message:
+              'Bu karşılaşma henüz açılmadı. Gerçek encounter durumu açıldığında Savaş hazırlığına geçecek.',
         ),
         onStory: () => _showUnavailable(context, 'Bölüm Hikayesi'),
         onAdventureLog: () => _showUnavailable(context, 'Macera Günlüğü'),

@@ -21,9 +21,9 @@ final class ProductionReleaseEvidence {
     required String androidGradle,
     required String iosProject,
   }) {
-    final applicationId = RegExp(r'applicationId\s*=\s*"([^"]+)"')
-        .firstMatch(androidGradle)
-        ?.group(1);
+    final applicationId = RegExp(
+      r'applicationId\s*=\s*"([^"]+)"',
+    ).firstMatch(androidGradle)?.group(1);
 
     final signingMatch = RegExp(
       r'^\s*signingConfig\s*=\s*(.+)$',
