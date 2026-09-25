@@ -11,8 +11,8 @@ import 'package:actirune/features/home/home_screen.dart';
 import 'package:actirune/features/home/rune_shrine_ready_screen.dart';
 import 'package:actirune/features/profile/achievements_screen.dart';
 import 'package:actirune/features/profile/profile_screen.dart';
-import 'package:actirune/features/profile/settings_account_screen.dart';
 import 'package:actirune/features/profile/settings_accessibility_screen.dart';
+import 'package:actirune/features/profile/settings_account_screen.dart';
 import 'package:actirune/features/profile/settings_hub_screen.dart';
 import 'package:actirune/features/profile/settings_notifications_screen.dart';
 import 'package:actirune/features/profile/settings_permissions_screen.dart';
@@ -38,12 +38,14 @@ void main() {
     await tester.pumpAndSettle();
   }
 
+  Finder rootScreen(Type type) => find.byType(type, skipOffstage: false);
+
   testWidgets('production root screens expose no silent primary callbacks', (
     tester,
   ) async {
     await pumpShell(tester);
 
-    final home = tester.widget<HomeScreen>(find.byType(HomeScreen));
+    final home = tester.widget<HomeScreen>(rootScreen(HomeScreen));
     expect(home.onDailyStreak, isNotNull);
     expect(home.onMessages, isNotNull);
     expect(home.onQuests, isNotNull);
@@ -56,7 +58,7 @@ void main() {
     expect(home.battleRootEnabled, isTrue);
 
     final adventure = tester.widget<AdventureScreen>(
-      find.byType(AdventureScreen),
+      rootScreen(AdventureScreen),
     );
     expect(adventure.onDailyStreak, isNotNull);
     expect(adventure.onMessages, isNotNull);
@@ -70,7 +72,7 @@ void main() {
     expect(adventure.onRootNavigate, isNotNull);
     expect(adventure.battleRootEnabled, isTrue);
 
-    final hero = tester.widget<HeroScreen>(find.byType(HeroScreen));
+    final hero = tester.widget<HeroScreen>(rootScreen(HeroScreen));
     expect(hero.onEquipment, isNotNull);
     expect(hero.onRunes, isNotNull);
     expect(hero.onAbilities, isNotNull);
@@ -83,7 +85,7 @@ void main() {
     expect(hero.onRootNavigate, isNotNull);
     expect(hero.battleRootEnabled, isTrue);
 
-    final profile = tester.widget<ProfileScreen>(find.byType(ProfileScreen));
+    final profile = tester.widget<ProfileScreen>(rootScreen(ProfileScreen));
     expect(profile.onBack, isNotNull);
     expect(profile.onProfileDetails, isNotNull);
     expect(profile.onEditProfile, isNotNull);
@@ -106,19 +108,24 @@ void main() {
   ) async {
     await pumpShell(tester);
 
-    await tester.tap(find.byKey(const ValueKey('artwork-hotspot-home.messages')));
+    await tester.tap(
+      find.byKey(const ValueKey('artwork-hotspot-home.messages')),
+    );
     await tester.pumpAndSettle();
     await closeUnavailable(tester);
 
-    await tester.tap(find.byKey(const ValueKey('artwork-hotspot-home.nav-battle')));
+    await tester.tap(
+      find.byKey(const ValueKey('artwork-hotspot-home.nav-battle')),
+    );
     await tester.pumpAndSettle();
     await closeUnavailable(tester);
   });
 
   testWidgets('Hero story no longer misroutes to Quest Chain', (tester) async {
     await pumpShell(tester);
-
-    await tester.tap(find.byKey(const ValueKey('artwork-hotspot-home.nav-hero')));
+    await tester.tap(
+      find.byKey(const ValueKey('artwork-hotspot-home.nav-hero')),
+    );
     await tester.pumpAndSettle();
     await tester.tap(
       find.byKey(const ValueKey('artwork-hotspot-hero.character-story')),
@@ -133,7 +140,9 @@ void main() {
     tester,
   ) async {
     await pumpShell(tester);
-    await tester.tap(find.byKey(const ValueKey('artwork-hotspot-home.nav-hero')));
+    await tester.tap(
+      find.byKey(const ValueKey('artwork-hotspot-home.nav-hero')),
+    );
     await tester.pumpAndSettle();
     await tester.tap(
       find.byKey(const ValueKey('artwork-hotspot-hero.equipment')),
@@ -173,60 +182,65 @@ void main() {
     expect(inventory.battleRootEnabled, isTrue);
   });
 
-  testWidgets('Profile friends route to Social, badges route through Shop to Pro', (
-    tester,
-  ) async {
-    await pumpShell(tester);
-    await tester.tap(
-      find.byKey(const ValueKey('artwork-hotspot-home.nav-profile')),
-    );
-    await tester.pumpAndSettle();
+  testWidgets(
+    'Profile friends route to Social, badges route through Shop to Pro',
+    (tester) async {
+      await pumpShell(tester);
+      await tester.tap(
+        find.byKey(const ValueKey('artwork-hotspot-home.nav-profile')),
+      );
+      await tester.pumpAndSettle();
 
-    await tester.tap(
-      find.byKey(const ValueKey('artwork-hotspot-profile.friends')),
-    );
-    await tester.pumpAndSettle();
-    expect(find.byType(SocialScreen), findsOneWidget);
-    await tester.pageBack();
-    await tester.pumpAndSettle();
+      await tester.tap(
+        find.byKey(const ValueKey('artwork-hotspot-profile.friends')),
+      );
+      await tester.pumpAndSettle();
+      expect(find.byType(SocialScreen), findsOneWidget);
+      await tester.pageBack();
+      await tester.pumpAndSettle();
 
-    await tester.tap(
-      find.byKey(const ValueKey('artwork-hotspot-profile.badges')),
-    );
-    await tester.pumpAndSettle();
-    final achievements = tester.widget<AchievementsScreen>(
-      find.byType(AchievementsScreen),
-    );
-    expect(achievements.onCrystalStore, isNotNull);
-    expect(achievements.onGoldStore, isNotNull);
-    expect(achievements.onNotifications, isNotNull);
-    expect(achievements.onShowInProfile, isNotNull);
+      await tester.tap(
+        find.byKey(const ValueKey('artwork-hotspot-profile.badges')),
+      );
+      await tester.pumpAndSettle();
+      final achievements = tester.widget<AchievementsScreen>(
+        find.byType(AchievementsScreen),
+      );
+      expect(achievements.onCrystalStore, isNotNull);
+      expect(achievements.onGoldStore, isNotNull);
+      expect(achievements.onNotifications, isNotNull);
+      expect(achievements.onShowInProfile, isNotNull);
 
-    await tester.tap(
-      find.byKey(const ValueKey('artwork-hotspot-achievements.crystal-store')),
-    );
-    await tester.pumpAndSettle();
-    final shop = tester.widget<ShopScreen>(find.byType(ShopScreen));
-    expect(shop.onNotifications, isNotNull);
-    expect(shop.onSettings, isNotNull);
-    expect(shop.onCategorySelected, isNotNull);
-    expect(shop.onWeeklyCollection, isNotNull);
-    expect(shop.onSeeAllFeatured, isNotNull);
-    expect(shop.onProductSelected, isNotNull);
-    expect(shop.onRuneThemes, isNotNull);
-    expect(shop.onCrystalPacks, isNotNull);
-    expect(shop.onPro, isNotNull);
-    expect(shop.onRootNavigate, isNotNull);
+      await tester.tap(
+        find.byKey(
+          const ValueKey('artwork-hotspot-achievements.crystal-store'),
+        ),
+      );
+      await tester.pumpAndSettle();
+      final shop = tester.widget<ShopScreen>(find.byType(ShopScreen));
+      expect(shop.onNotifications, isNotNull);
+      expect(shop.onSettings, isNotNull);
+      expect(shop.onCategorySelected, isNotNull);
+      expect(shop.onWeeklyCollection, isNotNull);
+      expect(shop.onSeeAllFeatured, isNotNull);
+      expect(shop.onProductSelected, isNotNull);
+      expect(shop.onRuneThemes, isNotNull);
+      expect(shop.onCrystalPacks, isNotNull);
+      expect(shop.onPro, isNotNull);
+      expect(shop.onRootNavigate, isNotNull);
 
-    await tester.tap(find.byKey(const ValueKey('artwork-hotspot-shop.pro')));
-    await tester.pumpAndSettle();
-    final pro = tester.widget<ProPaywallScreen>(find.byType(ProPaywallScreen));
-    expect(pro.onBack, isNotNull);
-    expect(pro.onClose, isNotNull);
-    expect(pro.onPlanSelected, isNotNull);
-    expect(pro.onUpgradeRequested, isNotNull);
-    expect(pro.onContinueFree, isNotNull);
-  });
+      await tester.tap(find.byKey(const ValueKey('artwork-hotspot-shop.pro')));
+      await tester.pumpAndSettle();
+      final pro = tester.widget<ProPaywallScreen>(
+        find.byType(ProPaywallScreen),
+      );
+      expect(pro.onBack, isNotNull);
+      expect(pro.onClose, isNotNull);
+      expect(pro.onPlanSelected, isNotNull);
+      expect(pro.onUpgradeRequested, isNotNull);
+      expect(pro.onContinueFree, isNotNull);
+    },
+  );
 
   testWidgets('Settings children are not created with dead callbacks', (
     tester,
@@ -260,7 +274,9 @@ void main() {
     expect(account.onViewData, isNotNull);
     expect(account.onSignOut, isNotNull);
     expect(account.onDeleteAccount, isNotNull);
-    await tester.pageBack();
+    await tester.tap(
+      find.byKey(const ValueKey('artwork-hotspot-settings-account.back')),
+    );
     await tester.pumpAndSettle();
 
     await tester.tap(
@@ -274,7 +290,11 @@ void main() {
     );
     expect(notifications.onToggle, isNotNull);
     expect(notifications.onReminderHours, isNotNull);
-    await tester.pageBack();
+    await tester.tap(
+      find.byKey(
+        const ValueKey('artwork-hotspot-settings-notifications.back'),
+      ),
+    );
     await tester.pumpAndSettle();
 
     await tester.tap(
@@ -288,18 +308,24 @@ void main() {
     expect(privacy.onToggle, isNotNull);
     expect(privacy.onBlockedPlayers, isNotNull);
     expect(privacy.onDataPrivacy, isNotNull);
-    await tester.pageBack();
+    await tester.tap(
+      find.byKey(const ValueKey('artwork-hotspot-settings-privacy.back')),
+    );
     await tester.pumpAndSettle();
 
     await tester.tap(
-      find.byKey(const ValueKey('artwork-hotspot-settings.section-permissions')),
+      find.byKey(
+        const ValueKey('artwork-hotspot-settings.section-permissions'),
+      ),
     );
     await tester.pumpAndSettle();
     final permissions = tester.widget<SettingsPermissionsScreen>(
       find.byType(SettingsPermissionsScreen),
     );
     expect(permissions.onManage, isNotNull);
-    await tester.pageBack();
+    await tester.tap(
+      find.byKey(const ValueKey('artwork-hotspot-settings-permissions.back')),
+    );
     await tester.pumpAndSettle();
 
     await tester.tap(
@@ -356,7 +382,9 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    await tester.tap(find.byKey(const ValueKey('artwork-hotspot-home.rewards')));
+    await tester.tap(
+      find.byKey(const ValueKey('artwork-hotspot-home.rewards')),
+    );
     await tester.pumpAndSettle();
     final shrine = tester.widget<RuneShrineReadyScreen>(
       find.byType(RuneShrineReadyScreen),
