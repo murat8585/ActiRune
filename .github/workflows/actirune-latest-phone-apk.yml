@@ -3,7 +3,7 @@ name: ActiRune Latest Phone ARM64 APK
 on:
   push:
     branches:
-      - fix/full-ui-interaction-wiring-20260925
+      - fix/real-ui-navigation-20260925
     paths:
       - '.github/workflows/actirune-latest-phone-apk.yml'
   workflow_dispatch:
