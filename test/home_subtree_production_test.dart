@@ -210,7 +210,10 @@ void main() {
     await pumpHome(tester);
     await tapHotspot(tester, 'home.yesterday-summary');
     await tapHotspot(tester, 'daily-summary.view-details');
-    await expectUnavailable(tester, 'Günlük Özet Detayları');
+    expect(find.byType(HomePreviewDialog), findsOneWidget);
+    expect(find.byType(FeatureUnavailableDialog), findsNothing);
+    await tester.tap(find.byKey(const ValueKey('home-preview-dialog-close')));
+    await tester.pumpAndSettle();
 
     await pumpHome(tester);
     await tapHotspot(tester, 'home.yesterday-summary');

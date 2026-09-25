@@ -183,7 +183,11 @@ class _MainShellState extends State<MainShell> {
           if (callback != null) {
             callback();
           } else {
-            _showUnavailable(context, 'Günlük Özet Detayları');
+            _showHomePreview(
+              context,
+              'Günlük Özet Detayları',
+              'Canlı ayrıntılı istatistik sahibi henüz bağlı değil. Bu önizleme Dünün Özeti akışını kapatmadan ayrıntı alanını test etmek içindir.',
+            );
           }
         },
       ),
