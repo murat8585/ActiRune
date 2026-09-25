@@ -34,7 +34,8 @@ void main() {
         'settings-permissions.manage-camera': 'camera İzni',
         'settings-permissions.manage-physicalActivity': 'physicalActivity İzni',
         'settings-permissions.manage-notifications': 'notifications İzni',
-        'settings-permissions.manage-healthIntegration': 'healthIntegration İzni',
+        'settings-permissions.manage-healthIntegration':
+            'healthIntegration İzni',
       };
 
       for (final entry in fallbackTitles.entries) {
