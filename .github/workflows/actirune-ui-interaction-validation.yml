@@ -57,6 +57,7 @@ jobs:
         run: >-
           flutter test --no-pub
           test/home_interaction_test.dart
+          test/home_hitbox_regression_test.dart
           test/home_settings_route_test.dart
           test/home_subtree_production_test.dart
           test/home_permissions_production_test.dart
