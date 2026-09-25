@@ -13,12 +13,11 @@ import '../pose/provider/pose_models.dart';
 import 'calibration_movement_sequence.dart';
 import 'first_calibration_engine.dart';
 
-typedef CalibrationCameraSessionFactory =
-    PoseCameraSession Function({
-      required PoseRepDetector detector,
-      required void Function(VerifiedRep rep) onVerifiedRep,
-      required void Function(PoseFrame frame) onPoseFrame,
-    });
+typedef CalibrationCameraSessionFactory = PoseCameraSession Function({
+  required PoseRepDetector detector,
+  required void Function(VerifiedRep rep) onVerifiedRep,
+  required void Function(PoseFrame frame) onPoseFrame,
+});
 
 PoseCameraSession createProductionCalibrationCameraSession({
   required PoseRepDetector detector,
@@ -312,8 +311,7 @@ class _FirstCalibrationFlowScreenState extends State<FirstCalibrationFlowScreen>
     if (!mounted) return;
     if (!opened) {
       setState(() {
-        _settingsError =
-            'Ayarlar açılamadı. Cihaz ayarlarından ActiRune kamera iznini açıp yeniden dene.';
+        _settingsError = 'Ayarlar açılamadı. Cihaz ayarlarından ActiRune kamera iznini açıp yeniden dene.';
       });
     }
   }

@@ -100,8 +100,7 @@ class CalibrationMovementSequence implements PoseRepDetector {
 
     final preference = preferences[movement];
     if (preference == null || preference.movement != movement) {
-      _configurationError =
-          'Bu hareket için kalibrasyon tercihi seçilmedi. Kalibrasyon tamamlanamaz.';
+      _configurationError = 'Bu hareket için kalibrasyon tercihi seçilmedi. Kalibrasyon tamamlanamaz.';
       return;
     }
     if (preference.suitability ==
@@ -127,8 +126,7 @@ class CalibrationMovementSequence implements PoseRepDetector {
             : null,
       );
     } on ArgumentError {
-      _configurationError =
-          'Bu hareket için doğrulama yapılandırması eksik. Kalibrasyon tamamlanamaz.';
+      _configurationError = 'Bu hareket için doğrulama yapılandırması eksik. Kalibrasyon tamamlanamaz.';
     }
   }
 

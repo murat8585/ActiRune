@@ -1,5 +1,7 @@
 import 'dart:async';
+
 import 'package:google_mlkit_pose_detection/google_mlkit_pose_detection.dart';
+
 import 'pose_models.dart';
 
 /// Consumes adapted camera images with one inference in flight. While busy,
@@ -93,5 +95,7 @@ class MlKitPoseProvider implements PoseProvider {
   }
 }
 
-typedef PoseFrameInference =
-    Future<PoseFrame?> Function(InputImage image, DateTime timestamp);
+typedef PoseFrameInference = Future<PoseFrame?> Function(
+  InputImage image,
+  DateTime timestamp,
+);

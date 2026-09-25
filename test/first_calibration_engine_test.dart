@@ -89,41 +89,37 @@ void main() {
     expect(assessment.readyForStartingProfile, isFalse);
   });
 
-  test(
-    'alternative-required movement needs named alternative and matching evidence',
-    () {
-      final preferences =
-          Map<CalibrationMovement, CalibrationMovementPreference>.from(
-              _validPreferences(),
-            )
-            ..[CalibrationMovement
-                .pushUp] = const CalibrationMovementPreference(
-              movement: CalibrationMovement.pushUp,
-              suitability: CalibrationMovementSuitability.alternativeRequired,
-            );
-
-      final assessment = engine.evaluate(_validInput(preferences: preferences));
-
-      expect(
-        assessment.blockers,
-        contains(
-          const CalibrationBlocker(
-            code: CalibrationBlockerCode.alternativeMissing,
+  test('alternative-required movement needs named alternative and matching evidence', () {
+    final preferences =
+        Map<CalibrationMovement, CalibrationMovementPreference>.from(
+            _validPreferences(),
+          )
+          ..[CalibrationMovement.pushUp] = const CalibrationMovementPreference(
             movement: CalibrationMovement.pushUp,
-          ),
+            suitability: CalibrationMovementSuitability.alternativeRequired,
+          );
+
+    final assessment = engine.evaluate(_validInput(preferences: preferences));
+
+    expect(
+      assessment.blockers,
+      contains(
+        const CalibrationBlocker(
+          code: CalibrationBlockerCode.alternativeMissing,
+          movement: CalibrationMovement.pushUp,
         ),
-      );
-      expect(
-        assessment.blockers,
-        contains(
-          const CalibrationBlocker(
-            code: CalibrationBlockerCode.evidencePreferenceMismatch,
-            movement: CalibrationMovement.pushUp,
-          ),
+      ),
+    );
+    expect(
+      assessment.blockers,
+      contains(
+        const CalibrationBlocker(
+          code: CalibrationBlockerCode.evidencePreferenceMismatch,
+          movement: CalibrationMovement.pushUp,
         ),
-      );
-    },
-  );
+      ),
+    );
+  });
 
   test(
     'easy Push-up alternative can be accepted without inventing difficulty',

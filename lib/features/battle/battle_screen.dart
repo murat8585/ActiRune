@@ -162,16 +162,14 @@ class _BattleScreenState extends State<BattleScreen> {
           widget.onCameraRecheck ??
           () => _showUnavailable(
             'Kamera Yeniden Kontrol',
-            message:
-                'Gerçek kamera hazırlık sahibi bağlanmadan yeniden kontrol başlatılamaz.',
+            message: 'Gerçek kamera hazırlık sahibi bağlanmadan yeniden kontrol başlatılamaz.',
           ),
       onVictoryContinue: _exitEncounter,
       onVictoryReplay:
           widget.onVictoryReplay ??
           () => _showUnavailable(
             'Tekrar Savaş',
-            message:
-                'Karşılaşma sahibi yeni savaş oturumunu sağlamadan tekrar başlatılamaz.',
+            message: 'Karşılaşma sahibi yeni savaş oturumunu sağlamadan tekrar başlatılamaz.',
           ),
       onVictoryViewRewards:
           widget.onVictoryViewRewards ??

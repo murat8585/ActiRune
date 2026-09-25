@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+
 import '../provider/pose_models.dart';
 
 double jointAngle(JointPoint a, JointPoint b, JointPoint c) {
