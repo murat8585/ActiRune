@@ -1,0 +1,158 @@
+name: Finalize Home Settings Preview
+
+on:
+  push:
+    branches:
+      - fix/real-ui-navigation-20260925
+    paths:
+      - .github/workflows/home-settings-finalize.yml
+
+permissions:
+  contents: write
+
+jobs:
+  finalize-home-settings:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - name: Checkout current Home branch
+        uses: actions/checkout@v4
+        with:
+          ref: fix/real-ui-navigation-20260925
+          fetch-depth: 0
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Resolve dependencies
+        run: flutter pub get
+
+      - name: Patch Settings preview ownership and audit truth
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+
+          shell = Path('lib/app/main_shell.dart')
+          text = shell.read_text(encoding='utf-8')
+          old_helper = "  void _showHomePreview(BuildContext context, String title, String message) {\n    unawaited(HomePreviewDialog.show(context, title: title, message: message));\n  }\n"
+          new_helper = "  void _showHomePreview(BuildContext context, String title, [String? message]) {\n    unawaited(\n      HomePreviewDialog.show(\n        context,\n        title: title,\n        message: message ??\n            'Bu alan test önizlemesinde açıldı. Canlı tercih sahibi bağlı olmadığı için kalıcı hesap veya ayar verisi değiştirilmez.',\n      ),\n    );\n  }\n"
+          if old_helper not in text:
+              raise SystemExit('Home preview helper marker not found')
+          text = text.replace(old_helper, new_helper, 1)
+
+          def replace_settings_segment(source, start_marker, end_marker, expected_count):
+              start = source.index(start_marker)
+              end = source.index(end_marker, start)
+              segment = source[start:end]
+              count = segment.count('_showUnavailable(')
+              if count != expected_count:
+                  raise SystemExit(f'{start_marker.strip()} expected {expected_count} unavailable callbacks, got {count}')
+              segment = segment.replace('_showUnavailable(', '_showHomePreview(')
+              return source[:start] + segment + source[end:]
+
+          text = replace_settings_segment(
+              text,
+              '  Future<void> _openAccount(BuildContext context) async {',
+              '  Future<void> _managePermission(',
+              12,
+          )
+          text = replace_settings_segment(
+              text,
+              '  Future<void> _openAccessibility(BuildContext context) async {',
+              '  Future<void> _openSettingsHub(BuildContext context) async {',
+              3,
+          )
+          shell.write_text(text, encoding='utf-8')
+
+          test = Path('test/home_subtree_production_test.dart')
+          text = test.read_text(encoding='utf-8')
+          settings_marker = "  Future<void> openSettingsSection(WidgetTester tester, String section) async {\n"
+          if 'Future<void> expectPreview(' not in text:
+              helper = "  Future<void> expectPreview(WidgetTester tester) async {\n    expect(find.byType(HomePreviewDialog), findsOneWidget);\n    expect(find.byType(FeatureUnavailableDialog), findsNothing);\n    await tester.tap(find.byKey(const ValueKey('home-preview-dialog-close')));\n    await tester.pumpAndSettle();\n  }\n\n"
+              if settings_marker not in text:
+                  raise SystemExit('Settings helper insertion marker not found')
+              text = text.replace(settings_marker, helper + settings_marker, 1)
+
+          tail_marker = "  testWidgets('Settings Account visible actions never fail silently',"
+          tail_start = text.find(tail_marker)
+          if tail_start < 0:
+              raise SystemExit('Settings production test tail marker not found')
+          prefix = text[:tail_start]
+          tail = text[tail_start:]
+          tail, replacements = re.subn(
+              r"await expectUnavailable\(tester, [^;]+\);",
+              "await expectPreview(tester);",
+              tail,
+          )
+          if replacements != 10:
+              raise SystemExit(f'Expected 10 Settings unavailable expectations, replaced {replacements}')
+          test.write_text(prefix + tail, encoding='utf-8')
+
+          audit = Path('tool/interaction_audit.py')
+          text = audit.read_text(encoding='utf-8')
+          old_return = '    return "BLOCKED_FEEDBACK" if direct_unavailable else "CONNECTED"\n'
+          new_return = "    if direct_unavailable:\n        return \"BLOCKED_FEEDBACK\"\n    direct_preview = re.match(\n        r\"^(?:\\([^)]*\\)|[A-Za-z_]\\w*)\\s*=>\\s*_showHomePreview\\s*\\(\",\n        argument,\n        flags=re.DOTALL,\n    )\n    return \"PREVIEW_FEEDBACK\" if direct_preview else \"CONNECTED\"\n"
+          if old_return not in text:
+              raise SystemExit('Audit callback return marker not found')
+          text = text.replace(old_return, new_return, 1)
+
+          fixture_marker = '        ("HomeScreen(onEvents: () => _openEvents(context))", "onEvents", "CONNECTED"),\n'
+          preview_fixture = '        ("HomeScreen(onMessages: () => _showHomePreview(context, \'Inbox\'))", "onMessages", "PREVIEW_FEEDBACK"),\n'
+          if preview_fixture not in text:
+              if fixture_marker not in text:
+                  raise SystemExit('Audit fixture marker not found')
+              text = text.replace(fixture_marker, preview_fixture + fixture_marker, 1)
+          audit.write_text(text, encoding='utf-8')
+
+      - name: Format bounded Dart files
+        run: dart format lib/app/main_shell.dart test/home_subtree_production_test.dart
+
+      - name: Assert bounded final Home patch
+        shell: bash
+        run: |
+          git diff --check
+          changed="$(git diff --name-only -- lib test tool | sort | tr '\n' ' ')"
+          echo "Changed lib/test/tool files: $changed"
+          for path in $(git diff --name-only -- lib test tool); do
+            case "$path" in
+              lib/app/main_shell.dart|test/home_subtree_production_test.dart|tool/interaction_audit.py) ;;
+              *) echo "Unexpected final Home Settings file: $path"; exit 1 ;;
+            esac
+          done
+
+      - name: Interaction audit
+        run: python3 tool/interaction_audit.py
+
+      - name: Analyze
+        run: flutter analyze
+
+      - name: Final Home test suite
+        run: >-
+          flutter test --no-pub
+          test/home_interaction_test.dart
+          test/home_hitbox_regression_test.dart
+          test/home_settings_route_test.dart
+          test/home_permissions_production_test.dart
+          test/home_subtree_navigation_test.dart
+          test/home_subtree_auxiliary_navigation_test.dart
+          test/home_subtree_production_test.dart
+          test/events_route_integration_test.dart
+          test/event_detail_popup_test.dart
+          test/world_progression_route_integration_test.dart
+          test/world_progression_screen_test.dart
+          test/daily_summary_popup_test.dart
+          test/rune_shrine_ready_screen_test.dart
+          test/production_interaction_wiring_test.dart
+
+      - name: Commit validated Home Settings previews
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add lib/app/main_shell.dart test/home_subtree_production_test.dart tool/interaction_audit.py
+          git commit -m "Finalize Home Settings preview interactions"
+          git push origin HEAD:fix/real-ui-navigation-20260925
