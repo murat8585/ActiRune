@@ -71,8 +71,12 @@ jobs:
           test/world_progression_screen_test.dart
           test/daily_summary_popup_test.dart
           test/rune_shrine_ready_screen_test.dart
+          test/rune_shrine_result_test.dart
           test/quest_engine_test.dart
           test/progression_policy_test.dart
+          test/rewarded_ad_policy_test.dart
+          test/monetization_provider_contracts_test.dart
+          test/provider_authority_lock_test.dart
 
       - name: Production interaction wiring tests
         run: flutter test --no-pub test/production_interaction_wiring_test.dart
