@@ -1,4 +1,5 @@
 import 'package:actirune/app/main_shell.dart';
+import 'package:actirune/core/widgets/feature_unavailable_dialog.dart';
 import 'package:actirune/features/adventure/adventure_screen.dart';
 import 'package:actirune/features/battle/battle_prep_screen.dart';
 import 'package:actirune/features/hero/hero_screen.dart';
@@ -69,7 +70,7 @@ void main() {
   );
 
   testWidgets(
-    'Battle root remains inaccessible without a real encounter owner',
+    'Battle root explains the lock without fabricating an encounter owner',
     (tester) async {
       await tester.pumpWidget(const MaterialApp(home: MainShell()));
       await tester.pump();
@@ -77,10 +78,14 @@ void main() {
       await tester.tap(
         find.byKey(const ValueKey('artwork-hotspot-home.nav-battle')),
       );
-      await tester.pump();
+      await tester.pumpAndSettle();
 
       expect(find.byType(HomeScreen), findsOneWidget);
+      expect(find.byType(FeatureUnavailableDialog), findsOneWidget);
       expect(find.byType(NavigationBar), findsNothing);
+
+      await tester.tap(find.byKey(const ValueKey('feature-unavailable-close')));
+      await tester.pumpAndSettle();
 
       await tester.tap(
         find.byKey(const ValueKey('artwork-hotspot-home.nav-adventure')),
@@ -91,9 +96,10 @@ void main() {
       await tester.tap(
         find.byKey(const ValueKey('artwork-hotspot-adventure.nav-battle')),
       );
-      await tester.pump();
+      await tester.pumpAndSettle();
 
       expect(find.byType(AdventureScreen), findsOneWidget);
+      expect(find.byType(FeatureUnavailableDialog), findsOneWidget);
     },
   );
 
