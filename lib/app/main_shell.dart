@@ -347,11 +347,10 @@ class _MainShellState extends State<MainShell> {
       MaterialPageRoute<void>(
         builder: (routeContext) => RuneShrineReadyScreen(
           onClose: () => Navigator.of(routeContext).pop(),
-          onOpenGift: () => _showUnavailable(
+          onOpenGift: () => _showHomePreview(
             routeContext,
             'Rün Hediyesi',
-            message:
-                'Ödüllü reklam ve gerçek ödül sahibi bağlanmadan hediye verilemez.',
+            'Rün hediyesi önizlemesi açık. Ödüllü reklam ve gerçek ödül sahibi bağlanmadığı için bu test sürümünde rune, envanter veya para birimi değiştirilmez.',
           ),
           onNotNow: () => Navigator.of(routeContext).pop(),
           onRootNavigate: (next) =>

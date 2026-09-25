@@ -232,7 +232,11 @@ void main() {
     await pumpHome(tester);
     await tapHotspot(tester, 'home.rewards');
     await tapHotspot(tester, 'rune-shrine-ready.open-gift');
-    await expectUnavailable(tester, 'Rün Hediyesi');
+    expect(find.byType(HomePreviewDialog), findsOneWidget);
+    expect(find.byType(FeatureUnavailableDialog), findsNothing);
+    expect(find.byType(RuneShrineReadyScreen), findsOneWidget);
+    await tester.tap(find.byKey(const ValueKey('home-preview-dialog-close')));
+    await tester.pumpAndSettle();
     expect(find.byType(RuneShrineReadyScreen), findsOneWidget);
 
     await tapHotspot(tester, 'rune-shrine-ready.not-now');
