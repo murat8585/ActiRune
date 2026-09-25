@@ -8,6 +8,7 @@ import 'package:actirune/features/home/daily_summary_popup.dart';
 import 'package:actirune/features/home/event_detail_popup.dart';
 import 'package:actirune/features/home/events_screen.dart';
 import 'package:actirune/features/home/home_screen.dart';
+import 'package:actirune/features/home/rune_inbox_preview_screen.dart';
 import 'package:actirune/features/home/rune_shrine_ready_screen.dart';
 import 'package:actirune/features/profile/achievements_screen.dart';
 import 'package:actirune/features/profile/profile_screen.dart';
@@ -112,7 +113,9 @@ void main() {
       find.byKey(const ValueKey('artwork-hotspot-home.messages')),
     );
     await tester.pumpAndSettle();
-    await closeUnavailable(tester);
+    expect(find.byType(RuneInboxPreviewScreen), findsOneWidget);
+    await tester.tap(find.byKey(const ValueKey('rune-inbox-preview-back')));
+    await tester.pumpAndSettle();
 
     await tester.tap(
       find.byKey(const ValueKey('artwork-hotspot-home.nav-battle')),
@@ -349,9 +352,9 @@ void main() {
     await tester.pumpAndSettle();
     final events = tester.widget<EventsScreen>(find.byType(EventsScreen));
     expect(events.onBack, isNotNull);
-    expect(events.onInfo, isNotNull);
+    expect(events.onInfo, isNull);
     expect(events.onFeaturedEvent, isNotNull);
-    expect(events.onFilter, isNotNull);
+    expect(events.onFilter, isNull);
     expect(events.onEvent, isNotNull);
     await tester.tap(
       find.byKey(const ValueKey('artwork-hotspot-events.featured')),

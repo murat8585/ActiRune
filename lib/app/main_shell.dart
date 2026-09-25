@@ -84,8 +84,16 @@ class _MainShellState extends State<MainShell> {
     );
   }
 
-  void _showHomePreview(BuildContext context, String title, String message) {
-    unawaited(HomePreviewDialog.show(context, title: title, message: message));
+  void _showHomePreview(BuildContext context, String title, [String? message]) {
+    unawaited(
+      HomePreviewDialog.show(
+        context,
+        title: title,
+        message:
+            message ??
+            'Bu alan test önizlemesinde açıldı. Canlı tercih sahibi bağlı olmadığı için kalıcı hesap veya ayar verisi değiştirilmez.',
+      ),
+    );
   }
 
   void _select(_ShellDestination next) {
@@ -508,13 +516,13 @@ class _MainShellState extends State<MainShell> {
         builder: (routeContext) => SettingsAccountScreen(
           onBack: () => Navigator.of(routeContext).pop(),
           onEditProfile: () =>
-              _showUnavailable(routeContext, 'Profili Düzenle'),
-          onCopyRuneId: () => _showUnavailable(routeContext, 'Rune ID'),
+              _showHomePreview(routeContext, 'Profili Düzenle'),
+          onCopyRuneId: () => _showHomePreview(routeContext, 'Rune ID'),
           onLinkedAccount: (_) =>
-              _showUnavailable(routeContext, 'Bağlı Hesaplar'),
-          onViewData: () => _showUnavailable(routeContext, 'Verilerimi Gör'),
-          onSignOut: () => _showUnavailable(routeContext, 'Çıkış Yap'),
-          onDeleteAccount: () => _showUnavailable(routeContext, 'Hesabı Sil'),
+              _showHomePreview(routeContext, 'Bağlı Hesaplar'),
+          onViewData: () => _showHomePreview(routeContext, 'Verilerimi Gör'),
+          onSignOut: () => _showHomePreview(routeContext, 'Çıkış Yap'),
+          onDeleteAccount: () => _showHomePreview(routeContext, 'Hesabı Sil'),
           onRootNavigate: (next) =>
               _closeChildStackAndSelect(routeContext, next.name),
           battleRootEnabled: true,
@@ -528,9 +536,9 @@ class _MainShellState extends State<MainShell> {
       MaterialPageRoute<void>(
         builder: (routeContext) => SettingsNotificationsScreen(
           onBack: () => Navigator.of(routeContext).pop(),
-          onToggle: (_) => _showUnavailable(routeContext, 'Bildirim Tercihi'),
+          onToggle: (_) => _showHomePreview(routeContext, 'Bildirim Tercihi'),
           onReminderHours: () =>
-              _showUnavailable(routeContext, 'Hatırlatma Saatleri'),
+              _showHomePreview(routeContext, 'Hatırlatma Saatleri'),
           onRootNavigate: (next) =>
               _closeChildStackAndSelect(routeContext, next.name),
           battleRootEnabled: true,
@@ -545,12 +553,12 @@ class _MainShellState extends State<MainShell> {
         builder: (routeContext) => SettingsPrivacyScreen(
           onBack: () => Navigator.of(routeContext).pop(),
           onProfileVisibility: () =>
-              _showUnavailable(routeContext, 'Profil Görünürlüğü'),
-          onToggle: (_) => _showUnavailable(routeContext, 'Gizlilik Tercihi'),
+              _showHomePreview(routeContext, 'Profil Görünürlüğü'),
+          onToggle: (_) => _showHomePreview(routeContext, 'Gizlilik Tercihi'),
           onBlockedPlayers: () =>
-              _showUnavailable(routeContext, 'Engellenen Oyuncular'),
+              _showHomePreview(routeContext, 'Engellenen Oyuncular'),
           onDataPrivacy: () =>
-              _showUnavailable(routeContext, 'Veri ve Gizlilik'),
+              _showHomePreview(routeContext, 'Veri ve Gizlilik'),
           onRootNavigate: (next) =>
               _closeChildStackAndSelect(routeContext, next.name),
           battleRootEnabled: true,
@@ -589,11 +597,11 @@ class _MainShellState extends State<MainShell> {
       MaterialPageRoute<void>(
         builder: (routeContext) => SettingsAccessibilityScreen(
           onBack: () => Navigator.of(routeContext).pop(),
-          onTextSize: () => _showUnavailable(routeContext, 'Metin Boyutu'),
+          onTextSize: () => _showHomePreview(routeContext, 'Metin Boyutu'),
           onToggle: (_) =>
-              _showUnavailable(routeContext, 'Erişilebilirlik Tercihi'),
+              _showHomePreview(routeContext, 'Erişilebilirlik Tercihi'),
           onColorSupport: () =>
-              _showUnavailable(routeContext, 'Renk Ayrımı Desteği'),
+              _showHomePreview(routeContext, 'Renk Ayrımı Desteği'),
           onRootNavigate: (next) =>
               _closeChildStackAndSelect(routeContext, next.name),
           battleRootEnabled: true,

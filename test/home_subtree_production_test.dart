@@ -52,6 +52,13 @@ void main() {
     await tester.pumpAndSettle();
   }
 
+  Future<void> expectPreview(WidgetTester tester) async {
+    expect(find.byType(HomePreviewDialog), findsOneWidget);
+    expect(find.byType(FeatureUnavailableDialog), findsNothing);
+    await tester.tap(find.byKey(const ValueKey('home-preview-dialog-close')));
+    await tester.pumpAndSettle();
+  }
+
   Future<void> openSettingsSection(WidgetTester tester, String section) async {
     await pumpHome(tester);
     await tapHotspot(tester, 'home.settings');
@@ -275,7 +282,7 @@ void main() {
     };
     for (final entry in outcomes.entries) {
       await tapHotspot(tester, entry.key);
-      await expectUnavailable(tester, entry.value);
+      await expectPreview(tester);
     }
   });
 
@@ -291,10 +298,10 @@ void main() {
       'system',
     ]) {
       await tapHotspot(tester, 'settings-notifications.toggle-$toggle');
-      await expectUnavailable(tester, 'Bildirim Tercihi');
+      await expectPreview(tester);
     }
     await tapHotspot(tester, 'settings-notifications.reminder-hours');
-    await expectUnavailable(tester, 'Hatırlatma Saatleri');
+    await expectPreview(tester);
   });
 
   testWidgets('Settings Privacy visible actions never fail silently', (
@@ -302,7 +309,7 @@ void main() {
   ) async {
     await openSettingsSection(tester, 'privacy');
     await tapHotspot(tester, 'settings-privacy.profile-visibility');
-    await expectUnavailable(tester, 'Profil Görünürlüğü');
+    await expectPreview(tester);
 
     for (final toggle in <String>[
       'onlineStatus',
@@ -310,13 +317,13 @@ void main() {
       'congratulations',
     ]) {
       await tapHotspot(tester, 'settings-privacy.toggle-$toggle');
-      await expectUnavailable(tester, 'Gizlilik Tercihi');
+      await expectPreview(tester);
     }
 
     await tapHotspot(tester, 'settings-privacy.blocked-players');
-    await expectUnavailable(tester, 'Engellenen Oyuncular');
+    await expectPreview(tester);
     await tapHotspot(tester, 'settings-privacy.data-privacy');
-    await expectUnavailable(tester, 'Veri ve Gizlilik');
+    await expectPreview(tester);
   });
 
   testWidgets('Settings Accessibility visible actions never fail silently', (
@@ -324,7 +331,7 @@ void main() {
   ) async {
     await openSettingsSection(tester, 'accessibility');
     await tapHotspot(tester, 'settings-accessibility.text-size');
-    await expectUnavailable(tester, 'Metin Boyutu');
+    await expectPreview(tester);
 
     for (final toggle in <String>[
       'highContrast',
@@ -333,10 +340,10 @@ void main() {
       'audioCues',
     ]) {
       await tapHotspot(tester, 'settings-accessibility.toggle-$toggle');
-      await expectUnavailable(tester, 'Erişilebilirlik Tercihi');
+      await expectPreview(tester);
     }
 
     await tapHotspot(tester, 'settings-accessibility.color-support');
-    await expectUnavailable(tester, 'Renk Ayrımı Desteği');
+    await expectPreview(tester);
   });
 }

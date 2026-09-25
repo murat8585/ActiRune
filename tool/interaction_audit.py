@@ -173,13 +173,21 @@ def classify_callback_binding(call: str, callback: str) -> str:
         argument,
         flags=re.DOTALL,
     )
-    return "BLOCKED_FEEDBACK" if direct_unavailable else "CONNECTED"
+    if direct_unavailable:
+        return "BLOCKED_FEEDBACK"
+    direct_preview = re.match(
+        r"^(?:\([^)]*\)|[A-Za-z_]\w*)\s*=>\s*_showHomePreview\s*\(",
+        argument,
+        flags=re.DOTALL,
+    )
+    return "PREVIEW_FEEDBACK" if direct_preview else "CONNECTED"
 
 
 def audit_callback_classifier(failures: list[str]) -> None:
     fixtures = (
         ("HomeScreen(onMessages: () => _showUnavailable(context, 'Inbox'))", "onMessages", "BLOCKED_FEEDBACK"),
         ("HomeScreen(onQuests: (_) =>\n  _showUnavailable(context, 'Quests'))", "onQuests", "BLOCKED_FEEDBACK"),
+        ("HomeScreen(onMessages: () => _showHomePreview(context, 'Inbox'))", "onMessages", "PREVIEW_FEEDBACK"),
         ("HomeScreen(onEvents: () => _openEvents(context))", "onEvents", "CONNECTED"),
         (
             "QuestChainScreen(onActiveQuest: ready ? () => _openBattle() : () => _showUnavailable(context, 'Battle'))",
