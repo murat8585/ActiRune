@@ -65,6 +65,8 @@ SCREENS = {
 # behavior even when the owner does not subscribe.
 ALLOW_MISSING = {
     ("AchievementsScreen", "onFilterChanged"),
+    ("EventsScreen", "onFilter"),
+    ("EventsScreen", "onInfo"),
 }
 
 ALLOWED_STATUSES = {

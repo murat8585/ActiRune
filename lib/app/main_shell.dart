@@ -266,9 +266,7 @@ class _MainShellState extends State<MainShell> {
       MaterialPageRoute<void>(
         builder: (routeContext) => EventsScreen(
           onBack: () => Navigator.of(routeContext).pop(),
-          onInfo: () => _showUnavailable(routeContext, 'Etkinlik Bilgisi'),
           onFeaturedEvent: () => _openEventDetail(routeContext),
-          onFilter: (_) => _showUnavailable(routeContext, 'Etkinlik Filtresi'),
           onEvent: (_) => _openEventDetail(routeContext),
           onRootNavigate: (next) =>
               _closeChildStackAndSelect(routeContext, next.name),

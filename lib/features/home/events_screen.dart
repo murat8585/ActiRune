@@ -141,10 +141,7 @@ class _EventsScreenState extends State<EventsScreen> {
               child: DecoratedBox(
                 decoration: BoxDecoration(
                   color: const Color(0x1200D9FF),
-                  border: Border.all(
-                    color: const Color(0xFF55E5FF),
-                    width: 2,
-                  ),
+                  border: Border.all(color: const Color(0xFF55E5FF), width: 2),
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),

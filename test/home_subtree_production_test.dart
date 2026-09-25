@@ -9,6 +9,7 @@ import 'package:actirune/features/home/quest_center_preview_screen.dart';
 import 'package:actirune/features/home/rune_inbox_preview_screen.dart';
 import 'package:actirune/features/home/event_detail_popup.dart';
 import 'package:actirune/features/home/events_screen.dart';
+import 'package:actirune/features/home/home_preview_dialog.dart';
 import 'package:actirune/features/home/rune_shrine_ready_screen.dart';
 import 'package:actirune/features/profile/profile_screen.dart';
 import 'package:actirune/features/profile/settings_accessibility_screen.dart';
@@ -127,11 +128,20 @@ void main() {
       await tapHotspot(tester, 'home.events');
 
       await tapHotspot(tester, 'events.info');
-      await expectUnavailable(tester, 'Etkinlik Bilgisi');
+      expect(find.byType(HomePreviewDialog), findsOneWidget);
+      expect(find.byType(FeatureUnavailableDialog), findsNothing);
+      await tester.tap(find.byKey(const ValueKey('home-preview-dialog-close')));
+      await tester.pumpAndSettle();
 
       for (final filter in <String>['active', 'upcoming', 'completed']) {
         await tapHotspot(tester, 'events.filter-$filter');
-        await expectUnavailable(tester, 'Etkinlik Filtresi');
+        expect(
+          find.byKey(
+            ValueKey<String>('artwork-overlay-events.filter-selection-$filter'),
+          ),
+          findsOneWidget,
+        );
+        expect(find.byType(FeatureUnavailableDialog), findsNothing);
       }
 
       await tapHotspot(tester, 'events.featured');
