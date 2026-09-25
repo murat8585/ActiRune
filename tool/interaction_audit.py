@@ -37,7 +37,6 @@ SCREENS = {
     "DailySummaryPopup": "lib/features/home/daily_summary_popup.dart",
     "EventDetailPopup": "lib/features/home/event_detail_popup.dart",
     "DailyQuestsScreen": "lib/features/quests/daily_quests_screen.dart",
-    "WeeklyQuestsScreen": "lib/features/quests/weekly_quests_screen.dart",
     "QuestChainScreen": "lib/features/quests/quest_chain_screen.dart",
     "EventsScreen": "lib/features/home/events_screen.dart",
     "WorldProgressionScreen": "lib/features/adventure/world_progression_screen.dart",
