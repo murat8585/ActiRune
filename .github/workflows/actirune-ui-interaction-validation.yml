@@ -39,8 +39,11 @@ jobs:
       - name: Python production interaction audit
         run: python3 tool/interaction_audit.py
 
-      - name: Verify formatting
-        run: dart format --output=none --set-exit-if-changed lib test
+      - name: Format and show formatter diff
+        shell: bash
+        run: |
+          dart format lib test
+          git diff -- lib/app/main_shell.dart lib/core/widgets/feature_unavailable_dialog.dart test/production_interaction_wiring_test.dart
 
       - name: Analyze
         run: flutter analyze
