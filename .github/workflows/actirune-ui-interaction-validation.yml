@@ -14,7 +14,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: actirune-ui-interaction-validation
@@ -40,25 +40,19 @@ jobs:
       - name: Python production interaction audit
         run: python3 tool/interaction_audit.py
 
-      - name: Format audit changes
-        run: dart format lib/features/battle/battle_screen.dart test/battle_screen_adapter_test.dart test/home_subtree_production_test.dart
-
-      - name: Commit formatter output when needed
-        shell: bash
-        run: |
-          if ! git diff --quiet -- lib/features/battle/battle_screen.dart test/battle_screen_adapter_test.dart test/home_subtree_production_test.dart; then
-            git config user.name "github-actions[bot]"
-            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add lib/features/battle/battle_screen.dart test/battle_screen_adapter_test.dart test/home_subtree_production_test.dart
-            git commit -m "Format Home interaction audit changes"
-            git push origin HEAD:fix/full-ui-interaction-wiring-20260925
-          fi
+      - name: Enforce Dart formatting
+        run: dart format --output=none --set-exit-if-changed lib test
 
       - name: Analyze
         run: flutter analyze
 
-      - name: Home subtree production tests
-        run: flutter test --no-pub test/home_subtree_production_test.dart
+      - name: Home subtree focused tests
+        run: >-
+          flutter test --no-pub
+          test/home_subtree_production_test.dart
+          test/home_permissions_production_test.dart
+          test/home_subtree_navigation_test.dart
+          test/home_subtree_auxiliary_navigation_test.dart
 
       - name: Production interaction wiring tests
         run: flutter test --no-pub test/production_interaction_wiring_test.dart
