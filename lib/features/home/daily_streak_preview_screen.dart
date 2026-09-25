@@ -162,7 +162,10 @@ class _DayNode extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 8),
-        Text(label, style: const TextStyle(color: Color(0xFFAEC0D3), fontSize: 12)),
+        Text(
+          label,
+          style: const TextStyle(color: Color(0xFFAEC0D3), fontSize: 12),
+        ),
       ],
     );
   }

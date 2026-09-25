@@ -22,9 +22,7 @@ void main() {
       expect(find.byType(DailyStreakPreviewScreen), findsOneWidget);
       expect(find.byType(DailyQuestsScreen), findsNothing);
 
-      await tester.tap(
-        find.byKey(const ValueKey('daily-streak-preview-back')),
-      );
+      await tester.tap(find.byKey(const ValueKey('daily-streak-preview-back')));
       await tester.pumpAndSettle();
       expect(find.byType(HomeScreen), findsOneWidget);
     },

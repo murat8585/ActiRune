@@ -38,11 +38,10 @@ import '../features/social/social_screen.dart';
 
 enum _ShellDestination { home, adventure, battle, hero, profile }
 
-typedef BattleRootBuilder =
-    Widget Function(
-      BuildContext context,
-      ValueChanged<BattlePrepRootDestination> onRootNavigate,
-    );
+typedef BattleRootBuilder = Widget Function(
+  BuildContext context,
+  ValueChanged<BattlePrepRootDestination> onRootNavigate,
+);
 
 class MainShell extends StatefulWidget {
   const MainShell({
@@ -105,8 +104,7 @@ class _MainShellState extends State<MainShell> {
       _showUnavailable(
         context,
         'Savaş',
-        message:
-            'Gerçek karşılaşma içeriği henüz bağlı olmadığı için Savaş şu anda kilitli.',
+        message: 'Gerçek karşılaşma içeriği henüz bağlı olmadığı için Savaş şu anda kilitli.',
       );
       return;
     }
@@ -119,8 +117,7 @@ class _MainShellState extends State<MainShell> {
       _showUnavailable(
         routeContext,
         'Savaş',
-        message:
-            'Gerçek karşılaşma içeriği henüz bağlı olmadığı için Savaş şu anda kilitli.',
+        message: 'Gerçek karşılaşma içeriği henüz bağlı olmadığı için Savaş şu anda kilitli.',
       );
       return;
     }
@@ -129,34 +126,34 @@ class _MainShellState extends State<MainShell> {
   }
 
   Future<void> _openDailyStreakPreview(BuildContext context) async {
-  await Navigator.of(context).push<void>(
-    MaterialPageRoute<void>(
-      builder: (routeContext) => DailyStreakPreviewScreen(
-        onBack: () => Navigator.of(routeContext).pop(),
+    await Navigator.of(context).push<void>(
+      MaterialPageRoute<void>(
+        builder: (routeContext) => DailyStreakPreviewScreen(
+          onBack: () => Navigator.of(routeContext).pop(),
+        ),
       ),
-    ),
-  );
-}
+    );
+  }
 
-Future<void> _openRuneInboxPreview(BuildContext context) async {
-  await Navigator.of(context).push<void>(
-    MaterialPageRoute<void>(
-      builder: (routeContext) => RuneInboxPreviewScreen(
-        onBack: () => Navigator.of(routeContext).pop(),
+  Future<void> _openRuneInboxPreview(BuildContext context) async {
+    await Navigator.of(context).push<void>(
+      MaterialPageRoute<void>(
+        builder: (routeContext) => RuneInboxPreviewScreen(
+          onBack: () => Navigator.of(routeContext).pop(),
+        ),
       ),
-    ),
-  );
-}
+    );
+  }
 
-Future<void> _openQuestCenterPreview(BuildContext context) async {
-  await Navigator.of(context).push<void>(
-    MaterialPageRoute<void>(
-      builder: (routeContext) => QuestCenterPreviewScreen(
-        onBack: () => Navigator.of(routeContext).pop(),
+  Future<void> _openQuestCenterPreview(BuildContext context) async {
+    await Navigator.of(context).push<void>(
+      MaterialPageRoute<void>(
+        builder: (routeContext) => QuestCenterPreviewScreen(
+          onBack: () => Navigator.of(routeContext).pop(),
+        ),
       ),
-    ),
-  );
-}
+    );
+  }
 
   Future<void> _openDailySummary(BuildContext context) async {
     await showGeneralDialog<void>(
@@ -242,8 +239,7 @@ Future<void> _openQuestCenterPreview(BuildContext context) async {
               : () => _showUnavailable(
                   routeContext,
                   'Aktif Görev',
-                  message:
-                      'Gerçek karşılaşma içeriği bağlanmadan aktif görev Savaş akışını başlatamaz.',
+                  message: 'Gerçek karşılaşma içeriği bağlanmadan aktif görev Savaş akışını başlatamaz.',
                 ),
           onCompletionRewards: () {
             final callback = widget.onQuestChainCompletionRewards;
@@ -316,8 +312,7 @@ Future<void> _openQuestCenterPreview(BuildContext context) async {
           onOpenGift: () => _showUnavailable(
             routeContext,
             'Rün Hediyesi',
-            message:
-                'Ödüllü reklam ve gerçek ödül sahibi bağlanmadan hediye verilemez.',
+            message: 'Ödüllü reklam ve gerçek ödül sahibi bağlanmadan hediye verilemez.',
           ),
           onNotNow: () => Navigator.of(routeContext).pop(),
           onRootNavigate: (next) =>
@@ -673,8 +668,7 @@ Future<void> _openQuestCenterPreview(BuildContext context) async {
         onEncounterPreview: () => _showUnavailable(
           context,
           'Hazır Ol',
-          message:
-              'Bu karşılaşma henüz açılmadı. Gerçek encounter durumu açıldığında Savaş hazırlığına geçecek.',
+          message: 'Bu karşılaşma henüz açılmadı. Gerçek encounter durumu açıldığında Savaş hazırlığına geçecek.',
         ),
         onStory: () => _showUnavailable(context, 'Bölüm Hikayesi'),
         onAdventureLog: () => _showUnavailable(context, 'Macera Günlüğü'),
