@@ -37,42 +37,22 @@ jobs:
 
           shell = Path('lib/app/main_shell.dart')
           text = shell.read_text(encoding='utf-8')
-          old = '''          onOpenGift: () => _showUnavailable(
-            routeContext,
-            'Rün Hediyesi',
-            message:
-                'Ödüllü reklam ve gerçek ödül sahibi bağlanmadan hediye verilemez.',
-          ),'''
-          new = '''          onOpenGift: () => _showHomePreview(
-            routeContext,
-            'Rün Hediyesi',
-            'Rün hediyesi önizlemesi açık. Ödüllü reklam ve gerçek ödül sahibi bağlanmadığı için bu test sürümünde rune, envanter veya para birimi değiştirilmez.',
-          ),'''
+          old = "          onOpenGift: () => _showUnavailable(\n            routeContext,\n            'Rün Hediyesi',\n            message:\n                'Ödüllü reklam ve gerçek ödül sahibi bağlanmadan hediye verilemez.',\n          ),\n"
+          new = "          onOpenGift: () => _showHomePreview(\n            routeContext,\n            'Rün Hediyesi',\n            'Rün hediyesi önizlemesi açık. Ödüllü reklam ve gerçek ödül sahibi bağlanmadığı için bu test sürümünde rune, envanter veya para birimi değiştirilmez.',\n          ),\n"
           if old not in text:
               raise SystemExit('Rune Shrine MainShell marker not found')
           shell.write_text(text.replace(old, new, 1), encoding='utf-8')
 
           test = Path('test/home_subtree_production_test.dart')
           text = test.read_text(encoding='utf-8')
-          old = '''    await tapHotspot(tester, 'rune-shrine-ready.open-gift');
-    await expectUnavailable(tester, 'Rün Hediyesi');
-    expect(find.byType(RuneShrineReadyScreen), findsOneWidget);'''
-          new = '''    await tapHotspot(tester, 'rune-shrine-ready.open-gift');
-    expect(find.byType(HomePreviewDialog), findsOneWidget);
-    expect(find.byType(FeatureUnavailableDialog), findsNothing);
-    expect(find.byType(RuneShrineReadyScreen), findsOneWidget);
-    await tester.tap(find.byKey(const ValueKey('home-preview-dialog-close')));
-    await tester.pumpAndSettle();
-    expect(find.byType(RuneShrineReadyScreen), findsOneWidget);'''
+          old = "    await tapHotspot(tester, 'rune-shrine-ready.open-gift');\n    await expectUnavailable(tester, 'Rün Hediyesi');\n    expect(find.byType(RuneShrineReadyScreen), findsOneWidget);\n"
+          new = "    await tapHotspot(tester, 'rune-shrine-ready.open-gift');\n    expect(find.byType(HomePreviewDialog), findsOneWidget);\n    expect(find.byType(FeatureUnavailableDialog), findsNothing);\n    expect(find.byType(RuneShrineReadyScreen), findsOneWidget);\n    await tester.tap(find.byKey(const ValueKey('home-preview-dialog-close')));\n    await tester.pumpAndSettle();\n    expect(find.byType(RuneShrineReadyScreen), findsOneWidget);\n"
           if old not in text:
               raise SystemExit('Rune Shrine Home test marker not found')
           test.write_text(text.replace(old, new, 1), encoding='utf-8')
 
       - name: Format bounded files
-        run: >-
-          dart format
-          lib/app/main_shell.dart
-          test/home_subtree_production_test.dart
+        run: dart format lib/app/main_shell.dart test/home_subtree_production_test.dart
 
       - name: Assert bounded patch
         shell: bash
