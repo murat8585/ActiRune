@@ -12,10 +12,13 @@ import '../features/hero/hero_screen.dart';
 import '../features/hero/inventory_screen.dart';
 import '../features/hero/lumi_screen.dart';
 import '../features/hero/movement_mastery_screen.dart';
+import '../features/home/daily_streak_preview_screen.dart';
 import '../features/home/daily_summary_popup.dart';
 import '../features/home/event_detail_popup.dart';
 import '../features/home/events_screen.dart';
 import '../features/home/home_screen.dart';
+import '../features/home/quest_center_preview_screen.dart';
+import '../features/home/rune_inbox_preview_screen.dart';
 import '../features/home/rune_shrine_ready_screen.dart';
 import '../features/profile/achievements_screen.dart';
 import '../features/profile/player_level_screen.dart';
@@ -124,6 +127,36 @@ class _MainShellState extends State<MainShell> {
     Navigator.of(routeContext).popUntil((route) => route.isFirst);
     _select(next);
   }
+
+  Future<void> _openDailyStreakPreview(BuildContext context) async {
+  await Navigator.of(context).push<void>(
+    MaterialPageRoute<void>(
+      builder: (routeContext) => DailyStreakPreviewScreen(
+        onBack: () => Navigator.of(routeContext).pop(),
+      ),
+    ),
+  );
+}
+
+Future<void> _openRuneInboxPreview(BuildContext context) async {
+  await Navigator.of(context).push<void>(
+    MaterialPageRoute<void>(
+      builder: (routeContext) => RuneInboxPreviewScreen(
+        onBack: () => Navigator.of(routeContext).pop(),
+      ),
+    ),
+  );
+}
+
+Future<void> _openQuestCenterPreview(BuildContext context) async {
+  await Navigator.of(context).push<void>(
+    MaterialPageRoute<void>(
+      builder: (routeContext) => QuestCenterPreviewScreen(
+        onBack: () => Navigator.of(routeContext).pop(),
+      ),
+    ),
+  );
+}
 
   Future<void> _openDailySummary(BuildContext context) async {
     await showGeneralDialog<void>(
@@ -619,19 +652,9 @@ class _MainShellState extends State<MainShell> {
   List<Widget> _screens(BuildContext context) {
     return [
       HomeScreen(
-        onDailyStreak: () => _showUnavailable(
-          context,
-          'Günlük Seri',
-          message:
-              '7 günlük esnek seri sistemi canlı aktivite verisine bağlandığında bu alan açılacak.',
-        ),
-        onMessages: () => _showUnavailable(context, 'Rune Gelen Kutusu'),
-        onQuests: () => _showUnavailable(
-          context,
-          'Görevler',
-          message:
-              'Görevler ana merkezi ve canlı ilerleme durumu tamamlandığında bu alan açılacak.',
-        ),
+        onDailyStreak: () => _openDailyStreakPreview(context),
+        onMessages: () => _openRuneInboxPreview(context),
+        onQuests: () => _openQuestCenterPreview(context),
         onEvents: () => _openEvents(context),
         onSettings: () => _openSettingsHub(context),
         onWorldMap: () => _openWorldProgression(context),

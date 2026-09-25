@@ -1,5 +1,5 @@
 import 'package:actirune/app/main_shell.dart';
-import 'package:actirune/core/widgets/feature_unavailable_dialog.dart';
+import 'package:actirune/features/home/daily_streak_preview_screen.dart';
 import 'package:actirune/features/home/home_screen.dart';
 import 'package:actirune/features/quests/daily_quests_screen.dart';
 import 'package:flutter/material.dart';
@@ -19,17 +19,12 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.byType(FeatureUnavailableDialog), findsOneWidget);
-      expect(find.text('Günlük Seri'), findsOneWidget);
+      expect(find.byType(DailyStreakPreviewScreen), findsOneWidget);
       expect(find.byType(DailyQuestsScreen), findsNothing);
-      expect(
-        find.text(
-          '7 günlük esnek seri sistemi canlı aktivite verisine bağlandığında bu alan açılacak.',
-        ),
-        findsOneWidget,
-      );
 
-      await tester.tap(find.byKey(const ValueKey('feature-unavailable-close')));
+      await tester.tap(
+        find.byKey(const ValueKey('daily-streak-preview-back')),
+      );
       await tester.pumpAndSettle();
       expect(find.byType(HomeScreen), findsOneWidget);
     },

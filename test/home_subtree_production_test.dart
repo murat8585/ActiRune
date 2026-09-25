@@ -3,7 +3,10 @@ import 'package:actirune/core/widgets/feature_unavailable_dialog.dart';
 import 'package:actirune/features/adventure/adventure_screen.dart';
 import 'package:actirune/features/adventure/world_progression_screen.dart';
 import 'package:actirune/features/hero/hero_screen.dart';
+import 'package:actirune/features/home/daily_streak_preview_screen.dart';
 import 'package:actirune/features/home/daily_summary_popup.dart';
+import 'package:actirune/features/home/quest_center_preview_screen.dart';
+import 'package:actirune/features/home/rune_inbox_preview_screen.dart';
 import 'package:actirune/features/home/event_detail_popup.dart';
 import 'package:actirune/features/home/events_screen.dart';
 import 'package:actirune/features/home/rune_shrine_ready_screen.dart';
@@ -60,15 +63,21 @@ void main() {
   ) async {
     await pumpHome(tester);
     await tapHotspot(tester, 'home.daily-streak');
-    await expectUnavailable(tester, 'Günlük Seri');
+    expect(find.byType(DailyStreakPreviewScreen), findsOneWidget);
+    await tester.tap(find.byKey(const ValueKey('daily-streak-preview-back')));
+    await tester.pumpAndSettle();
 
     await pumpHome(tester);
     await tapHotspot(tester, 'home.messages');
-    await expectUnavailable(tester, 'Rune Gelen Kutusu');
+    expect(find.byType(RuneInboxPreviewScreen), findsOneWidget);
+    await tester.tap(find.byKey(const ValueKey('rune-inbox-preview-back')));
+    await tester.pumpAndSettle();
 
     await pumpHome(tester);
     await tapHotspot(tester, 'home.quests');
-    await expectUnavailable(tester, 'Görevler');
+    expect(find.byType(QuestCenterPreviewScreen), findsOneWidget);
+    await tester.tap(find.byKey(const ValueKey('quest-center-preview-back')));
+    await tester.pumpAndSettle();
 
     await pumpHome(tester);
     await tapHotspot(tester, 'home.events');
