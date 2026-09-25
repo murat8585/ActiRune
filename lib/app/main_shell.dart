@@ -1,5 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
+import '../core/platform/app_settings_launcher.dart';
+import '../core/widgets/feature_unavailable_dialog.dart';
 import '../features/adventure/adventure_screen.dart';
 import '../features/adventure/world_progression_screen.dart';
 import '../features/battle/battle_prep_screen.dart';
@@ -26,6 +30,9 @@ import '../features/profile/settings_privacy_screen.dart';
 import '../features/quests/daily_quests_screen.dart';
 import '../features/quests/quest_chain_screen.dart';
 import '../features/quests/weekly_quests_screen.dart';
+import '../features/shop/pro_paywall_screen.dart';
+import '../features/shop/shop_screen.dart';
+import '../features/social/social_screen.dart';
 
 enum _ShellDestination { home, adventure, battle, hero, profile }
 
@@ -60,8 +67,21 @@ class _MainShellState extends State<MainShell> {
 
   bool get _battleAvailable => widget.battleRootBuilder != null;
 
+  void _showUnavailable(
+    BuildContext context,
+    String feature, {
+    String? message,
+  }) {
+    unawaited(
+      FeatureUnavailableDialog.show(
+        context,
+        feature: feature,
+        message: message,
+      ),
+    );
+  }
+
   void _select(_ShellDestination next) {
-    if (next == _ShellDestination.battle && !_battleAvailable) return;
     if (destination == next) return;
     setState(() => destination = next);
   }
@@ -77,20 +97,31 @@ class _MainShellState extends State<MainShell> {
     };
   }
 
-  void _selectHomeRoot(HomeRootDestination next) =>
-      _select(_rootByName(next.name));
-  void _selectAdventureRoot(AdventureRootDestination next) =>
-      _select(_rootByName(next.name));
-  void _selectBattleRoot(BattlePrepRootDestination next) =>
-      _select(_rootByName(next.name));
-  void _selectHeroRoot(HeroRootDestination next) =>
-      _select(_rootByName(next.name));
-  void _selectProfileRoot(ProfileRootDestination next) =>
-      _select(_rootByName(next.name));
+  void _selectRoot(BuildContext context, String rootName) {
+    final next = _rootByName(rootName);
+    if (next == _ShellDestination.battle && !_battleAvailable) {
+      _showUnavailable(
+        context,
+        'Savaş',
+        message:
+            'Gerçek karşılaşma içeriği henüz bağlı olmadığı için Savaş şu anda kilitli.',
+      );
+      return;
+    }
+    _select(next);
+  }
 
   void _closeChildStackAndSelect(BuildContext routeContext, String rootName) {
     final next = _rootByName(rootName);
-    if (next == _ShellDestination.battle && !_battleAvailable) return;
+    if (next == _ShellDestination.battle && !_battleAvailable) {
+      _showUnavailable(
+        routeContext,
+        'Savaş',
+        message:
+            'Gerçek karşılaşma içeriği henüz bağlı olmadığı için Savaş şu anda kilitli.',
+      );
+      return;
+    }
     Navigator.of(routeContext).popUntil((route) => route.isFirst);
     _select(next);
   }
@@ -109,12 +140,15 @@ class _MainShellState extends State<MainShell> {
           Navigator.of(dialogContext).pop();
           _select(_ShellDestination.adventure);
         },
-        onViewDetails: widget.onDailySummaryDetails == null
-            ? null
-            : () {
-                Navigator.of(dialogContext).pop();
-                widget.onDailySummaryDetails!();
-              },
+        onViewDetails: () {
+          Navigator.of(dialogContext).pop();
+          final callback = widget.onDailySummaryDetails;
+          if (callback != null) {
+            callback();
+          } else {
+            _showUnavailable(context, 'Günlük Özet Detayları');
+          }
+        },
       ),
     );
   }
@@ -126,8 +160,13 @@ class _MainShellState extends State<MainShell> {
       barrierLabel: 'Etkinlik Detayı',
       barrierColor: Colors.transparent,
       transitionDuration: Duration.zero,
-      pageBuilder: (dialogContext, _, _) =>
-          EventDetailPopup(onClose: () => Navigator.of(dialogContext).pop()),
+      pageBuilder: (dialogContext, _, _) => EventDetailPopup(
+        onClose: () => Navigator.of(dialogContext).pop(),
+        onJoin: () => _showUnavailable(dialogContext, 'Etkinliğe Katıl'),
+        onViewTasks: () =>
+            _showUnavailable(dialogContext, 'Etkinlik Görevleri'),
+        onTask: (_) => _showUnavailable(dialogContext, 'Etkinlik Görevi'),
+      ),
     );
   }
 
@@ -135,9 +174,19 @@ class _MainShellState extends State<MainShell> {
     await Navigator.of(context).push<void>(
       MaterialPageRoute<void>(
         builder: (routeContext) => DailyQuestsScreen(
+          onProgressReward: () =>
+              _showUnavailable(routeContext, 'Günlük Rün Sandığı'),
+          onClaimExploreReward: () =>
+              _showUnavailable(routeContext, 'Keşif Ödülü'),
+          onClaimBattleReward: () =>
+              _showUnavailable(routeContext, 'Savaş Ödülü'),
+          onFreeTaskChange: () =>
+              _showUnavailable(routeContext, 'Görev Değiştirme'),
+          onTaskChangeHelp: () =>
+              _showUnavailable(routeContext, 'Görev Değiştirme Yardımı'),
           onRootNavigate: (next) =>
               _closeChildStackAndSelect(routeContext, next.name),
-          battleRootEnabled: _battleAvailable,
+          battleRootEnabled: true,
         ),
       ),
     );
@@ -148,10 +197,17 @@ class _MainShellState extends State<MainShell> {
       MaterialPageRoute<void>(
         builder: (routeContext) => WeeklyQuestsScreen(
           onDailyStreak: () => _openDailyQuests(routeContext),
-          onClaimQuestChainReward: widget.onWeeklyQuestChainReward,
+          onClaimQuestChainReward: () {
+            final callback = widget.onWeeklyQuestChainReward;
+            if (callback != null) {
+              callback();
+            } else {
+              _showUnavailable(routeContext, 'Görev Zinciri Ödülü');
+            }
+          },
           onRootNavigate: (next) =>
               _closeChildStackAndSelect(routeContext, next.name),
-          battleRootEnabled: _battleAvailable,
+          battleRootEnabled: true,
         ),
       ),
     );
@@ -162,14 +218,33 @@ class _MainShellState extends State<MainShell> {
       MaterialPageRoute<void>(
         builder: (routeContext) => QuestChainScreen(
           onBack: () => Navigator.of(routeContext).pop(),
-          onDailyStreak: widget.onQuestChainStreakDetails,
+          onDailyStreak: () {
+            final callback = widget.onQuestChainStreakDetails;
+            if (callback != null) {
+              callback();
+            } else {
+              _openDailyQuests(routeContext);
+            }
+          },
           onActiveQuest: _battleAvailable
               ? () => _closeChildStackAndSelect(routeContext, 'battle')
-              : null,
-          onCompletionRewards: widget.onQuestChainCompletionRewards,
+              : () => _showUnavailable(
+                    routeContext,
+                    'Aktif Görev',
+                    message:
+                        'Gerçek karşılaşma içeriği bağlanmadan aktif görev Savaş akışını başlatamaz.',
+                  ),
+          onCompletionRewards: () {
+            final callback = widget.onQuestChainCompletionRewards;
+            if (callback != null) {
+              callback();
+            } else {
+              _showUnavailable(routeContext, 'Bölüm Tamamlama Ödülü');
+            }
+          },
           onRootNavigate: (next) =>
               _closeChildStackAndSelect(routeContext, next.name),
-          battleRootEnabled: _battleAvailable,
+          battleRootEnabled: true,
         ),
       ),
     );
@@ -180,11 +255,13 @@ class _MainShellState extends State<MainShell> {
       MaterialPageRoute<void>(
         builder: (routeContext) => EventsScreen(
           onBack: () => Navigator.of(routeContext).pop(),
+          onInfo: () => _showUnavailable(routeContext, 'Etkinlik Bilgisi'),
           onFeaturedEvent: () => _openEventDetail(routeContext),
+          onFilter: (_) => _showUnavailable(routeContext, 'Etkinlik Filtresi'),
           onEvent: (_) => _openEventDetail(routeContext),
           onRootNavigate: (next) =>
               _closeChildStackAndSelect(routeContext, next.name),
-          battleRootEnabled: _battleAvailable,
+          battleRootEnabled: true,
         ),
       ),
     );
@@ -198,9 +275,24 @@ class _MainShellState extends State<MainShell> {
           onHeroProfile: () => _closeChildStackAndSelect(routeContext, 'hero'),
           onNotifications: () => _openNotifications(routeContext),
           onSettings: () => _openSettingsHub(routeContext),
+          onRegionSelect: () =>
+              _showUnavailable(routeContext, 'Bölge Seçimi'),
+          onAncientTree: () => _showUnavailable(routeContext, 'Kadim Ağaç'),
+          onLostRuneCave: () =>
+              _showUnavailable(routeContext, 'Kayıp Rün Mağarası'),
+          onWaterfallTemple: () =>
+              _showUnavailable(routeContext, 'Şelale Tapınağı'),
+          onWindCliffs: () =>
+              _showUnavailable(routeContext, 'Rüzgar Kayalıkları'),
+          onShowNextTarget: () =>
+              _showUnavailable(routeContext, 'Sonraki Hedef'),
+          onBossPreview: () => _showUnavailable(routeContext, 'Boss Ön İzleme'),
+          onRewardPreview: () =>
+              _showUnavailable(routeContext, 'Ödül Ön İzleme'),
           onRootNavigate: (next) =>
               _closeChildStackAndSelect(routeContext, next.name),
-          battleRootEnabled: _battleAvailable,
+          bossUnlocked: false,
+          battleRootEnabled: true,
         ),
       ),
     );
@@ -211,10 +303,16 @@ class _MainShellState extends State<MainShell> {
       MaterialPageRoute<void>(
         builder: (routeContext) => RuneShrineReadyScreen(
           onClose: () => Navigator.of(routeContext).pop(),
+          onOpenGift: () => _showUnavailable(
+            routeContext,
+            'Rün Hediyesi',
+            message:
+                'Ödüllü reklam ve gerçek ödül sahibi bağlanmadan hediye verilemez.',
+          ),
           onNotNow: () => Navigator.of(routeContext).pop(),
           onRootNavigate: (next) =>
               _closeChildStackAndSelect(routeContext, next.name),
-          battleRootEnabled: _battleAvailable,
+          battleRootEnabled: true,
         ),
       ),
     );
@@ -225,9 +323,20 @@ class _MainShellState extends State<MainShell> {
       MaterialPageRoute<void>(
         builder: (routeContext) => InventoryScreen(
           onBack: () => Navigator.of(routeContext).pop(),
+          onInfo: () => _showUnavailable(routeContext, 'Envanter Bilgisi'),
+          onCategory: (_) =>
+              _showUnavailable(routeContext, 'Envanter Kategorisi'),
+          onSearch: () => _showUnavailable(routeContext, 'Envanter Arama'),
+          onFilter: () => _showUnavailable(routeContext, 'Envanter Filtresi'),
+          onSort: () => _showUnavailable(routeContext, 'Envanter Sıralama'),
+          onViewMode: (_) =>
+              _showUnavailable(routeContext, 'Envanter Görünümü'),
+          onItem: (_) => _showUnavailable(routeContext, 'Eşya Detayı'),
+          onBulkActions: () =>
+              _showUnavailable(routeContext, 'Toplu Envanter İşlemleri'),
           onRootNavigate: (next) =>
               _closeChildStackAndSelect(routeContext, next.name),
-          battleRootEnabled: _battleAvailable,
+          battleRootEnabled: true,
         ),
       ),
     );
@@ -238,10 +347,15 @@ class _MainShellState extends State<MainShell> {
       MaterialPageRoute<void>(
         builder: (routeContext) => EquipmentScreen(
           onBack: () => Navigator.of(routeContext).pop(),
+          onInfo: () => _showUnavailable(routeContext, 'Ekipman Bilgisi'),
+          onSlot: (_) => _showUnavailable(routeContext, 'Ekipman Slotu'),
+          onSelectedItem: () =>
+              _showUnavailable(routeContext, 'Seçili Eşya Detayı'),
           onInventory: () => _openInventory(routeContext),
+          onPresets: () => _showUnavailable(routeContext, 'Ekipman Ön Ayarları'),
           onRootNavigate: (next) =>
               _closeChildStackAndSelect(routeContext, next.name),
-          battleRootEnabled: _battleAvailable,
+          battleRootEnabled: true,
         ),
       ),
     );
@@ -251,9 +365,21 @@ class _MainShellState extends State<MainShell> {
     await Navigator.of(context).push<void>(
       MaterialPageRoute<void>(
         builder: (routeContext) => LumiScreen(
+          onDailyStreak: () => _openDailyQuests(routeContext),
+          onBondInfo: () => _showUnavailable(routeContext, 'Lumi Bağı'),
+          onLevelRewards: () =>
+              _showUnavailable(routeContext, 'Lumi Seviye Ödülleri'),
+          onAbilitySelected: (_) =>
+              _showUnavailable(routeContext, 'Lumi Yeteneği'),
+          onAppearanceSelected: (_) =>
+              _showUnavailable(routeContext, 'Lumi Görünümü'),
+          onAppearanceNext: () =>
+              _showUnavailable(routeContext, 'Lumi Görünümleri'),
+          onCustomize: () =>
+              _showUnavailable(routeContext, 'Lumi Özelleştirme'),
           onRootNavigate: (next) =>
               _closeChildStackAndSelect(routeContext, next.name),
-          battleRootEnabled: _battleAvailable,
+          battleRootEnabled: true,
         ),
       ),
     );
@@ -264,9 +390,16 @@ class _MainShellState extends State<MainShell> {
       MaterialPageRoute<void>(
         builder: (routeContext) => MovementMasteryScreen(
           onBack: () => Navigator.of(routeContext).pop(),
+          onHelp: () => _showUnavailable(routeContext, 'Hareket Ustalığı Yardımı'),
+          onMasteryInfo: () =>
+              _showUnavailable(routeContext, 'Hareket Ustalığı Bilgisi'),
+          onMovement: (_) =>
+              _showUnavailable(routeContext, 'Hareket Ustalığı Detayı'),
+          onMovementGuide: () =>
+              _showUnavailable(routeContext, 'Hareket Rehberi'),
           onRootNavigate: (next) =>
               _closeChildStackAndSelect(routeContext, next.name),
-          battleRootEnabled: _battleAvailable,
+          battleRootEnabled: true,
         ),
       ),
     );
@@ -277,9 +410,14 @@ class _MainShellState extends State<MainShell> {
       MaterialPageRoute<void>(
         builder: (routeContext) => PlayerLevelScreen(
           onBack: () => Navigator.of(routeContext).pop(),
+          onHelp: () => _showUnavailable(routeContext, 'Oyuncu Seviyesi Yardımı'),
+          onClaimMilestone: () =>
+              _showUnavailable(routeContext, 'Seviye Ödülü'),
+          onAbout: () =>
+              _showUnavailable(routeContext, 'Oyuncu Seviyesi Hakkında'),
           onRootNavigate: (next) =>
               _closeChildStackAndSelect(routeContext, next.name),
-          battleRootEnabled: _battleAvailable,
+          battleRootEnabled: true,
         ),
       ),
     );
@@ -290,11 +428,13 @@ class _MainShellState extends State<MainShell> {
       MaterialPageRoute<void>(
         builder: (routeContext) => AchievementsScreen(
           onBack: () => Navigator.of(routeContext).pop(),
+          onCrystalStore: () => _openShop(routeContext),
+          onGoldStore: () => _openShop(routeContext),
           onNotifications: () => _openNotifications(routeContext),
           onShowInProfile: () => Navigator.of(routeContext).pop(),
           onRootNavigate: (next) =>
               _closeChildStackAndSelect(routeContext, next.name),
-          battleRootEnabled: _battleAvailable,
+          battleRootEnabled: true,
         ),
       ),
     );
@@ -305,9 +445,12 @@ class _MainShellState extends State<MainShell> {
       MaterialPageRoute<void>(
         builder: (routeContext) => ProfileHistoryScreen(
           onBack: () => Navigator.of(routeContext).pop(),
+          onTab: (_) => _showUnavailable(routeContext, 'Geçmiş Filtresi'),
+          onRange: () => _showUnavailable(routeContext, 'Tarih Aralığı'),
+          onEntry: (_) => _showUnavailable(routeContext, 'Geçmiş Kaydı Detayı'),
           onRootNavigate: (next) =>
               _closeChildStackAndSelect(routeContext, next.name),
-          battleRootEnabled: _battleAvailable,
+          battleRootEnabled: true,
         ),
       ),
     );
@@ -318,9 +461,16 @@ class _MainShellState extends State<MainShell> {
       MaterialPageRoute<void>(
         builder: (routeContext) => SettingsAccountScreen(
           onBack: () => Navigator.of(routeContext).pop(),
+          onEditProfile: () => _showUnavailable(routeContext, 'Profili Düzenle'),
+          onCopyRuneId: () => _showUnavailable(routeContext, 'Rune ID'),
+          onLinkedAccount: (_) =>
+              _showUnavailable(routeContext, 'Bağlı Hesaplar'),
+          onViewData: () => _showUnavailable(routeContext, 'Verilerimi Gör'),
+          onSignOut: () => _showUnavailable(routeContext, 'Çıkış Yap'),
+          onDeleteAccount: () => _showUnavailable(routeContext, 'Hesabı Sil'),
           onRootNavigate: (next) =>
               _closeChildStackAndSelect(routeContext, next.name),
-          battleRootEnabled: _battleAvailable,
+          battleRootEnabled: true,
         ),
       ),
     );
@@ -331,9 +481,13 @@ class _MainShellState extends State<MainShell> {
       MaterialPageRoute<void>(
         builder: (routeContext) => SettingsNotificationsScreen(
           onBack: () => Navigator.of(routeContext).pop(),
+          onToggle: (_) =>
+              _showUnavailable(routeContext, 'Bildirim Tercihi'),
+          onReminderHours: () =>
+              _showUnavailable(routeContext, 'Hatırlatma Saatleri'),
           onRootNavigate: (next) =>
               _closeChildStackAndSelect(routeContext, next.name),
-          battleRootEnabled: _battleAvailable,
+          battleRootEnabled: true,
         ),
       ),
     );
@@ -344,12 +498,28 @@ class _MainShellState extends State<MainShell> {
       MaterialPageRoute<void>(
         builder: (routeContext) => SettingsPrivacyScreen(
           onBack: () => Navigator.of(routeContext).pop(),
+          onProfileVisibility: () =>
+              _showUnavailable(routeContext, 'Profil Görünürlüğü'),
+          onToggle: (_) => _showUnavailable(routeContext, 'Gizlilik Tercihi'),
+          onBlockedPlayers: () =>
+              _showUnavailable(routeContext, 'Engellenen Oyuncular'),
+          onDataPrivacy: () => _showUnavailable(routeContext, 'Veri ve Gizlilik'),
           onRootNavigate: (next) =>
               _closeChildStackAndSelect(routeContext, next.name),
-          battleRootEnabled: _battleAvailable,
+          battleRootEnabled: true,
         ),
       ),
     );
+  }
+
+  Future<void> _managePermission(
+    BuildContext context,
+    PermissionTarget target,
+  ) async {
+    final opened = await const AppSettingsLauncher().openAppSettings();
+    if (!opened && context.mounted) {
+      _showUnavailable(context, '${target.name} İzni');
+    }
   }
 
   Future<void> _openPermissions(BuildContext context) async {
@@ -357,9 +527,11 @@ class _MainShellState extends State<MainShell> {
       MaterialPageRoute<void>(
         builder: (routeContext) => SettingsPermissionsScreen(
           onBack: () => Navigator.of(routeContext).pop(),
+          onManage: (target) =>
+              unawaited(_managePermission(routeContext, target)),
           onRootNavigate: (next) =>
               _closeChildStackAndSelect(routeContext, next.name),
-          battleRootEnabled: _battleAvailable,
+          battleRootEnabled: true,
         ),
       ),
     );
@@ -370,9 +542,14 @@ class _MainShellState extends State<MainShell> {
       MaterialPageRoute<void>(
         builder: (routeContext) => SettingsAccessibilityScreen(
           onBack: () => Navigator.of(routeContext).pop(),
+          onTextSize: () => _showUnavailable(routeContext, 'Metin Boyutu'),
+          onToggle: (_) =>
+              _showUnavailable(routeContext, 'Erişilebilirlik Tercihi'),
+          onColorSupport: () =>
+              _showUnavailable(routeContext, 'Renk Ayrımı Desteği'),
           onRootNavigate: (next) =>
               _closeChildStackAndSelect(routeContext, next.name),
-          battleRootEnabled: _battleAvailable,
+          battleRootEnabled: true,
         ),
       ),
     );
@@ -399,7 +576,61 @@ class _MainShellState extends State<MainShell> {
           },
           onRootNavigate: (next) =>
               _closeChildStackAndSelect(routeContext, next.name),
-          battleRootEnabled: _battleAvailable,
+          battleRootEnabled: true,
+        ),
+      ),
+    );
+  }
+
+  Future<void> _openSocial(BuildContext context) async {
+    await Navigator.of(context).push<void>(
+      MaterialPageRoute<void>(builder: (_) => const SocialScreen()),
+    );
+  }
+
+  Future<void> _openProPaywall(BuildContext context) async {
+    await Navigator.of(context).push<void>(
+      MaterialPageRoute<void>(
+        builder: (routeContext) => ProPaywallScreen(
+          onBack: () => Navigator.of(routeContext).pop(),
+          onClose: () => Navigator.of(routeContext).pop(),
+          onPlanSelected: (_) =>
+              _showUnavailable(routeContext, 'Pro Plan Seçimi'),
+          onUpgradeRequested: () =>
+              _showUnavailable(routeContext, 'ActiRune Pro Satın Alma'),
+          onContinueFree: () => Navigator.of(routeContext).pop(),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _openShop(BuildContext context) async {
+    await Navigator.of(context).push<void>(
+      MaterialPageRoute<void>(
+        builder: (routeContext) => ShopScreen(
+          onNotifications: () => _openNotifications(routeContext),
+          onSettings: () => _openSettingsHub(routeContext),
+          onCategorySelected: (category) {
+            if (category == ShopCategory.pro) {
+              _openProPaywall(routeContext);
+            } else {
+              _showUnavailable(routeContext, 'Mağaza Kategorisi');
+            }
+          },
+          onWeeklyCollection: () =>
+              _showUnavailable(routeContext, 'Haftalık Koleksiyon'),
+          onSeeAllFeatured: () =>
+              _showUnavailable(routeContext, 'Öne Çıkan Ürünler'),
+          onProductSelected: (_) =>
+              _showUnavailable(routeContext, 'Mağaza Ürünü'),
+          onRuneThemes: () =>
+              _showUnavailable(routeContext, 'Rün Temaları'),
+          onCrystalPacks: () =>
+              _showUnavailable(routeContext, 'Kristal Paketleri'),
+          onPro: () => _openProPaywall(routeContext),
+          onRootNavigate: (next) =>
+              _closeChildStackAndSelect(routeContext, next.name),
+          battleRootEnabled: true,
         ),
       ),
     );
@@ -409,47 +640,68 @@ class _MainShellState extends State<MainShell> {
     return [
       HomeScreen(
         onDailyStreak: () => _openDailyQuests(context),
+        onMessages: () => _showUnavailable(context, 'Rune Gelen Kutusu'),
         onQuests: () => _openWeeklyQuests(context),
         onEvents: () => _openEvents(context),
         onSettings: () => _openSettingsHub(context),
         onWorldMap: () => _openWorldProgression(context),
         onYesterdaySummary: () => _openDailySummary(context),
         onRewards: () => _openRuneShrine(context),
-        onRootNavigate: _selectHomeRoot,
-        battleRootEnabled: _battleAvailable,
+        onRootNavigate: (next) => _selectRoot(context, next.name),
+        battleRootEnabled: true,
       ),
       AdventureScreen(
         onDailyStreak: () => _openDailyQuests(context),
+        onMessages: () => _showUnavailable(context, 'Rune Gelen Kutusu'),
         onQuests: () => _openQuestChain(context),
         onEvents: () => _openEvents(context),
         onSettings: () => _openSettingsHub(context),
         onWorldMap: () => _openWorldProgression(context),
-        onRootNavigate: _selectAdventureRoot,
-        battleRootEnabled: _battleAvailable,
+        onEncounterPreview: () => _showUnavailable(
+          context,
+          'Hazır Ol',
+          message:
+              'Bu karşılaşma henüz açılmadı. Gerçek encounter durumu açıldığında Savaş hazırlığına geçecek.',
+        ),
+        onStory: () => _showUnavailable(context, 'Bölüm Hikayesi'),
+        onAdventureLog: () => _showUnavailable(context, 'Macera Günlüğü'),
+        onRootNavigate: (next) => _selectRoot(context, next.name),
+        battleRootEnabled: true,
       ),
-      widget.battleRootBuilder?.call(context, _selectBattleRoot) ??
+      widget.battleRootBuilder?.call(
+            context,
+            (next) => _selectRoot(context, next.name),
+          ) ??
           const SizedBox.shrink(),
       HeroScreen(
         onEquipment: () => _openEquipment(context),
+        onRunes: () => _showUnavailable(context, 'Runeler'),
+        onAbilities: () => _showUnavailable(context, 'Yetenekler'),
         onCompanion: () => _openLumi(context),
+        onCharacterStory: () => _showUnavailable(context, 'Karakter Hikayesi'),
         onCompanionDetails: () => _openLumi(context),
-        onCharacterStory: () => _openQuestChain(context),
+        onRuneDetails: () => _showUnavailable(context, 'Rune Detayları'),
+        onDetailedStats: () => _showUnavailable(context, 'Detaylı İstatistikler'),
         onMovementMastery: () => _openMovementMastery(context),
-        onRootNavigate: _selectHeroRoot,
-        battleRootEnabled: _battleAvailable,
+        onRootNavigate: (next) => _selectRoot(context, next.name),
+        battleRootEnabled: true,
       ),
       ProfileScreen(
+        onBack: () => _selectRoot(context, 'home'),
         onProfileDetails: () => _openPlayerLevel(context),
+        onEditProfile: () => _showUnavailable(context, 'Profili Düzenle'),
+        onAvatar: () => _showUnavailable(context, 'Profil Fotoğrafı'),
         onBadges: () => _openAchievements(context),
         onMovementMastery: () => _openMovementMastery(context),
         onWorldProgress: () => _openWorldProgression(context),
+        onFriends: () => _openSocial(context),
         onHistory: () => _openProfileHistory(context),
         onAccountInfo: () => _openAccount(context),
         onNotifications: () => _openNotifications(context),
         onPrivacy: () => _openPrivacy(context),
         onSettings: () => _openSettingsHub(context),
-        onRootNavigate: _selectProfileRoot,
-        battleRootEnabled: _battleAvailable,
+        onRootNavigate: (next) => _selectRoot(context, next.name),
+        battleRootEnabled: true,
       ),
     ];
   }
