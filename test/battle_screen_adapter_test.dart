@@ -1,3 +1,4 @@
+import 'package:actirune/core/widgets/feature_unavailable_dialog.dart';
 import 'package:actirune/features/battle/battle_flow_host.dart';
 import 'package:actirune/features/battle/battle_prep_screen.dart';
 import 'package:actirune/features/battle/battle_screen.dart';
@@ -98,5 +99,20 @@ void main() {
 
     expect(exits, 1);
     expect(find.byType(BattlePrepScreen), findsNothing);
+  });
+
+  testWidgets('unowned Battle Prep controls fail closed with visible feedback', (
+    tester,
+  ) async {
+    await tester.pumpWidget(buildSubject());
+    await tester.pump();
+
+    await tester.tap(
+      find.byKey(const ValueKey('artwork-hotspot-battle-prep.equipment')),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byType(FeatureUnavailableDialog), findsOneWidget);
+    expect(find.text('Savaş Ekipmanı'), findsOneWidget);
   });
 }
