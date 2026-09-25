@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
+import '../../core/widgets/feature_unavailable_dialog.dart';
 import 'battle_flow_host.dart';
 import 'battle_prep_screen.dart';
 import 'battle_session_engine.dart';
@@ -80,6 +83,16 @@ class _BattleScreenState extends State<BattleScreen> {
     super.dispose();
   }
 
+  void _showUnavailable(String feature, {String? message}) {
+    unawaited(
+      FeatureUnavailableDialog.show(
+        context,
+        feature: feature,
+        message: message,
+      ),
+    );
+  }
+
   void _exitEncounter() {
     if (_session.snapshot.phase != BattleSessionPhase.retired) {
       _session.retire();
@@ -106,7 +119,14 @@ class _BattleScreenState extends State<BattleScreen> {
 
   Future<void> _requestRewardedRetry() async {
     final request = widget.onRewardedRetry;
-    if (request == null) return;
+    if (request == null) {
+      _showUnavailable(
+        'Son Bir Şans',
+        message:
+            'Ödüllü tekrar sahibi bağlanmadan yeni savaş hakkı verilemez.',
+      );
+      return;
+    }
 
     final rewarded = await request();
     if (!mounted || !rewarded) return;
@@ -122,24 +142,48 @@ class _BattleScreenState extends State<BattleScreen> {
       cameraEnabled: widget.cameraEnabled,
       requiredPlankHoldDuration: widget.requiredPlankHoldDuration,
       onBattlePrepBack: _exitEncounter,
-      onBattlePrepInfo: widget.onBattlePrepInfo,
-      onEquipment: widget.onEquipment,
-      onRunes: widget.onRunes,
-      onCompanion: widget.onCompanion,
-      onAbilities: widget.onAbilities,
-      onBattleTips: widget.onBattleTips,
+      onBattlePrepInfo:
+          widget.onBattlePrepInfo ??
+          () => _showUnavailable('Savaş Hazırlığı Bilgisi'),
+      onEquipment:
+          widget.onEquipment ?? () => _showUnavailable('Savaş Ekipmanı'),
+      onRunes: widget.onRunes ?? () => _showUnavailable('Savaş Runeleri'),
+      onCompanion:
+          widget.onCompanion ?? () => _showUnavailable('Savaş Yoldaşı'),
+      onAbilities:
+          widget.onAbilities ?? () => _showUnavailable('Savaş Yetenekleri'),
+      onBattleTips:
+          widget.onBattleTips ?? () => _showUnavailable('Savaş İpuçları'),
       onReturnToAdventure: _exitEncounter,
       onRootNavigate: _rootNavigate,
-      onCameraPrepInfo: widget.onCameraPrepInfo,
-      onCameraRecheck: widget.onCameraRecheck,
+      onCameraPrepInfo:
+          widget.onCameraPrepInfo ??
+          () => _showUnavailable('Kamera Hazırlığı Bilgisi'),
+      onCameraRecheck:
+          widget.onCameraRecheck ??
+          () => _showUnavailable(
+            'Kamera Yeniden Kontrol',
+            message:
+                'Gerçek kamera hazırlık sahibi bağlanmadan yeniden kontrol başlatılamaz.',
+          ),
       onVictoryContinue: _exitEncounter,
-      onVictoryReplay: widget.onVictoryReplay,
-      onVictoryViewRewards: widget.onVictoryViewRewards,
+      onVictoryReplay:
+          widget.onVictoryReplay ??
+          () => _showUnavailable(
+            'Tekrar Savaş',
+            message:
+                'Karşılaşma sahibi yeni savaş oturumunu sağlamadan tekrar başlatılamaz.',
+          ),
+      onVictoryViewRewards:
+          widget.onVictoryViewRewards ??
+          () => _showUnavailable('Savaş Ödülleri'),
       onRewardedRetryRequested: () {
-        _requestRewardedRetry();
+        unawaited(_requestRewardedRetry());
       },
       onDefeatReturnToAdventure: _exitEncounter,
-      onDefeatViewTactics: widget.onDefeatViewTactics,
+      onDefeatViewTactics:
+          widget.onDefeatViewTactics ??
+          () => _showUnavailable('Savaş Taktikleri'),
     );
   }
 }
