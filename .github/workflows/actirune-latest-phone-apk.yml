@@ -51,8 +51,16 @@ jobs:
           test -f "$APK"
           unzip -l "$APK" | tee apk-contents.txt
           grep -q 'lib/arm64-v8a/libflutter.so' apk-contents.txt
-          if grep -q 'lib/x86_64/' apk-contents.txt; then
-            echo 'ERROR: x86_64 library found in phone APK'
+          if grep -q 'lib/x86_64/libflutter.so' apk-contents.txt; then
+            echo 'ERROR: x86_64 Flutter engine found in phone APK'
+            exit 1
+          fi
+          if grep -q 'lib/armeabi-v7a/libflutter.so' apk-contents.txt; then
+            echo 'ERROR: armeabi-v7a Flutter engine found in phone APK'
+            exit 1
+          fi
+          if grep -q 'lib/x86/libflutter.so' apk-contents.txt; then
+            echo 'ERROR: x86 Flutter engine found in phone APK'
             exit 1
           fi
           SHORT_SHA="${GITHUB_SHA:0:12}"
@@ -64,7 +72,7 @@ jobs:
             echo "branch=${GITHUB_REF_NAME}"
             echo "commit=${GITHUB_SHA}"
             echo "artifact=${OUT}"
-            echo "abi=arm64-v8a"
+            echo "flutter_engine_abi=arm64-v8a"
             echo "flutter_version=$(flutter --version | head -n 1)"
           } > BUILD_INFO.txt
 
