@@ -1,0 +1,80 @@
+name: ActiRune Latest Phone ARM64 APK
+
+on:
+  push:
+    branches:
+      - fix/full-ui-interaction-wiring-20260925
+    paths:
+      - '.github/workflows/actirune-latest-phone-apk.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-phone-arm64:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout exact commit
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Resolve dependencies
+        run: flutter pub get
+
+      - name: Production interaction audit
+        run: python3 tool/interaction_audit.py
+
+      - name: Verify formatting
+        run: dart format --output=none --set-exit-if-changed lib test
+
+      - name: Analyze
+        run: flutter analyze
+
+      - name: Run full Flutter tests
+        run: flutter test --no-pub
+
+      - name: Build ARM64 debug APK
+        run: flutter build apk --debug --target-platform android-arm64
+
+      - name: Verify APK ABI and prepare artifact
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK="build/app/outputs/flutter-apk/app-debug.apk"
+          test -f "$APK"
+          unzip -l "$APK" | tee apk-contents.txt
+          grep -q 'lib/arm64-v8a/libflutter.so' apk-contents.txt
+          if grep -q 'lib/x86_64/' apk-contents.txt; then
+            echo 'ERROR: x86_64 library found in phone APK'
+            exit 1
+          fi
+          SHORT_SHA="${GITHUB_SHA:0:12}"
+          OUT="ActiRune-phone-arm64-debug-${SHORT_SHA}.apk"
+          cp "$APK" "$OUT"
+          sha256sum "$OUT" | tee SHA256SUMS.txt
+          {
+            echo "repository=${GITHUB_REPOSITORY}"
+            echo "branch=${GITHUB_REF_NAME}"
+            echo "commit=${GITHUB_SHA}"
+            echo "artifact=${OUT}"
+            echo "abi=arm64-v8a"
+            echo "flutter_version=$(flutter --version | head -n 1)"
+          } > BUILD_INFO.txt
+
+      - name: Upload ARM64 phone APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: ActiRune-latest-phone-arm64
+          path: |
+            ActiRune-phone-arm64-debug-*.apk
+            SHA256SUMS.txt
+            BUILD_INFO.txt
+          if-no-files-found: error
+          retention-days: 14
