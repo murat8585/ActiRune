@@ -42,6 +42,7 @@ void main() {
 
         // Widget CI is not Android, so the real MethodChannel launcher correctly
         // falls back to an explicit product message instead of failing silently.
+        expect(find.byType(FeatureUnavailableDialog), findsOneWidget);
         expect(
           find.byKey(const ValueKey('feature-unavailable-dialog')),
           findsOneWidget,
