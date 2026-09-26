@@ -41,6 +41,14 @@ void main() {
     );
     expect(surface.assetPath, QuestChainScreen.artworkAsset);
     expect(surface.sourceSize, const Size(941, 1672));
+    expect(
+      surface.overlays.map((overlay) => overlay.id),
+      contains('quest-chain-reward-sample'),
+    );
+    expect(
+      find.textContaining('Gerçek ilerleme ve ödül verisi bağlı değil'),
+      findsOneWidget,
+    );
 
     for (final id in const [
       'quest-chain.back',
@@ -191,6 +199,30 @@ void main() {
     );
     await tester.pumpAndSettle();
     expect(find.byType(AdventureScreen), findsOneWidget);
+  });
+
+  testWidgets('default Quest Chain reward remains blocked without a grant', (
+    tester,
+  ) async {
+    await tester.pumpWidget(const MaterialApp(home: MainShell()));
+    await tester.pump();
+    await tester.tap(
+      find.byKey(const ValueKey('artwork-hotspot-home.nav-adventure')),
+    );
+    await tester.pump();
+    await tester.tap(
+      find.byKey(const ValueKey('artwork-hotspot-adventure.quests')),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(
+      find.byKey(
+        const ValueKey('artwork-hotspot-quest-chain.completion-rewards'),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byType(FeatureUnavailableDialog), findsOneWidget);
+    expect(find.textContaining('Herhangi bir ödül verilmedi'), findsOneWidget);
   });
 
   testWidgets('Hero Character Story never impersonates Quest Chain', (

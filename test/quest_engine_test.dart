@@ -147,13 +147,13 @@ void main() {
       );
 
       expect(first.status, QuestRewardClaimStatus.claimable);
-      expect(first.shouldApplyReward, isTrue);
+      expect(first.canAttemptClaim, isTrue);
       expect(second.claimId, first.claimId);
       expect(second.status, QuestRewardClaimStatus.alreadyClaimed);
-      expect(second.shouldApplyReward, isFalse);
+      expect(second.canAttemptClaim, isFalse);
     });
 
-    test('ineligible reward never requests application', () {
+    test('ineligible reward is not a claim candidate', () {
       final decision = policy.evaluate(
         scopeId: 'weekly:2026-W39',
         rewardKey: 'mainReward',
@@ -161,7 +161,52 @@ void main() {
       );
 
       expect(decision.status, QuestRewardClaimStatus.notEligible);
-      expect(decision.shouldApplyReward, isFalse);
+      expect(decision.canAttemptClaim, isFalse);
+    });
+
+    test(
+      'same scope and reward key remain stable; other keys stay distinct',
+      () {
+        String claimId(String scope, String reward) => policy
+            .evaluate(scopeId: scope, rewardKey: reward, eligible: true)
+            .claimId;
+
+        expect(
+          claimId('daily:2026-09-23', 'chest'),
+          claimId('daily:2026-09-23', 'chest'),
+        );
+        expect(
+          claimId('daily:2026-09-23', 'chest'),
+          isNot(claimId('daily:2026-09-23', 'bonus')),
+        );
+        expect(
+          claimId('daily:2026-09-23', 'chest'),
+          isNot(claimId('daily:2026-09-24', 'chest')),
+        );
+      },
+    );
+
+    test('rejects delimiter collisions and empty claim identifiers', () {
+      expect(
+        () => policy.evaluate(
+          scopeId: 'daily::2026',
+          rewardKey: 'chest',
+          eligible: true,
+        ),
+        throwsArgumentError,
+      );
+      expect(
+        () => policy.evaluate(
+          scopeId: 'daily',
+          rewardKey: '2026::chest',
+          eligible: true,
+        ),
+        throwsArgumentError,
+      );
+      expect(
+        () => policy.evaluate(scopeId: ' ', rewardKey: 'chest', eligible: true),
+        throwsArgumentError,
+      );
     });
   });
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../core/widgets/artwork_interaction_surface.dart';
+import '../../core/widgets/artwork_sample_mask.dart';
 
 enum QuestChainRootDestination { home, adventure, battle, hero, profile }
 
@@ -76,6 +77,16 @@ class QuestChainScreen extends StatelessWidget {
         child: ArtworkInteractionSurface(
           assetPath: artworkAsset,
           sourceSize: artworkSize,
+          overlays: const [
+            ArtworkOverlay(
+              id: 'quest-chain-reward-sample',
+              normalizedRect: Rect.fromLTWH(.045, .775, .91, .12),
+              child: ArtworkSampleMask(
+                label:
+                    'Bölüm ödülü örnektir. Gerçek ilerleme ve ödül verisi bağlı değil.',
+              ),
+            ),
+          ],
           hotspots: [
             _hotspot(
               id: 'quest-chain.back',

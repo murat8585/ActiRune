@@ -114,7 +114,7 @@ class QuestCenterScreen extends StatelessWidget {
                       ),
                       const Spacer(),
                       const Text(
-                        'Ödül toplama P6B aşamasında bağlanacak.',
+                        'Gerçek görev ilerlemesi ve ödül kayıt sistemi bağlı değil; ödül verilmez.',
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: Color(0xFFBBD3E3),

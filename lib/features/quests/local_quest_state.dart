@@ -4,7 +4,9 @@ import 'quest_engine.dart';
 
 enum QuestType { daily, weekly }
 
-enum QuestStatus { active, completed, claimed }
+/// Local display progress only. A successful claim requires a real receipt
+/// owner and is deliberately absent from this sample-only state.
+enum QuestStatus { active, completed }
 
 @immutable
 class QuestRecord {

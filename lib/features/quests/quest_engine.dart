@@ -174,14 +174,18 @@ class QuestRewardClaimDecision {
   final String claimId;
   final QuestRewardClaimStatus status;
 
-  bool get shouldApplyReward => status == QuestRewardClaimStatus.claimable;
+  /// Eligibility is only a candidate for a claim. It does not authorize a
+  /// balance/inventory mutation without a payload, application owner and
+  /// durable receipt transaction.
+  bool get canAttemptClaim => status == QuestRewardClaimStatus.claimable;
 }
 
-/// Pure idempotency policy for reward claims.
+/// Pure eligibility and stable-ID policy for reward claims.
 ///
 /// The caller owns persistence and actual reward application. This policy only
 /// guarantees that a stable claim id cannot be treated as claimable twice when
-/// the caller provides its already-persisted claim-id set.
+/// the caller provides its already-persisted claim-id set. It is not a
+/// transaction coordinator and never applies a reward or writes a receipt.
 class QuestRewardClaimPolicy {
   const QuestRewardClaimPolicy();
 
@@ -193,6 +197,9 @@ class QuestRewardClaimPolicy {
   }) {
     _validateScopeId(scopeId, 'scopeId');
     _validateScopeId(rewardKey, 'rewardKey');
+    if (scopeId.contains('::') || rewardKey.contains('::')) {
+      throw ArgumentError('claim scope and reward key must not contain ::');
+    }
     final claimId = '$scopeId::$rewardKey';
 
     if (!eligible) {

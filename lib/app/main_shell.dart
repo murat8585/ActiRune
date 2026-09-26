@@ -239,19 +239,19 @@ class _MainShellState extends State<MainShell> {
             routeContext,
             'Günlük Rün Sandığı',
             message:
-                'Ödül işlemi P6B aşamasında bağlanacak. Herhangi bir ödül verilmedi.',
+                'Gerçek görev ilerlemesi, ödül içeriği ve ödül kayıt sistemi bağlı değil. Herhangi bir ödül verilmedi.',
           ),
           onClaimExploreReward: () => _showUnavailable(
             routeContext,
             'Keşif Ödülü',
             message:
-                'Ödül işlemi P6B aşamasında bağlanacak. Herhangi bir ödül verilmedi.',
+                'Gerçek görev ilerlemesi, ödül içeriği ve ödül kayıt sistemi bağlı değil. Herhangi bir ödül verilmedi.',
           ),
           onClaimBattleReward: () => _showUnavailable(
             routeContext,
             'Savaş Ödülü',
             message:
-                'Ödül işlemi P6B aşamasında bağlanacak. Herhangi bir ödül verilmedi.',
+                'Gerçek görev ilerlemesi, ödül içeriği ve ödül kayıt sistemi bağlı değil. Herhangi bir ödül verilmedi.',
           ),
           onFreeTaskChange: () =>
               _showUnavailable(routeContext, 'Görev Değiştirme'),
@@ -275,7 +275,7 @@ class _MainShellState extends State<MainShell> {
             routeContext,
             'Haftalık Görev Ödülü',
             message:
-                'Ödül işlemi P6B aşamasında bağlanacak. Herhangi bir ödül verilmedi.',
+                'Gerçek görev ilerlemesi, ödül içeriği ve ödül kayıt sistemi bağlı değil. Herhangi bir ödül verilmedi.',
           ),
           onRootNavigate: (next) =>
               _closeChildStackAndSelect(routeContext, next.name),
@@ -311,7 +311,12 @@ class _MainShellState extends State<MainShell> {
             if (callback != null) {
               callback();
             } else {
-              _showUnavailable(routeContext, 'Bölüm Tamamlama Ödülü');
+              _showUnavailable(
+                routeContext,
+                'Bölüm Tamamlama Ödülü',
+                message:
+                    'Gerçek görev zinciri ilerlemesi, ödül içeriği ve ödül kayıt sistemi bağlı değil. Herhangi bir ödül verilmedi.',
+              );
             }
           },
           onRootNavigate: (next) =>

@@ -14,7 +14,7 @@ class LocalQuestPanel extends StatelessWidget {
   Widget build(BuildContext context) {
     final visible = records.where((record) => record.type == type).toList();
     final completed = visible
-        .where((record) => record.status != QuestStatus.active)
+        .where((record) => record.status == QuestStatus.completed)
         .length;
     final goal = type == QuestType.daily
         ? DailyQuestEngine.normalGoal
@@ -72,7 +72,6 @@ class LocalQuestPanel extends StatelessWidget {
                       '${record.progress}/${record.target} • ${switch (record.status) {
                         QuestStatus.active => 'Sürüyor',
                         QuestStatus.completed => 'Tamamlandı',
-                        QuestStatus.claimed => 'Alındı',
                       }}',
                       key: ValueKey('quest-status-${record.id}'),
                       style: const TextStyle(
@@ -85,7 +84,7 @@ class LocalQuestPanel extends StatelessWidget {
               ),
             const Spacer(),
             const Text(
-              'Örnek ilerleme gerçek aktivite değildir. Ödül işlemleri P6B’de bağlanacak.',
+              'Örnek ilerleme gerçek aktivite değildir. Gerçek görev ilerlemesi ve ödül işlemi bağlı değil; ödül verilmez.',
               textAlign: TextAlign.center,
               style: TextStyle(color: Color(0xFFBBD3E3), fontSize: 10),
             ),
