@@ -1,19 +1,12 @@
 import 'package:flutter/material.dart';
 
 import '../../core/widgets/artwork_interaction_surface.dart';
+import '../../core/widgets/artwork_sample_mask.dart';
+import 'hero_item_state.dart';
+
+export 'hero_item_state.dart' show EquipmentSlot;
 
 enum EquipmentRootDestination { home, adventure, battle, hero, profile }
-
-enum EquipmentSlot {
-  weapon,
-  helmet,
-  gloves,
-  ring,
-  necklace,
-  chest,
-  boots,
-  rune,
-}
 
 /// Selected P1 Equipment candidate wired as an artwork-first child screen.
 ///
@@ -29,6 +22,7 @@ class EquipmentScreen extends StatelessWidget {
     this.onInventory,
     this.onPresets,
     this.onRootNavigate,
+    this.itemOwner,
     this.battleRootEnabled = true,
   });
 
@@ -43,6 +37,7 @@ class EquipmentScreen extends StatelessWidget {
   final VoidCallback? onInventory;
   final VoidCallback? onPresets;
   final ValueChanged<EquipmentRootDestination>? onRootNavigate;
+  final HeroItemOwner? itemOwner;
   final bool battleRootEnabled;
 
   ArtworkHotspot _hotspot({
@@ -70,8 +65,11 @@ class EquipmentScreen extends StatelessWidget {
       id: 'equipment.slot-${slot.name}',
       semanticLabel: semanticLabel,
       normalizedRect: normalizedRect,
-      enabled: callback != null,
-      onTap: callback == null ? () {} : () => callback(slot),
+      enabled: callback != null || itemOwner != null,
+      onTap: () {
+        itemOwner?.selectSlot(slot);
+        callback?.call(slot);
+      },
     );
   }
 
@@ -95,6 +93,16 @@ class EquipmentScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (itemOwner != null) {
+      return AnimatedBuilder(
+        animation: itemOwner!,
+        builder: (context, _) => _buildScreen(),
+      );
+    }
+    return _buildScreen();
+  }
+
+  Widget _buildScreen() {
     return Scaffold(
       backgroundColor: Colors.black,
       body: SafeArea(
@@ -103,6 +111,22 @@ class EquipmentScreen extends StatelessWidget {
         child: ArtworkInteractionSurface(
           assetPath: artworkAsset,
           sourceSize: artworkSize,
+          overlays: itemOwner == null
+              ? const []
+              : [
+                  const ArtworkOverlay(
+                    id: 'equipment-sample-balances',
+                    normalizedRect: Rect.fromLTWH(.31, .005, .56, .065),
+                    child: ArtworkSampleMask(
+                      label: 'Canlı hesap verisi bağlı değil',
+                    ),
+                  ),
+                  ArtworkOverlay(
+                    id: 'equipment-owned-state',
+                    normalizedRect: const Rect.fromLTWH(.23, .18, .54, .54),
+                    child: _EquipmentOwnedPanel(owner: itemOwner!),
+                  ),
+                ],
           hotspots: [
             _hotspot(
               id: 'equipment.back',
@@ -163,6 +187,33 @@ class EquipmentScreen extends StatelessWidget {
               callback: onSelectedItem,
             ),
             _hotspot(
+              id: 'equipment.equip-selected',
+              semanticLabel: 'Seçili eşyayı tak',
+              normalizedRect: const Rect.fromLTWH(.25, .62, .23, .07),
+              callback:
+                  itemOwner?.selectedItem?.compatibleSlots.contains(
+                        itemOwner!.selectedSlot,
+                      ) ==
+                      true
+                  ? () => itemOwner!.equip(
+                      itemOwner!.selectedItem!.id,
+                      itemOwner!.selectedSlot,
+                    )
+                  : null,
+            ),
+            _hotspot(
+              id: 'equipment.unequip',
+              semanticLabel: 'Seçili slottaki eşyayı çıkar',
+              normalizedRect: const Rect.fromLTWH(.52, .62, .23, .07),
+              callback:
+                  itemOwner?.equippedItemIds.containsKey(
+                        itemOwner!.selectedSlot,
+                      ) ==
+                      true
+                  ? () => itemOwner!.unequip(itemOwner!.selectedSlot)
+                  : null,
+            ),
+            _hotspot(
               id: 'equipment.inventory',
               semanticLabel: 'Ekipman Envanteri',
               normalizedRect: const Rect.fromLTWH(0.020, 0.777, 0.462, 0.087),
@@ -202,6 +253,25 @@ class EquipmentScreen extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _EquipmentOwnedPanel extends StatelessWidget {
+  const _EquipmentOwnedPanel({required this.owner});
+
+  final HeroItemOwner owner;
+
+  @override
+  Widget build(BuildContext context) {
+    final itemId = owner.equippedItemIds[owner.selectedSlot];
+    final selected = owner.ownedItems.where((item) => item.id == itemId);
+    return ArtworkSampleMask(
+      label:
+          '${owner.selectedSlot.name}: '
+          '${itemId == null || selected.isEmpty ? 'takılı eşya yok' : selected.first.title}\n'
+          '${owner.selectedItem == null ? 'Envanterden eşya seçin' : 'Seçilen: ${owner.selectedItem!.title}'}\n'
+          'Tak                         Çıkar',
     );
   }
 }

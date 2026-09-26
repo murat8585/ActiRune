@@ -2,6 +2,7 @@ import 'package:actirune/app/main_shell.dart';
 import 'package:actirune/core/widgets/feature_unavailable_dialog.dart';
 import 'package:actirune/features/adventure/adventure_screen.dart';
 import 'package:actirune/features/hero/equipment_screen.dart';
+import 'package:actirune/features/hero/crafting_screen.dart';
 import 'package:actirune/features/hero/hero_screen.dart';
 import 'package:actirune/features/hero/inventory_screen.dart';
 import 'package:actirune/features/home/daily_summary_popup.dart';
@@ -157,8 +158,8 @@ void main() {
     );
     expect(equipment.onBack, isNotNull);
     expect(equipment.onInfo, isNotNull);
-    expect(equipment.onSlot, isNotNull);
-    expect(equipment.onSelectedItem, isNotNull);
+    expect(equipment.itemOwner, isNotNull);
+    expect(equipment.itemOwner!.ownedItems, isEmpty);
     expect(equipment.onInventory, isNotNull);
     expect(equipment.onPresets, isNotNull);
     expect(equipment.onRootNavigate, isNotNull);
@@ -174,15 +175,27 @@ void main() {
     );
     expect(inventory.onBack, isNotNull);
     expect(inventory.onInfo, isNotNull);
-    expect(inventory.onCategory, isNotNull);
-    expect(inventory.onSearch, isNotNull);
-    expect(inventory.onFilter, isNotNull);
-    expect(inventory.onSort, isNotNull);
-    expect(inventory.onViewMode, isNotNull);
-    expect(inventory.onItem, isNotNull);
+    expect(inventory.itemOwner, same(equipment.itemOwner));
+    expect(inventory.itemOwner, isNotNull);
+    expect(inventory.onCrafting, isNotNull);
     expect(inventory.onBulkActions, isNotNull);
     expect(inventory.onRootNavigate, isNotNull);
     expect(inventory.battleRootEnabled, isTrue);
+
+    await tester.tap(
+      find.byKey(
+        const ValueKey('artwork-hotspot-inventory.category-materials'),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(inventory.itemOwner!.selectedCategory, InventoryCategory.materials);
+    await tester.tap(
+      find.byKey(const ValueKey('artwork-hotspot-inventory.crafting')),
+    );
+    await tester.pumpAndSettle();
+    final crafting = tester.widget<CraftingScreen>(find.byType(CraftingScreen));
+    expect(crafting.itemOwner, same(inventory.itemOwner));
+    expect(crafting.onCraftRequested, isNull);
   });
 
   testWidgets(

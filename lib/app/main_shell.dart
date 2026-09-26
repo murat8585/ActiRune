@@ -8,6 +8,8 @@ import '../features/adventure/adventure_screen.dart';
 import '../features/adventure/world_progression_screen.dart';
 import '../features/battle/battle_prep_screen.dart';
 import '../features/hero/equipment_screen.dart';
+import '../features/hero/crafting_screen.dart';
+import '../features/hero/hero_item_state.dart';
 import '../features/hero/hero_screen.dart';
 import '../features/hero/inventory_screen.dart';
 import '../features/hero/lumi_screen.dart';
@@ -71,10 +73,12 @@ class MainShell extends StatefulWidget {
 class _MainShellState extends State<MainShell> {
   _ShellDestination destination = _ShellDestination.home;
   final LocalQuestOwner _questOwner = LocalQuestOwner();
+  final HeroItemOwner _itemOwner = HeroItemOwner();
 
   @override
   void dispose() {
     _questOwner.dispose();
+    _itemOwner.dispose();
     super.dispose();
   }
 
@@ -440,16 +444,10 @@ class _MainShellState extends State<MainShell> {
         builder: (routeContext) => InventoryScreen(
           onBack: () => Navigator.of(routeContext).pop(),
           onInfo: () => _showUnavailable(routeContext, 'Envanter Bilgisi'),
-          onCategory: (_) =>
-              _showUnavailable(routeContext, 'Envanter Kategorisi'),
-          onSearch: () => _showUnavailable(routeContext, 'Envanter Arama'),
-          onFilter: () => _showUnavailable(routeContext, 'Envanter Filtresi'),
-          onSort: () => _showUnavailable(routeContext, 'Envanter Sıralama'),
-          onViewMode: (_) =>
-              _showUnavailable(routeContext, 'Envanter Görünümü'),
-          onItem: (_) => _showUnavailable(routeContext, 'Eşya Detayı'),
           onBulkActions: () =>
               _showUnavailable(routeContext, 'Toplu Envanter İşlemleri'),
+          onCrafting: () => _openCrafting(routeContext),
+          itemOwner: _itemOwner,
           onRootNavigate: (next) =>
               _closeChildStackAndSelect(routeContext, next.name),
           battleRootEnabled: true,
@@ -464,14 +462,27 @@ class _MainShellState extends State<MainShell> {
         builder: (routeContext) => EquipmentScreen(
           onBack: () => Navigator.of(routeContext).pop(),
           onInfo: () => _showUnavailable(routeContext, 'Ekipman Bilgisi'),
-          onSlot: (_) => _showUnavailable(routeContext, 'Ekipman Slotu'),
-          onSelectedItem: () =>
-              _showUnavailable(routeContext, 'Seçili Eşya Detayı'),
           onInventory: () => _openInventory(routeContext),
           onPresets: () =>
               _showUnavailable(routeContext, 'Ekipman Ön Ayarları'),
           onRootNavigate: (next) =>
               _closeChildStackAndSelect(routeContext, next.name),
+          itemOwner: _itemOwner,
+          battleRootEnabled: true,
+        ),
+      ),
+    );
+  }
+
+  Future<void> _openCrafting(BuildContext context) async {
+    await Navigator.of(context).push<void>(
+      MaterialPageRoute<void>(
+        builder: (routeContext) => CraftingScreen(
+          onBack: () => Navigator.of(routeContext).pop(),
+          onInfo: () => _showUnavailable(routeContext, 'Üretim Bilgisi'),
+          onRootNavigate: (next) =>
+              _closeChildStackAndSelect(routeContext, next.name),
+          itemOwner: _itemOwner,
           battleRootEnabled: true,
         ),
       ),

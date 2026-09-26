@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
 import '../../core/widgets/artwork_interaction_surface.dart';
+import '../../core/widgets/artwork_sample_mask.dart';
+import 'hero_item_state.dart';
+
+export 'hero_item_state.dart' show InventoryCategory, InventoryViewMode;
 
 enum InventoryRootDestination { home, adventure, battle, hero, profile }
-
-enum InventoryCategory { equipment, runes, potions, materials }
-
-enum InventoryViewMode { grid, list }
 
 class InventoryScreen extends StatelessWidget {
   const InventoryScreen({
@@ -20,7 +20,9 @@ class InventoryScreen extends StatelessWidget {
     this.onViewMode,
     this.onItem,
     this.onBulkActions,
+    this.onCrafting,
     this.onRootNavigate,
+    this.itemOwner,
     this.battleRootEnabled = true,
   });
 
@@ -37,7 +39,9 @@ class InventoryScreen extends StatelessWidget {
   final ValueChanged<InventoryViewMode>? onViewMode;
   final ValueChanged<int>? onItem;
   final VoidCallback? onBulkActions;
+  final VoidCallback? onCrafting;
   final ValueChanged<InventoryRootDestination>? onRootNavigate;
+  final HeroItemOwner? itemOwner;
   final bool battleRootEnabled;
 
   ArtworkHotspot _hotspot({
@@ -65,8 +69,11 @@ class InventoryScreen extends StatelessWidget {
       id: 'inventory.category-${category.name}',
       semanticLabel: semanticLabel,
       normalizedRect: normalizedRect,
-      enabled: callback != null,
-      onTap: callback == null ? () {} : () => callback(category),
+      enabled: callback != null || itemOwner != null,
+      onTap: () {
+        itemOwner?.selectCategory(category);
+        callback?.call(category);
+      },
     );
   }
 
@@ -80,8 +87,11 @@ class InventoryScreen extends StatelessWidget {
       id: 'inventory.view-${mode.name}',
       semanticLabel: semanticLabel,
       normalizedRect: normalizedRect,
-      enabled: callback != null,
-      onTap: callback == null ? () {} : () => callback(mode),
+      enabled: callback != null || itemOwner != null,
+      onTap: () {
+        itemOwner?.selectViewMode(mode);
+        callback?.call(mode);
+      },
     );
   }
 
@@ -90,12 +100,19 @@ class InventoryScreen extends StatelessWidget {
     required Rect normalizedRect,
   }) {
     final callback = onItem;
+    final visibleItems = itemOwner?.visibleItems;
+    final item = visibleItems != null && index < visibleItems.length
+        ? visibleItems[index]
+        : null;
     return ArtworkHotspot(
       id: 'inventory.item-$index',
-      semanticLabel: 'Envanter Eşyası ${index + 1}',
+      semanticLabel: item?.title ?? 'Envanter Eşyası ${index + 1}',
       normalizedRect: normalizedRect,
-      enabled: callback != null,
-      onTap: callback == null ? () {} : () => callback(index),
+      enabled: itemOwner == null ? callback != null : item != null,
+      onTap: () {
+        if (item != null) itemOwner?.selectItem(item.id);
+        callback?.call(index);
+      },
     );
   }
 
@@ -119,6 +136,87 @@ class InventoryScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (itemOwner != null) {
+      return AnimatedBuilder(
+        animation: itemOwner!,
+        builder: (context, _) => _buildScreen(context),
+      );
+    }
+    return _buildScreen(context);
+  }
+
+  Future<void> _openSearch(BuildContext context) async {
+    final owner = itemOwner;
+    if (owner == null) return;
+    final controller = TextEditingController(text: owner.searchQuery);
+    final query = await showDialog<String>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Sahip olunan eşyalarda ara'),
+        content: TextField(controller: controller, autofocus: true),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, ''),
+            child: const Text('Temizle'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, controller.text),
+            child: const Text('Uygula'),
+          ),
+        ],
+      ),
+    );
+    controller.dispose();
+    if (query != null) owner.setSearchQuery(query);
+  }
+
+  Future<void> _openFilter(BuildContext context) async {
+    final owner = itemOwner;
+    if (owner == null) return;
+    final choice = await showDialog<int>(
+      context: context,
+      builder: (dialogContext) => SimpleDialog(
+        title: const Text('Nadirlik filtresi'),
+        children: [
+          SimpleDialogOption(
+            onPressed: () => Navigator.pop(dialogContext, 0),
+            child: const Text('Tümü'),
+          ),
+          for (final rarity in HeroItemRarity.values)
+            SimpleDialogOption(
+              onPressed: () => Navigator.pop(dialogContext, rarity.index + 1),
+              child: Text(rarity.name),
+            ),
+        ],
+      ),
+    );
+    if (choice != null) {
+      owner.setRarityFilter(
+        choice == 0 ? null : HeroItemRarity.values[choice - 1],
+      );
+    }
+  }
+
+  Future<void> _openSort(BuildContext context) async {
+    final owner = itemOwner;
+    if (owner == null) return;
+    final choice = await showDialog<InventorySortMode>(
+      context: context,
+      builder: (dialogContext) => SimpleDialog(
+        title: const Text('Sıralama'),
+        children: [
+          for (final mode in InventorySortMode.values)
+            SimpleDialogOption(
+              onPressed: () => Navigator.pop(dialogContext, mode),
+              child: Text(mode.name),
+            ),
+        ],
+      ),
+    );
+    if (choice != null) owner.setSortMode(choice);
+  }
+
+  Widget _buildScreen(BuildContext context) {
     const itemRects = <Rect>[
       Rect.fromLTWH(0.040, 0.290, 0.217, 0.136),
       Rect.fromLTWH(0.270, 0.290, 0.217, 0.136),
@@ -146,6 +244,20 @@ class InventoryScreen extends StatelessWidget {
         child: ArtworkInteractionSurface(
           assetPath: artworkAsset,
           sourceSize: artworkSize,
+          overlays: itemOwner == null
+              ? const []
+              : [
+                  ArtworkOverlay(
+                    id: 'inventory-owned-state',
+                    normalizedRect: const Rect.fromLTWH(.035, .285, .93, .565),
+                    child: _InventoryOwnedPanel(owner: itemOwner!),
+                  ),
+                  const ArtworkOverlay(
+                    id: 'inventory-crafting-entry',
+                    normalizedRect: Rect.fromLTWH(.05, .855, .31, .04),
+                    child: ArtworkSampleMask(label: 'Rün Dövme'),
+                  ),
+                ],
           hotspots: [
             _hotspot(
               id: 'inventory.back',
@@ -183,19 +295,23 @@ class InventoryScreen extends StatelessWidget {
               id: 'inventory.search',
               semanticLabel: 'Eşya Ara',
               normalizedRect: const Rect.fromLTWH(0.045, 0.244, 0.374, 0.037),
-              callback: onSearch,
+              callback: itemOwner == null
+                  ? onSearch
+                  : () => _openSearch(context),
             ),
             _hotspot(
               id: 'inventory.filter',
               semanticLabel: 'Filtre',
               normalizedRect: const Rect.fromLTWH(0.440, 0.244, 0.185, 0.037),
-              callback: onFilter,
+              callback: itemOwner == null
+                  ? onFilter
+                  : () => _openFilter(context),
             ),
             _hotspot(
               id: 'inventory.sort',
               semanticLabel: 'Sırala',
               normalizedRect: const Rect.fromLTWH(0.634, 0.244, 0.180, 0.037),
-              callback: onSort,
+              callback: itemOwner == null ? onSort : () => _openSort(context),
             ),
             _viewHotspot(
               mode: InventoryViewMode.grid,
@@ -214,6 +330,12 @@ class InventoryScreen extends StatelessWidget {
               semanticLabel: 'Toplu İşlemler',
               normalizedRect: const Rect.fromLTWH(0.646, 0.855, 0.302, 0.042),
               callback: onBulkActions,
+            ),
+            _hotspot(
+              id: 'inventory.crafting',
+              semanticLabel: 'Rün Dövme',
+              normalizedRect: const Rect.fromLTWH(.05, .855, .31, .04),
+              callback: onCrafting,
             ),
             _rootHotspot(
               destination: InventoryRootDestination.home,
@@ -245,4 +367,49 @@ class InventoryScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+class _InventoryOwnedPanel extends StatelessWidget {
+  const _InventoryOwnedPanel({required this.owner});
+
+  final HeroItemOwner owner;
+
+  @override
+  Widget build(BuildContext context) => DecoratedBox(
+    decoration: BoxDecoration(
+      color: const Color(0xF0081A30),
+      border: Border.all(color: const Color(0xFFD8B873)),
+      borderRadius: BorderRadius.circular(12),
+    ),
+    child: Column(
+      children: [
+        Text(
+          '${owner.selectedCategory.name.toUpperCase()} • ${owner.visibleItems.length} kayıt • ${owner.viewMode.name}'
+          '${owner.selectedItem == null ? '' : ' • ${owner.selectedItem!.title} ×${owner.selectedItem!.quantity}'}',
+          key: const ValueKey('inventory-state-summary'),
+          style: const TextStyle(color: Color(0xFFFFD991)),
+        ),
+        if (owner.visibleItems.isEmpty)
+          const Expanded(
+            child: Center(
+              child: Text(
+                'Doğrulanmış sahip olunan eşya yok',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          )
+        else
+          for (final item in owner.visibleItems.take(16))
+            Expanded(
+              child: Center(
+                child: Text(
+                  '${item.title} ×${item.quantity}',
+                  key: ValueKey('inventory-owned-${item.id}'),
+                  style: const TextStyle(color: Colors.white),
+                ),
+              ),
+            ),
+      ],
+    ),
+  );
 }
