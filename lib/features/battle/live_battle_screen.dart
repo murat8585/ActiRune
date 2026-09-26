@@ -14,6 +14,7 @@ class LiveBattleScreen extends StatefulWidget {
   const LiveBattleScreen({
     super.key,
     required this.session,
+    required this.combat,
     required this.onOpenFormCoach,
     required this.onVictory,
     this.cameraEnabled = true,
@@ -26,6 +27,7 @@ class LiveBattleScreen extends StatefulWidget {
   static const artworkSize = Size(941, 1672);
 
   final BattleSessionEngine session;
+  final CombatEngine combat;
   final VoidCallback onOpenFormCoach;
   final VoidCallback onVictory;
   final bool cameraEnabled;
@@ -40,7 +42,6 @@ class LiveBattleScreen extends StatefulWidget {
 
 class _LiveBattleScreenState extends State<LiveBattleScreen>
     with WidgetsBindingObserver {
-  late final CombatEngine _combat;
   late final VerifiedMovementRouter _movementRouter;
   PoseCameraController? _poseCamera;
   bool _cameraStartPending = false;
@@ -49,10 +50,9 @@ class _LiveBattleScreenState extends State<LiveBattleScreen>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    _combat = CombatEngine();
     _movementRouter = VerifiedMovementRouter(
       session: widget.session,
-      combat: _combat,
+      combat: widget.combat,
     );
     if (widget.session.snapshot.phase != BattleSessionPhase.liveBattle) {
       widget.session.startLiveBattle();
@@ -86,7 +86,6 @@ class _LiveBattleScreenState extends State<LiveBattleScreen>
     final camera = _poseCamera;
     _poseCamera = null;
     if (camera != null) unawaited(camera.dispose());
-    _combat.dispose();
     super.dispose();
   }
 
@@ -121,7 +120,7 @@ class _LiveBattleScreenState extends State<LiveBattleScreen>
   void _acceptVerifiedRep(VerifiedRep rep) {
     if (!mounted || !_movementRouter.route(rep)) return;
 
-    if (_combat.snapshot.bossHp <= 0) {
+    if (widget.combat.snapshot.bossHp <= 0) {
       widget.session.markVictory();
       _stopCamera();
       widget.onVictory();

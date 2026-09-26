@@ -2,6 +2,7 @@ import 'package:actirune/features/battle/battle_flow_host.dart';
 import 'package:actirune/features/battle/battle_prep_screen.dart';
 import 'package:actirune/features/battle/battle_session_engine.dart';
 import 'package:actirune/features/battle/camera_prep_screen.dart';
+import 'package:actirune/features/battle/combat/combat_engine.dart';
 import 'package:actirune/features/battle/defeat_screen.dart';
 import 'package:actirune/features/battle/form_coach_screen.dart';
 import 'package:actirune/features/battle/live_battle_screen.dart';
@@ -24,6 +25,7 @@ void main() {
     return MaterialApp(
       home: BattleFlowHost(
         session: session,
+        combat: CombatEngine(bossMaxHp: 1000, damagePerVerifiedRep: 100),
         cameraReadiness: readiness,
         cameraEnabled: false,
         onRewardedRetryRequested: onRewardedRetryRequested,

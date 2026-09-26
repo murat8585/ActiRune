@@ -16,13 +16,17 @@ class CombatSnapshot {
 }
 
 class CombatEngine extends ChangeNotifier {
-  CombatEngine({this.bossMaxHp = 2000, this.damagePerVerifiedRep = 100})
+  CombatEngine({required this.bossMaxHp, required this.damagePerVerifiedRep})
     : _snapshot = CombatSnapshot(
         bossHp: bossMaxHp,
         bossMaxHp: bossMaxHp,
         verifiedReps: 0,
         combo: 0,
-      );
+      ) {
+    if (bossMaxHp <= 0 || damagePerVerifiedRep <= 0) {
+      throw ArgumentError('Combat values must be positive');
+    }
+  }
 
   final int bossMaxHp;
   final int damagePerVerifiedRep;

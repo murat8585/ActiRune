@@ -4,9 +4,11 @@ import 'package:flutter/material.dart';
 
 import '../../core/widgets/feature_unavailable_dialog.dart';
 import 'battle_flow_host.dart';
+import 'battle_encounter_definition.dart';
 import 'battle_prep_screen.dart';
 import 'battle_session_engine.dart';
 import 'camera_prep_screen.dart';
+import 'combat/combat_engine.dart';
 
 typedef BattleRewardedRetryRequest = Future<bool> Function();
 
@@ -18,7 +20,7 @@ typedef BattleRewardedRetryRequest = Future<bool> Function();
 class BattleScreen extends StatefulWidget {
   const BattleScreen({
     super.key,
-    required this.movement,
+    required this.encounter,
     this.cameraReadiness = CameraPrepReadiness.checking,
     this.cameraEnabled = true,
     this.requiredPlankHoldDuration,
@@ -38,7 +40,7 @@ class BattleScreen extends StatefulWidget {
     this.onDefeatViewTactics,
   });
 
-  final VerifiedMovementType movement;
+  final BattleEncounterDefinition encounter;
   final CameraPrepReadiness cameraReadiness;
   final bool cameraEnabled;
 
@@ -70,16 +72,22 @@ class BattleScreen extends StatefulWidget {
 
 class _BattleScreenState extends State<BattleScreen> {
   late final BattleSessionEngine _session;
+  late final CombatEngine _combat;
 
   @override
   void initState() {
     super.initState();
-    _session = BattleSessionEngine()..prepare(widget.movement);
+    _session = BattleSessionEngine()..prepare(widget.encounter.movement);
+    _combat = CombatEngine(
+      bossMaxHp: widget.encounter.enemyMaxHp,
+      damagePerVerifiedRep: widget.encounter.damagePerVerifiedRep,
+    );
   }
 
   @override
   void dispose() {
     _session.dispose();
+    _combat.dispose();
     super.dispose();
   }
 
@@ -130,13 +138,14 @@ class _BattleScreenState extends State<BattleScreen> {
     final rewarded = await request();
     if (!mounted || !rewarded) return;
 
-    _session.restartAfterSuccessfulRewardedAd();
+    if (_session.restartAfterSuccessfulRewardedAd()) _combat.reset();
   }
 
   @override
   Widget build(BuildContext context) {
     return BattleFlowHost(
       session: _session,
+      combat: _combat,
       cameraReadiness: widget.cameraReadiness,
       cameraEnabled: widget.cameraEnabled,
       requiredPlankHoldDuration: widget.requiredPlankHoldDuration,

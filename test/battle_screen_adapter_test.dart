@@ -1,5 +1,6 @@
 import 'package:actirune/core/widgets/feature_unavailable_dialog.dart';
 import 'package:actirune/features/battle/battle_flow_host.dart';
+import 'package:actirune/features/battle/battle_encounter_definition.dart';
 import 'package:actirune/features/battle/battle_prep_screen.dart';
 import 'package:actirune/features/battle/battle_screen.dart';
 import 'package:actirune/features/battle/battle_session_engine.dart';
@@ -18,7 +19,14 @@ void main() {
   }) {
     return MaterialApp(
       home: BattleScreen(
-        movement: VerifiedMovementType.squat,
+        encounter: BattleEncounterDefinition(
+          encounterId: 'fixture-encounter',
+          enemyId: 'fixture-enemy',
+          contentVersion: 'test-only',
+          movement: VerifiedMovementType.squat,
+          enemyMaxHp: 1000,
+          damagePerVerifiedRep: 100,
+        ),
         cameraReadiness: readiness,
         cameraEnabled: false,
         onExitEncounter: onExitEncounter,

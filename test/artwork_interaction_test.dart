@@ -1,4 +1,5 @@
 import 'package:actirune/features/battle/battle_session_engine.dart';
+import 'package:actirune/features/battle/combat/combat_engine.dart';
 import 'package:actirune/features/battle/live_battle_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -14,6 +15,7 @@ void main() {
     return MaterialApp(
       home: LiveBattleScreen(
         session: session,
+        combat: CombatEngine(bossMaxHp: 1000, damagePerVerifiedRep: 100),
         cameraEnabled: false,
         onOpenFormCoach: onOpenFormCoach ?? () {},
         onVictory: onVictory ?? () {},

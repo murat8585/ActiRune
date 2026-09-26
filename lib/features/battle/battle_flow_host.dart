@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'battle_prep_screen.dart';
 import 'battle_session_engine.dart';
 import 'camera_prep_screen.dart';
+import 'combat/combat_engine.dart';
 import 'defeat_screen.dart';
 import 'form_coach_screen.dart';
 import 'live_battle_screen.dart';
@@ -12,6 +13,7 @@ class BattleFlowHost extends StatelessWidget {
   const BattleFlowHost({
     super.key,
     required this.session,
+    required this.combat,
     required this.cameraReadiness,
     this.cameraEnabled = true,
     this.requiredPlankHoldDuration,
@@ -42,6 +44,7 @@ class BattleFlowHost extends StatelessWidget {
   });
 
   final BattleSessionEngine session;
+  final CombatEngine combat;
   final CameraPrepReadiness cameraReadiness;
   final bool cameraEnabled;
   final Duration? requiredPlankHoldDuration;
@@ -112,6 +115,7 @@ class BattleFlowHost extends StatelessWidget {
               LiveBattleScreen(
                 key: const ValueKey('battle-flow.live-battle'),
                 session: session,
+                combat: combat,
                 cameraEnabled: cameraEnabled,
                 requiredPlankHoldDuration: requiredPlankHoldDuration,
                 onOpenFormCoach: onFormCoachOpened ?? _noop,
