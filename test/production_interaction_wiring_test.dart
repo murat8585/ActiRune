@@ -8,7 +8,7 @@ import 'package:actirune/features/home/daily_summary_popup.dart';
 import 'package:actirune/features/home/event_detail_popup.dart';
 import 'package:actirune/features/home/events_screen.dart';
 import 'package:actirune/features/home/home_screen.dart';
-import 'package:actirune/features/home/rune_inbox_preview_screen.dart';
+import 'package:actirune/features/home/rune_inbox_screen.dart';
 import 'package:actirune/features/home/rune_shrine_ready_screen.dart';
 import 'package:actirune/features/profile/achievements_screen.dart';
 import 'package:actirune/features/profile/profile_screen.dart';
@@ -113,8 +113,8 @@ void main() {
       find.byKey(const ValueKey('artwork-hotspot-home.messages')),
     );
     await tester.pumpAndSettle();
-    expect(find.byType(RuneInboxPreviewScreen), findsOneWidget);
-    await tester.tap(find.byKey(const ValueKey('rune-inbox-preview-back')));
+    expect(find.byType(RuneInboxScreen), findsOneWidget);
+    await tester.tap(find.byKey(const ValueKey('rune-inbox-back')));
     await tester.pumpAndSettle();
 
     await tester.tap(

@@ -18,8 +18,8 @@ import '../features/home/event_detail_popup.dart';
 import '../features/home/events_screen.dart';
 import '../features/home/home_screen.dart';
 import '../features/home/home_preview_dialog.dart';
-import '../features/home/quest_center_preview_screen.dart';
-import '../features/home/rune_inbox_preview_screen.dart';
+import '../features/home/quest_center_screen.dart';
+import '../features/home/rune_inbox_screen.dart';
 import '../features/home/rune_shrine_ready_screen.dart';
 import '../features/profile/achievements_screen.dart';
 import '../features/profile/player_level_screen.dart';
@@ -32,7 +32,9 @@ import '../features/profile/settings_notifications_screen.dart';
 import '../features/profile/settings_permissions_screen.dart';
 import '../features/profile/settings_privacy_screen.dart';
 import '../features/quests/daily_quests_screen.dart';
+import '../features/quests/local_quest_state.dart';
 import '../features/quests/quest_chain_screen.dart';
+import '../features/quests/weekly_quests_screen.dart';
 import '../features/shop/pro_paywall_screen.dart';
 import '../features/shop/shop_screen.dart';
 import '../features/social/social_screen.dart';
@@ -67,6 +69,13 @@ class MainShell extends StatefulWidget {
 
 class _MainShellState extends State<MainShell> {
   _ShellDestination destination = _ShellDestination.home;
+  final LocalQuestOwner _questOwner = LocalQuestOwner();
+
+  @override
+  void dispose() {
+    _questOwner.dispose();
+    super.dispose();
+  }
 
   bool get _battleAvailable => widget.battleRootBuilder != null;
 
@@ -151,21 +160,23 @@ class _MainShellState extends State<MainShell> {
     );
   }
 
-  Future<void> _openRuneInboxPreview(BuildContext context) async {
+  Future<void> _openRuneInbox(BuildContext context) async {
     await Navigator.of(context).push<void>(
       MaterialPageRoute<void>(
-        builder: (routeContext) => RuneInboxPreviewScreen(
-          onBack: () => Navigator.of(routeContext).pop(),
-        ),
+        builder: (routeContext) =>
+            RuneInboxScreen(onBack: () => Navigator.of(routeContext).pop()),
       ),
     );
   }
 
-  Future<void> _openQuestCenterPreview(BuildContext context) async {
+  Future<void> _openQuestCenter(BuildContext context) async {
     await Navigator.of(context).push<void>(
       MaterialPageRoute<void>(
-        builder: (routeContext) => QuestCenterPreviewScreen(
+        builder: (routeContext) => QuestCenterScreen(
           onBack: () => Navigator.of(routeContext).pop(),
+          onDaily: () => _openDailyQuests(routeContext),
+          onWeekly: () => _openWeeklyQuests(routeContext),
+          questOwner: _questOwner,
         ),
       ),
     );
@@ -223,16 +234,49 @@ class _MainShellState extends State<MainShell> {
     await Navigator.of(context).push<void>(
       MaterialPageRoute<void>(
         builder: (routeContext) => DailyQuestsScreen(
-          onProgressReward: () =>
-              _showUnavailable(routeContext, 'Günlük Rün Sandığı'),
-          onClaimExploreReward: () =>
-              _showUnavailable(routeContext, 'Keşif Ödülü'),
-          onClaimBattleReward: () =>
-              _showUnavailable(routeContext, 'Savaş Ödülü'),
+          questOwner: _questOwner,
+          onProgressReward: () => _showUnavailable(
+            routeContext,
+            'Günlük Rün Sandığı',
+            message:
+                'Ödül işlemi P6B aşamasında bağlanacak. Herhangi bir ödül verilmedi.',
+          ),
+          onClaimExploreReward: () => _showUnavailable(
+            routeContext,
+            'Keşif Ödülü',
+            message:
+                'Ödül işlemi P6B aşamasında bağlanacak. Herhangi bir ödül verilmedi.',
+          ),
+          onClaimBattleReward: () => _showUnavailable(
+            routeContext,
+            'Savaş Ödülü',
+            message:
+                'Ödül işlemi P6B aşamasında bağlanacak. Herhangi bir ödül verilmedi.',
+          ),
           onFreeTaskChange: () =>
               _showUnavailable(routeContext, 'Görev Değiştirme'),
           onTaskChangeHelp: () =>
               _showUnavailable(routeContext, 'Görev Değiştirme Yardımı'),
+          onRootNavigate: (next) =>
+              _closeChildStackAndSelect(routeContext, next.name),
+          battleRootEnabled: true,
+        ),
+      ),
+    );
+  }
+
+  Future<void> _openWeeklyQuests(BuildContext context) async {
+    await Navigator.of(context).push<void>(
+      MaterialPageRoute<void>(
+        builder: (routeContext) => WeeklyQuestsScreen(
+          questOwner: _questOwner,
+          onDailyStreak: () => _openDailyStreakPreview(routeContext),
+          onClaimQuestChainReward: () => _showUnavailable(
+            routeContext,
+            'Haftalık Görev Ödülü',
+            message:
+                'Ödül işlemi P6B aşamasında bağlanacak. Herhangi bir ödül verilmedi.',
+          ),
           onRootNavigate: (next) =>
               _closeChildStackAndSelect(routeContext, next.name),
           battleRootEnabled: true,
@@ -694,8 +738,8 @@ class _MainShellState extends State<MainShell> {
     return [
       HomeScreen(
         onDailyStreak: () => _openDailyStreakPreview(context),
-        onMessages: () => _openRuneInboxPreview(context),
-        onQuests: () => _openQuestCenterPreview(context),
+        onMessages: () => _openRuneInbox(context),
+        onQuests: () => _openQuestCenter(context),
         onEvents: () => _openEvents(context),
         onSettings: () => _openSettingsHub(context),
         onWorldMap: () => _openWorldProgression(context),

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../../core/widgets/artwork_interaction_surface.dart';
+import 'local_quest_panel.dart';
+import 'local_quest_state.dart';
 
 enum DailyQuestsRootDestination { home, adventure, battle, hero, profile }
 
@@ -20,6 +22,7 @@ class DailyQuestsScreen extends StatelessWidget {
     this.onTaskChangeHelp,
     this.onRootNavigate,
     this.battleRootEnabled = true,
+    this.questOwner,
   });
 
   static const artworkAsset =
@@ -34,6 +37,7 @@ class DailyQuestsScreen extends StatelessWidget {
   final VoidCallback? onTaskChangeHelp;
   final ValueChanged<DailyQuestsRootDestination>? onRootNavigate;
   final bool battleRootEnabled;
+  final LocalQuestOwner? questOwner;
 
   ArtworkHotspot _hotspot({
     required String id,
@@ -70,6 +74,21 @@ class DailyQuestsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (questOwner != null) {
+      return AnimatedBuilder(
+        animation: questOwner!,
+        builder: (context, _) => _buildScreen(),
+      );
+    }
+    return _buildScreen();
+  }
+
+  Widget _buildScreen() {
+    final records =
+        questOwner?.recordsFor(QuestType.daily) ??
+        LocalQuestOwner.sampleRecords
+            .where((record) => record.type == QuestType.daily)
+            .toList();
     return Scaffold(
       backgroundColor: Colors.black,
       body: SafeArea(
@@ -78,6 +97,13 @@ class DailyQuestsScreen extends StatelessWidget {
         child: ArtworkInteractionSurface(
           assetPath: artworkAsset,
           sourceSize: artworkSize,
+          overlays: [
+            ArtworkOverlay(
+              id: 'daily-owned-state',
+              normalizedRect: const Rect.fromLTWH(.04, .205, .92, .655),
+              child: LocalQuestPanel(type: QuestType.daily, records: records),
+            ),
+          ],
           hotspots: [
             _hotspot(
               id: 'daily-quests.progress-reward',
@@ -88,7 +114,7 @@ class DailyQuestsScreen extends StatelessWidget {
                 0.3850,
                 0.1350,
               ),
-              callback: onProgressReward,
+              callback: questOwner == null ? onProgressReward : null,
             ),
             _hotspot(
               id: 'daily-quests.claim-explore',
@@ -99,7 +125,7 @@ class DailyQuestsScreen extends StatelessWidget {
                 0.1850,
                 0.0570,
               ),
-              callback: onClaimExploreReward,
+              callback: questOwner == null ? onClaimExploreReward : null,
             ),
             _hotspot(
               id: 'daily-quests.claim-battle',
@@ -110,7 +136,7 @@ class DailyQuestsScreen extends StatelessWidget {
                 0.1850,
                 0.0570,
               ),
-              callback: onClaimBattleReward,
+              callback: questOwner == null ? onClaimBattleReward : null,
             ),
             _hotspot(
               id: 'daily-quests.free-change',
@@ -121,7 +147,7 @@ class DailyQuestsScreen extends StatelessWidget {
                 0.3550,
                 0.0500,
               ),
-              callback: onFreeTaskChange,
+              callback: questOwner == null ? onFreeTaskChange : null,
             ),
             _hotspot(
               id: 'daily-quests.change-help',
@@ -132,7 +158,7 @@ class DailyQuestsScreen extends StatelessWidget {
                 0.0650,
                 0.0500,
               ),
-              callback: onTaskChangeHelp,
+              callback: questOwner == null ? onTaskChangeHelp : null,
             ),
             _rootHotspot(
               destination: DailyQuestsRootDestination.home,

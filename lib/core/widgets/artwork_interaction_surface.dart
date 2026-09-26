@@ -23,11 +23,13 @@ class ArtworkOverlay {
     required this.id,
     required this.normalizedRect,
     required this.child,
+    this.interactive = false,
   });
 
   final String id;
   final Rect normalizedRect;
   final Widget child;
+  final bool interactive;
 }
 
 /// Renders an approved artwork asset without stretching it and places
@@ -176,6 +178,7 @@ class _ArtworkOverlayRegion extends StatelessWidget {
     return Positioned.fromRect(
       rect: _normalizedRectInImage(imageRect, overlay.normalizedRect),
       child: IgnorePointer(
+        ignoring: !overlay.interactive,
         child: KeyedSubtree(
           key: ValueKey('artwork-overlay-${overlay.id}'),
           child: overlay.child,

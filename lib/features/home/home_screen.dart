@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 
 import '../../core/widgets/artwork_interaction_surface.dart';
+import '../../core/widgets/artwork_sample_mask.dart';
 
 enum HomeRootDestination { home, adventure, battle, hero, profile }
 
 /// Canonical Home anchor from VIS_0354.
 ///
-/// The artwork itself is the UI. Visible actions are exposed only through
-/// transparent hotspots; no duplicate Flutter controls are drawn on top.
+/// Approved artwork remains the shell. Overlays conceal baked example values
+/// for which the app has no account/activity owner.
 class HomeScreen extends StatelessWidget {
   const HomeScreen({
     super.key,
@@ -82,6 +83,53 @@ class HomeScreen extends StatelessWidget {
         child: ArtworkInteractionSurface(
           assetPath: artworkAsset,
           sourceSize: artworkSize,
+          overlays: const [
+            ArtworkOverlay(
+              id: 'home-profile-sample',
+              normalizedRect: Rect.fromLTWH(.177, .025, .16, .065),
+              child: ArtworkSampleMask(label: 'Profil verisi\nyok'),
+            ),
+            ArtworkOverlay(
+              id: 'home-streak-sample',
+              normalizedRect: Rect.fromLTWH(.78, .028, .13, .057),
+              child: ArtworkSampleMask(label: 'Seri verisi\nyok'),
+            ),
+            ArtworkOverlay(
+              id: 'home-message-badge',
+              normalizedRect: Rect.fromLTWH(.094, .131, .035, .019),
+              child: ColoredBox(color: Color(0xFF071522)),
+            ),
+            ArtworkOverlay(
+              id: 'home-quest-badge',
+              normalizedRect: Rect.fromLTWH(.094, .202, .035, .019),
+              child: ColoredBox(color: Color(0xFF071522)),
+            ),
+            ArtworkOverlay(
+              id: 'home-activity-samples',
+              normalizedRect: Rect.fromLTWH(.04, .495, .92, .115),
+              child: ArtworkSampleMask(
+                label:
+                    'Bugünkü hareket verisi yok\nAdım • doğrulanmış hareket • aktif dakika • Rune Energy',
+              ),
+            ),
+            ArtworkOverlay(
+              id: 'home-world-progress-samples',
+              normalizedRect: Rect.fromLTWH(.045, .702, .91, .089),
+              child: ArtworkSampleMask(
+                label: 'Dünya ilerlemesi ve sonraki karşılaşma: veri yok',
+              ),
+            ),
+            ArtworkOverlay(
+              id: 'home-reward-badge',
+              normalizedRect: Rect.fromLTWH(.91, .812, .035, .02),
+              child: ColoredBox(color: Color(0xFF071522)),
+            ),
+            ArtworkOverlay(
+              id: 'home-reward-subtitle',
+              normalizedRect: Rect.fromLTWH(.68, .845, .24, .02),
+              child: ArtworkSampleMask(label: 'Ödül verisi yok'),
+            ),
+          ],
           hotspots: [
             _hotspot(
               id: 'home.daily-streak',

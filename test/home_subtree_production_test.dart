@@ -5,8 +5,8 @@ import 'package:actirune/features/adventure/world_progression_screen.dart';
 import 'package:actirune/features/hero/hero_screen.dart';
 import 'package:actirune/features/home/daily_streak_preview_screen.dart';
 import 'package:actirune/features/home/daily_summary_popup.dart';
-import 'package:actirune/features/home/quest_center_preview_screen.dart';
-import 'package:actirune/features/home/rune_inbox_preview_screen.dart';
+import 'package:actirune/features/home/quest_center_screen.dart';
+import 'package:actirune/features/home/rune_inbox_screen.dart';
 import 'package:actirune/features/home/event_detail_popup.dart';
 import 'package:actirune/features/home/events_screen.dart';
 import 'package:actirune/features/home/home_preview_dialog.dart';
@@ -77,14 +77,14 @@ void main() {
 
     await pumpHome(tester);
     await tapHotspot(tester, 'home.messages');
-    expect(find.byType(RuneInboxPreviewScreen), findsOneWidget);
-    await tester.tap(find.byKey(const ValueKey('rune-inbox-preview-back')));
+    expect(find.byType(RuneInboxScreen), findsOneWidget);
+    await tester.tap(find.byKey(const ValueKey('rune-inbox-back')));
     await tester.pumpAndSettle();
 
     await pumpHome(tester);
     await tapHotspot(tester, 'home.quests');
-    expect(find.byType(QuestCenterPreviewScreen), findsOneWidget);
-    await tester.tap(find.byKey(const ValueKey('quest-center-preview-back')));
+    expect(find.byType(QuestCenterScreen), findsOneWidget);
+    await tester.tap(find.byKey(const ValueKey('quest-center-back')));
     await tester.pumpAndSettle();
 
     await pumpHome(tester);
