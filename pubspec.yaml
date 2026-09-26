@@ -13,17 +13,19 @@ dependencies:
   camera: ^0.12.1
   google_mlkit_pose_detection: ^0.16.1
   go_router: ^18.0.1
+  shared_preferences: ^2.5.5
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
+  crypto: ^3.0.6
 
 flutter:
   uses-material-design: true
   assets:
     - visual_authority/20260921/final_remaining_13/05_ONBOARDING_WELCOME_FINAL.png
-    - visual_authority/20260921/current/01_CANONICAL_FINAL/VIS_0180__P1_FIRST_CALIBRATION_FINAL.png
+    - visual_authority/20260926/final/VIS_20260926_FIRST_CALIBRATION_FINAL.png
     - visual_authority/20260921/final_remaining_13/06_CALIBRATION_RESULT_FINAL.png
     - visual_authority/20260921/current/01_CANONICAL_FINAL/VIS_0227__P1_DAILY_QUESTS_FINAL.png
     - visual_authority/20260921/current/01_CANONICAL_FINAL/VIS_0228__P1_WEEKLY_QUESTS_FINAL.png

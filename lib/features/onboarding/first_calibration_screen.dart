@@ -10,16 +10,20 @@ class FirstCalibrationScreen extends StatelessWidget {
   const FirstCalibrationScreen({
     super.key,
     required this.onStartCalibration,
+    this.onSkipCalibration,
     this.enabled = true,
+    this.skipEnabled = true,
   });
 
   static const artworkAsset =
-      'visual_authority/20260921/current/01_CANONICAL_FINAL/'
-      'VIS_0180__P1_FIRST_CALIBRATION_FINAL.png';
+      'visual_authority/20260926/final/'
+      'VIS_20260926_FIRST_CALIBRATION_FINAL.png';
   static const artworkSize = Size(941, 1672);
 
   final VoidCallback onStartCalibration;
+  final VoidCallback? onSkipCalibration;
   final bool enabled;
+  final bool skipEnabled;
 
   @override
   Widget build(BuildContext context) {
@@ -29,10 +33,17 @@ class FirstCalibrationScreen extends StatelessWidget {
       hotspots: [
         ArtworkHotspot(
           id: 'first-calibration.start',
-          semanticLabel: 'Kalibrasyonu Başlat',
-          normalizedRect: const Rect.fromLTWH(0.190, 0.843, 0.620, 0.061),
+          semanticLabel: 'Kalibrasyona Başla',
+          normalizedRect: const Rect.fromLTWH(0.210, 0.853, 0.580, 0.057),
           enabled: enabled,
           onTap: onStartCalibration,
+        ),
+        ArtworkHotspot(
+          id: 'first-calibration.skip',
+          semanticLabel: 'Şimdilik Geç',
+          normalizedRect: const Rect.fromLTWH(0.310, 0.927, 0.380, 0.034),
+          enabled: skipEnabled && onSkipCalibration != null,
+          onTap: onSkipCalibration ?? () {},
         ),
       ],
     );

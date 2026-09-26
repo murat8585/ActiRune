@@ -17,6 +17,7 @@ class OnboardingScreen extends StatefulWidget {
     this.onAccessibility,
     this.onRunCalibration,
     this.onCalibrationReady,
+    this.onSkipCalibration,
     this.onEnterApp,
   });
 
@@ -33,6 +34,7 @@ class OnboardingScreen extends StatefulWidget {
   /// Receives the non-medical starting profile only after a fail-closed
   /// calibration assessment succeeds. Persistence remains caller-owned.
   final ValueChanged<StartingCalibrationProfile>? onCalibrationReady;
+  final Future<void> Function()? onSkipCalibration;
 
   /// Optional seam for tests/embedding. Production falls back to `/app`.
   final VoidCallback? onEnterApp;
@@ -44,6 +46,7 @@ class OnboardingScreen extends StatefulWidget {
 class _OnboardingScreenState extends State<OnboardingScreen> {
   _OnboardingPhase _phase = _OnboardingPhase.welcome;
   bool _calibrationInFlight = false;
+  bool _skipInFlight = false;
 
   void _showFirstCalibration() {
     if (_phase == _OnboardingPhase.firstCalibration) return;
@@ -93,6 +96,24 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     context.go('/app');
   }
 
+  Future<void> _skipCalibration() async {
+    final skip = widget.onSkipCalibration;
+    if (skip == null || _skipInFlight) return;
+    setState(() => _skipInFlight = true);
+    try {
+      await skip();
+      if (mounted) _enterApp();
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Atlama kaydedilemedi. Yeniden dene.')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _skipInFlight = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -106,6 +127,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         _OnboardingPhase.firstCalibration => FirstCalibrationScreen(
           enabled: widget.onRunCalibration != null && !_calibrationInFlight,
           onStartCalibration: _runCalibration,
+          onSkipCalibration: widget.onSkipCalibration == null
+              ? null
+              : _skipCalibration,
+          skipEnabled: !_skipInFlight,
         ),
         _OnboardingPhase.calibrationResult => CalibrationResultScreen(
           onStartAdventure: _enterApp,

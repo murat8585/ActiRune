@@ -11,6 +11,7 @@ import '../pose/detector/verified_rep.dart';
 import '../pose/provider/pose_camera_controller.dart';
 import '../pose/provider/pose_models.dart';
 import 'calibration_movement_sequence.dart';
+import 'calibration_readiness_gate.dart';
 import 'first_calibration_engine.dart';
 
 typedef CalibrationCameraSessionFactory =
@@ -80,6 +81,8 @@ class _FirstCalibrationFlowScreenState extends State<FirstCalibrationFlowScreen>
   bool _assessmentSubmitted = false;
   bool _poseDetected = false;
   bool _fullBodyReady = false;
+  final CalibrationReadinessGate _readiness = CalibrationReadinessGate();
+  Timer? _readinessTimer;
   String? _inputError;
   String? _settingsError;
   String? _lastAssessmentKey;
@@ -97,6 +100,7 @@ class _FirstCalibrationFlowScreenState extends State<FirstCalibrationFlowScreen>
 
   @override
   void dispose() {
+    _readinessTimer?.cancel();
     WidgetsBinding.instance.removeObserver(this);
     _goalController.dispose();
     _sessionMinutesController.dispose();
@@ -111,6 +115,13 @@ class _FirstCalibrationFlowScreenState extends State<FirstCalibrationFlowScreen>
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state != AppLifecycleState.resumed) {
+      _readinessTimer?.cancel();
+      _readinessTimer = null;
+      _readiness.reset();
+      _poseDetected = false;
+      _fullBodyReady = false;
+    }
     if (state == AppLifecycleState.resumed && _settingsOpened) {
       _settingsOpened = false;
       unawaited(_startCamera());
@@ -205,6 +216,7 @@ class _FirstCalibrationFlowScreenState extends State<FirstCalibrationFlowScreen>
       _assessmentSubmitted = false;
       _lastAssessmentKey = null;
     });
+    _readiness.reset();
     unawaited(_startCamera());
   }
 
@@ -218,6 +230,7 @@ class _FirstCalibrationFlowScreenState extends State<FirstCalibrationFlowScreen>
     await camera.start();
     if (!mounted) return;
     setState(() => _cameraStarting = false);
+    _updateReadiness();
     final error = camera.error;
     if (error != null) {
       _evaluateIncompleteAttempt();
@@ -235,6 +248,7 @@ class _FirstCalibrationFlowScreenState extends State<FirstCalibrationFlowScreen>
         _fullBodyReady = fullBodyReady;
       });
     }
+    _updateReadiness();
     final configurationError = sequence.configurationError;
     if (configurationError != null) {
       _evaluateIncompleteAttempt();
@@ -249,6 +263,39 @@ class _FirstCalibrationFlowScreenState extends State<FirstCalibrationFlowScreen>
     }
   }
 
+  void _updateReadiness() {
+    if (!mounted || _step != _CalibrationFlowStep.cameraPrep) return;
+    _readiness.update(
+      cameraReady: _cameraSession?.isReady == true,
+      poseDetected: _poseDetected,
+      fullBodyReady: _fullBodyReady,
+    );
+    if (_readiness.phase == CalibrationReadinessPhase.stabilizing &&
+        _readinessTimer == null) {
+      _readinessTimer = Timer.periodic(const Duration(milliseconds: 100), (_) {
+        if (!mounted || _step != _CalibrationFlowStep.cameraPrep) {
+          _readinessTimer?.cancel();
+          _readinessTimer = null;
+          return;
+        }
+        _readiness.update(
+          cameraReady: _cameraSession?.isReady == true,
+          poseDetected: _poseDetected,
+          fullBodyReady: _fullBodyReady,
+        );
+        if (_readiness.phase == CalibrationReadinessPhase.waitingForCamera ||
+            _readiness.phase == CalibrationReadinessPhase.waitingForPose) {
+          _readinessTimer?.cancel();
+          _readinessTimer = null;
+        } else if (_readiness.advance(const Duration(milliseconds: 100))) {
+          _beginMovements();
+        }
+        if (mounted) setState(() {});
+      });
+    }
+    setState(() {});
+  }
+
   void _beginMovements() {
     final sequence = _sequence;
     if (sequence == null ||
@@ -258,6 +305,8 @@ class _FirstCalibrationFlowScreenState extends State<FirstCalibrationFlowScreen>
       return;
     }
     sequence.enableCapture();
+    _readinessTimer?.cancel();
+    _readinessTimer = null;
     _cameraPoseIntroCompleted = true;
     setState(() {
       _step = _CalibrationFlowStep.movements;
@@ -319,6 +368,9 @@ class _FirstCalibrationFlowScreenState extends State<FirstCalibrationFlowScreen>
   }
 
   Future<void> _editInputs() async {
+    _readinessTimer?.cancel();
+    _readinessTimer = null;
+    _readiness.reset();
     final camera = _cameraSession;
     _cameraSession = null;
     await camera?.dispose();
@@ -618,21 +670,17 @@ class _FirstCalibrationFlowScreenState extends State<FirstCalibrationFlowScreen>
             key: const ValueKey('first-calibration.camera-guidance'),
           ),
           const SizedBox(height: 14),
-          SizedBox(
-            height: 52,
-            child: FilledButton(
-              key: const ValueKey('first-calibration.begin-movements'),
-              onPressed: cameraReady && _poseDetected && _fullBodyReady
-                  ? _beginMovements
-                  : null,
-              style: FilledButton.styleFrom(
-                backgroundColor: const Color(0xFF087BC1),
-                foregroundColor: Colors.white,
-                disabledBackgroundColor: const Color(0xFF23364D),
-              ),
-              child: const Text('Hareket testlerine başla'),
-            ),
-          ),
+          _messagePanel(switch (_readiness.phase) {
+            CalibrationReadinessPhase.waitingForCamera => 'Kamera bekleniyor',
+            CalibrationReadinessPhase.waitingForPose =>
+              'Tüm vücudun kadraja girmesi bekleniyor',
+            CalibrationReadinessPhase.stabilizing =>
+              'Algılama hazır · sabit kal',
+            CalibrationReadinessPhase.countdown =>
+              '${_readiness.countdownNumber}',
+            CalibrationReadinessPhase.movementCapture =>
+              'Hareket testi başladı',
+          }, key: const ValueKey('first-calibration.readiness-status')),
         ],
         if (isMovements) ...[
           const SizedBox(height: 12),

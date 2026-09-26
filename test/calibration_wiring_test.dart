@@ -6,6 +6,7 @@ import 'package:actirune/features/onboarding/calibration_result_screen.dart';
 import 'package:actirune/features/onboarding/first_calibration_engine.dart';
 import 'package:actirune/features/onboarding/first_calibration_flow_screen.dart';
 import 'package:actirune/features/onboarding/first_calibration_screen.dart';
+import 'package:actirune/features/onboarding/onboarding_screen.dart';
 import 'package:actirune/features/pose/detector/pose_rep_detector.dart';
 import 'package:actirune/features/pose/detector/verified_rep.dart';
 import 'package:actirune/features/pose/provider/pose_camera_controller.dart';
@@ -20,64 +21,45 @@ final _baseTime = DateTime.utc(2026, 9, 25);
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  testWidgets(
-    'root app enables First Calibration and starts the real camera flow',
-    (tester) async {
-      _FakeCameraSession? createdSession;
-      var factoryCalls = 0;
+  testWidgets('production root blocks legacy movement calibration until P5B', (
+    tester,
+  ) async {
+    var factoryCalls = 0;
 
-      await tester.pumpWidget(
-        ActiRuneApp(
-          requiredPlankHoldDuration: _testPlankDuration,
-          calibrationCameraSessionFactory:
-              ({
-                required detector,
-                required onVerifiedRep,
-                required onPoseFrame,
-              }) {
-                factoryCalls++;
-                return createdSession = _FakeCameraSession(
-                  detector: detector,
-                  onVerifiedRep: onVerifiedRep,
-                  onPoseFrame: onPoseFrame,
-                  startupFrame: _fullBodyFrame(at: _baseTime),
-                );
-              },
-        ),
-      );
-      await tester.pumpAndSettle();
+    await tester.pumpWidget(
+      ActiRuneApp(
+        requiredPlankHoldDuration: _testPlankDuration,
+        calibrationCameraSessionFactory:
+            ({
+              required detector,
+              required onVerifiedRep,
+              required onPoseFrame,
+            }) {
+              factoryCalls++;
+              return _FakeCameraSession(
+                detector: detector,
+                onVerifiedRep: onVerifiedRep,
+                onPoseFrame: onPoseFrame,
+                startupFrame: _fullBodyFrame(at: _baseTime),
+              );
+            },
+      ),
+    );
+    await tester.pumpAndSettle();
 
-      await _openCalibrationArtwork(tester);
-      final startHotspot = find.byKey(
-        const ValueKey('artwork-hotspot-first-calibration.start'),
-      );
-      expect(tester.widget<Semantics>(startHotspot).properties.enabled, isTrue);
-      await tester.tap(startHotspot);
-      await tester.pumpAndSettle();
+    await _openCalibrationArtwork(tester);
+    final startHotspot = find.byKey(
+      const ValueKey('artwork-hotspot-first-calibration.start'),
+    );
+    expect(tester.widget<Semantics>(startHotspot).properties.enabled, isTrue);
+    await tester.tap(startHotspot);
+    await tester.pumpAndSettle();
 
-      expect(find.byType(FirstCalibrationFlowScreen), findsOneWidget);
-      expect(factoryCalls, 0);
-
-      await _fillInputsAndSelectStandardMovements(tester);
-      await _tapVisible(
-        tester,
-        find.byKey(const ValueKey('first-calibration.prepare-camera')),
-      );
-      await tester.pumpAndSettle();
-
-      expect(factoryCalls, 1);
-      expect(createdSession!.startCalls, 1);
-      expect(
-        tester
-            .widget<FilledButton>(
-              find.byKey(const ValueKey('first-calibration.begin-movements')),
-            )
-            .onPressed,
-        isNotNull,
-      );
-      expect(find.byType(CalibrationResultScreen), findsNothing);
-    },
-  );
+    expect(find.byType(FirstCalibrationFlowScreen), findsNothing);
+    expect(factoryCalls, 0);
+    expect(find.textContaining('P5B'), findsOneWidget);
+    expect(find.byType(CalibrationResultScreen), findsNothing);
+  });
 
   testWidgets('camera permission denial cannot create a calibration result', (
     tester,
@@ -150,10 +132,14 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(session!.isReady, isTrue);
-    final begin = tester.widget<FilledButton>(
-      find.byKey(const ValueKey('first-calibration.begin-movements')),
+    expect(
+      find.byKey(const ValueKey('first-calibration.readiness-status')),
+      findsOneWidget,
     );
-    expect(begin.onPressed, isNull);
+    expect(
+      find.byKey(const ValueKey('first-calibration.active-movement')),
+      findsNothing,
+    );
     expect(find.byType(CalibrationResultScreen), findsNothing);
   });
 
@@ -182,11 +168,7 @@ void main() {
       find.byKey(const ValueKey('first-calibration.prepare-camera')),
     );
     await tester.pumpAndSettle();
-    await _tapVisible(
-      tester,
-      find.byKey(const ValueKey('first-calibration.begin-movements')),
-    );
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(seconds: 6));
 
     expect(session!.isReady, isTrue);
     expect(session!.capturedEvidence, isEmpty);
@@ -195,6 +177,71 @@ void main() {
       findsOneWidget,
     );
     expect(find.byType(CalibrationResultScreen), findsNothing);
+  });
+
+  testWidgets('fake camera countdown cancels on body loss and restarts', (
+    tester,
+  ) async {
+    _FakeCameraSession? session;
+    await _pumpApp(
+      tester,
+      sessionBuilder: (detector, onVerifiedRep, onPoseFrame) =>
+          session = _FakeCameraSession(
+            detector: detector,
+            onVerifiedRep: onVerifiedRep,
+            onPoseFrame: onPoseFrame,
+            startupFrame: _fullBodyFrame(at: _baseTime),
+          ),
+    );
+    await _openCalibrationArtwork(tester);
+    await tester.tap(
+      find.byKey(const ValueKey('artwork-hotspot-first-calibration.start')),
+    );
+    await tester.pumpAndSettle();
+    await _fillInputsAndSelectStandardMovements(tester);
+    await _tapVisible(
+      tester,
+      find.byKey(const ValueKey('first-calibration.prepare-camera')),
+    );
+    await tester.pump(const Duration(milliseconds: 1900));
+    expect(find.textContaining('sabit kal'), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('first-calibration.active-movement')),
+      findsNothing,
+    );
+    await tester.pump(const Duration(milliseconds: 100));
+    expect(find.text('3'), findsOneWidget);
+    session!.emit(PoseFrame(timestamp: _baseTime, joints: const {}));
+    await tester.pump();
+    expect(find.textContaining('bekleniyor'), findsWidgets);
+    await tester.pump(const Duration(seconds: 3));
+    expect(
+      find.byKey(const ValueKey('first-calibration.active-movement')),
+      findsNothing,
+    );
+    session!.emit(
+      _fullBodyFrame(at: _baseTime.add(const Duration(seconds: 4))),
+    );
+    session!.emit(
+      _fullBodyFrame(at: _baseTime.add(const Duration(seconds: 5))),
+    );
+    await tester.pump(const Duration(milliseconds: 1900));
+    expect(
+      find.byKey(const ValueKey('first-calibration.active-movement')),
+      findsNothing,
+    );
+    await tester.pump(const Duration(milliseconds: 100));
+    expect(find.text('3'), findsOneWidget);
+    await tester.pump(const Duration(seconds: 1));
+    expect(find.text('2'), findsOneWidget);
+    await tester.pump(const Duration(seconds: 1));
+    expect(find.text('1'), findsOneWidget);
+    await tester.pump(const Duration(seconds: 1));
+    expect(
+      find.byKey(const ValueKey('first-calibration.active-movement')),
+      findsOneWidget,
+    );
+    expect(session!.capturedEvidence, isEmpty);
   });
 
   testWidgets('four detector-verified movements open the ready result', (
@@ -222,11 +269,7 @@ void main() {
       find.byKey(const ValueKey('first-calibration.prepare-camera')),
     );
     await tester.pumpAndSettle();
-    await _tapVisible(
-      tester,
-      find.byKey(const ValueKey('first-calibration.begin-movements')),
-    );
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(seconds: 6));
 
     for (final frame in _verifiedFramesForAllMovements()) {
       session!.emit(frame);
@@ -347,11 +390,29 @@ Future<void> _pumpApp(
   sessionBuilder,
 }) async {
   await tester.pumpWidget(
-    ActiRuneApp(
-      requiredPlankHoldDuration: _testPlankDuration,
-      calibrationCameraSessionFactory:
-          ({required detector, required onVerifiedRep, required onPoseFrame}) =>
-              sessionBuilder(detector, onVerifiedRep, onPoseFrame),
+    MaterialApp(
+      home: Builder(
+        builder: (context) => OnboardingScreen(
+          onRunCalibration: () =>
+              Navigator.of(context).push<FirstCalibrationAssessment>(
+                MaterialPageRoute(
+                  builder: (_) => FirstCalibrationFlowScreen(
+                    requiredPlankHoldDuration: _testPlankDuration,
+                    cameraSessionFactory:
+                        ({
+                          required detector,
+                          required onVerifiedRep,
+                          required onPoseFrame,
+                        }) => sessionBuilder(
+                          detector,
+                          onVerifiedRep,
+                          onPoseFrame,
+                        ),
+                  ),
+                ),
+              ),
+        ),
+      ),
     ),
   );
   await tester.pumpAndSettle();
