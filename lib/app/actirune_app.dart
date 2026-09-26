@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -9,6 +10,13 @@ import '../features/onboarding/first_calibration_engine.dart';
 import '../features/onboarding/first_calibration_flow_screen.dart';
 import '../features/onboarding/onboarding_screen.dart';
 import 'main_shell.dart';
+
+const bool runtimeAuditSkipOnboarding =
+    kDebugMode &&
+    bool.fromEnvironment(
+      'ACTIRUNE_RUNTIME_AUDIT_SKIP_ONBOARDING',
+      defaultValue: false,
+    );
 
 class ActiRuneApp extends StatefulWidget {
   const ActiRuneApp({
@@ -28,7 +36,7 @@ class ActiRuneApp extends StatefulWidget {
 
 class _ActiRuneAppState extends State<ActiRuneApp> {
   late final GoRouter _router = GoRouter(
-    initialLocation: '/onboarding',
+    initialLocation: runtimeAuditSkipOnboarding ? '/app' : '/onboarding',
     routes: [
       GoRoute(
         path: '/onboarding',
