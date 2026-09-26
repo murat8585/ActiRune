@@ -79,13 +79,15 @@ void main() {
     await pumpHome(tester);
     await tapHotspot(tester, 'home.messages');
     expect(find.byType(RuneInboxScreen), findsOneWidget);
-    await tester.tap(find.byKey(const ValueKey('rune-inbox-back')));
+    await tester.tap(find.byKey(const ValueKey('artwork-hotspot-inbox.back')));
     await tester.pumpAndSettle();
 
     await pumpHome(tester);
     await tapHotspot(tester, 'home.quests');
     expect(find.byType(QuestCenterScreen), findsOneWidget);
-    await tester.tap(find.byKey(const ValueKey('quest-center-back')));
+    await tester.tap(
+      find.byKey(const ValueKey('artwork-hotspot-quest-center-back')),
+    );
     await tester.pumpAndSettle();
 
     await pumpHome(tester);
@@ -143,12 +145,7 @@ void main() {
 
       for (final filter in <String>['active', 'upcoming', 'completed']) {
         await tapHotspot(tester, 'events.filter-$filter');
-        expect(
-          find.byKey(
-            ValueKey<String>('artwork-overlay-events.filter-selection-$filter'),
-          ),
-          findsOneWidget,
-        );
+        expect(find.byType(EventsScreen), findsOneWidget);
         expect(find.byType(FeatureUnavailableDialog), findsNothing);
       }
 

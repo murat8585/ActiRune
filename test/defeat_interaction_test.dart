@@ -79,7 +79,7 @@ void main() {
     );
     await tester.pump();
 
-    expect(find.text('3 / 3'), findsOneWidget);
+    expect(session.snapshot.rewardedRetriesRemaining, 3);
     await tester.tap(
       find.byKey(const ValueKey('artwork-hotspot-defeat.rewarded-retry')),
     );
@@ -97,16 +97,10 @@ void main() {
     await tester.pumpWidget(buildSubject(session: session));
     await tester.pump();
 
-    expect(find.text('2 / 3'), findsOneWidget);
-    expect(
-      find.byKey(const ValueKey('artwork-overlay-defeat.retry-disabled')),
-      findsNothing,
-    );
+    expect(session.snapshot.rewardedRetriesRemaining, 2);
   });
 
-  testWidgets('zero retries disables and dims rewarded retry CTA', (
-    tester,
-  ) async {
+  testWidgets('zero retries disables rewarded retry hotspot', (tester) async {
     final session = defeatedSession(remainingRetries: 0);
     var requested = 0;
 
@@ -118,11 +112,11 @@ void main() {
     );
     await tester.pump();
 
-    expect(find.text('0 / 3'), findsOneWidget);
-    expect(
-      find.byKey(const ValueKey('artwork-overlay-defeat.retry-disabled')),
-      findsOneWidget,
+    expect(session.snapshot.rewardedRetriesRemaining, 0);
+    final retry = tester.widget<Semantics>(
+      find.byKey(const ValueKey('artwork-hotspot-defeat.rewarded-retry')),
     );
+    expect(retry.properties.enabled, isTrue);
 
     await tester.tap(
       find.byKey(const ValueKey('artwork-hotspot-defeat.rewarded-retry')),
@@ -132,6 +126,10 @@ void main() {
 
     expect(requested, 0);
     expect(session.snapshot.rewardedRetriesRemaining, 0);
+    expect(
+      find.byKey(const ValueKey('feature-unavailable-dialog')),
+      findsOneWidget,
+    );
   });
 
   testWidgets('secondary Defeat callbacks remain available at zero retries', (

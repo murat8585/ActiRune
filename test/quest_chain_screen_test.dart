@@ -41,14 +41,7 @@ void main() {
     );
     expect(surface.assetPath, QuestChainScreen.artworkAsset);
     expect(surface.sourceSize, const Size(941, 1672));
-    expect(
-      surface.overlays.map((overlay) => overlay.id),
-      contains('quest-chain-reward-sample'),
-    );
-    expect(
-      find.textContaining('Gerçek ilerleme ve ödül verisi bağlı değil'),
-      findsOneWidget,
-    );
+    expect(surface.overlays, isEmpty);
 
     for (final id in const [
       'quest-chain.back',

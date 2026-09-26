@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../../core/widgets/artwork_interaction_surface.dart';
-import '../../core/widgets/artwork_sample_mask.dart';
 import 'profile_history_state.dart';
 
 export 'profile_history_state.dart' show HistoryTab, HistoryRange;
@@ -137,32 +136,6 @@ class ProfileHistoryScreen extends StatelessWidget {
         child: ArtworkInteractionSurface(
           assetPath: artworkAsset,
           sourceSize: artworkSize,
-          overlays: historyOwner == null
-              ? const []
-              : [
-                  ArtworkOverlay(
-                    id: 'history-owned-records',
-                    normalizedRect: const Rect.fromLTWH(.05, .26, .90, .61),
-                    child: ArtworkSampleMask(
-                      label: historyOwner!.visibleRecords.isEmpty
-                          ? 'Doğrulanmış geçmiş kaydı yok'
-                          : historyOwner!.visibleRecords
-                                .take(7)
-                                .map(
-                                  (record) => '${record.id}: ${record.title}',
-                                )
-                                .join('\n'),
-                    ),
-                  ),
-                  ArtworkOverlay(
-                    id: 'history-current-filter',
-                    normalizedRect: const Rect.fromLTWH(.39, .215, .55, .037),
-                    child: ArtworkSampleMask(
-                      label:
-                          '${historyOwner!.selectedTab.name} • ${historyOwner!.selectedRange.name}',
-                    ),
-                  ),
-                ],
           hotspots: [
             ArtworkHotspot(
               id: 'history.back',

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../../core/widgets/artwork_interaction_surface.dart';
-import '../../core/widgets/artwork_sample_mask.dart';
 import 'local_event_state.dart';
 
 enum EventDetailTask { verifiedBattles, eventGoal }
@@ -64,21 +63,6 @@ class EventDetailPopup extends StatelessWidget {
       child: ArtworkInteractionSurface(
         assetPath: artworkAsset,
         sourceSize: artworkSize,
-        overlays: [
-          ArtworkOverlay(
-            id: 'event-detail-identity-${event.id}',
-            normalizedRect: const Rect.fromLTWH(.11, .125, .76, .07),
-            child: ArtworkSampleMask(label: event.title),
-          ),
-          const ArtworkOverlay(
-            id: 'event-detail-unowned-data',
-            normalizedRect: Rect.fromLTWH(.08, .435, .84, .305),
-            child: ArtworkSampleMask(
-              label:
-                  'Görsel örnek: canlı görev, ilerleme ve ödül verisi bağlı değil',
-            ),
-          ),
-        ],
         hotspots: [
           ArtworkHotspot(
             id: 'event-detail.close',

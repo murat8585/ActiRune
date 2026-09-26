@@ -1,17 +1,24 @@
 import 'package:flutter/material.dart';
 
 import '../../core/widgets/artwork_interaction_surface.dart';
+import '../../core/widgets/feature_unavailable_dialog.dart';
 import 'inbox_state.dart';
 
 /// Approved Inbox artwork with a local, explicitly illustrative message owner.
 class RuneInboxScreen extends StatefulWidget {
-  const RuneInboxScreen({super.key, required this.onBack, this.owner});
+  const RuneInboxScreen({
+    super.key,
+    required this.onBack,
+    this.onRootNavigate,
+    this.owner,
+  });
 
   static const artworkAsset =
       'visual_authority/20260921/social_approved/'
       '06_RUNE_GELEN_KUTUSU_APPROVED_REFERENCE.png';
 
   final VoidCallback onBack;
+  final ValueChanged<String>? onRootNavigate;
   final LocalInboxOwner? owner;
 
   @override
@@ -38,7 +45,6 @@ class _RuneInboxScreenState extends State<RuneInboxScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final records = _owner.visible;
     return Scaffold(
       backgroundColor: Colors.black,
       body: SafeArea(
@@ -47,141 +53,58 @@ class _RuneInboxScreenState extends State<RuneInboxScreen> {
         child: ArtworkInteractionSurface(
           assetPath: RuneInboxScreen.artworkAsset,
           sourceSize: const Size(941, 1672),
-          overlays: [
-            ArtworkOverlay(
-              id: 'inbox-owned-content',
-              normalizedRect: const Rect.fromLTWH(.045, .105, .91, .74),
-              interactive: true,
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  color: const Color(0xF006172A),
-                  border: Border.all(
-                    color: const Color(0xFFD0A95C),
-                    width: 1.5,
-                  ),
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(10),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      const Text(
-                        'YEREL ÖRNEK MESAJLAR',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Color(0xFFFFD991),
-                          fontSize: 11,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 7),
-                      Row(
-                        children: [
-                          for (final category in InboxCategory.values)
-                            Expanded(
-                              child: GestureDetector(
-                                key: ValueKey('inbox-tab-${category.name}'),
-                                behavior: HitTestBehavior.opaque,
-                                onTap: () => _owner.select(category),
-                                child: Container(
-                                  key: ValueKey(
-                                    'inbox-tab-style-${category.name}',
-                                  ),
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 8,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: _owner.selected == category
-                                        ? const Color(0xFF1D617D)
-                                        : const Color(0xFF102438),
-                                    border: Border.all(
-                                      color: _owner.selected == category
-                                          ? const Color(0xFFFFD991)
-                                          : const Color(0xFF385466),
-                                    ),
-                                  ),
-                                  child: Text(
-                                    switch (category) {
-                                      InboxCategory.all => 'Tümü',
-                                      InboxCategory.social => 'Sosyal',
-                                      InboxCategory.system => 'Sistem',
-                                    },
-                                    textAlign: TextAlign.center,
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 12,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      for (final message in records)
-                        Container(
-                          key: ValueKey('inbox-record-${message.id}'),
-                          margin: const EdgeInsets.only(bottom: 6),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 9,
-                            vertical: 8,
-                          ),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF102C40),
-                            border: Border.all(color: const Color(0xFF557488)),
-                            borderRadius: BorderRadius.circular(7),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                message.title,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
-                                  color: Color(0xFFFFD991),
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              Text(
-                                message.summary,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 11,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      const Spacer(),
-                      const Text(
-                        'Bu kayıtlar hesap mesajı değildir. Yanıt, kabul ve ödül işlemleri bağlı değil.',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Color(0xFFBBD3E3),
-                          fontSize: 10,
-                        ),
-                      ),
-                    ],
-                  ),
+          hotspots: [
+            ArtworkHotspot(
+              id: 'inbox.back',
+              semanticLabel: 'Geri',
+              normalizedRect: const Rect.fromLTWH(.013, .012, .10, .07),
+              onTap: widget.onBack,
+            ),
+            for (final (category, x) in [
+              (InboxCategory.all, .14),
+              (InboxCategory.social, .39),
+              (InboxCategory.system, .64),
+            ])
+              ArtworkHotspot(
+                id: 'inbox-tab-${category.name}',
+                semanticLabel: 'Gelen kutusu ${category.name}',
+                normalizedRect: Rect.fromLTWH(x, .098, .23, .043),
+                onTap: () => _owner.select(category),
+              ),
+            for (final (id, y) in [
+              ('duel', .162),
+              ('congratulation', .279),
+              ('request', .395),
+              ('league', .515),
+              ('season', .63),
+            ])
+              ArtworkHotspot(
+                id: 'inbox.preview-$id',
+                semanticLabel: 'Örnek mesaj $id',
+                normalizedRect: Rect.fromLTWH(.07, y, .88, .105),
+                onTap: () => FeatureUnavailableDialog.show(
+                  context,
+                  feature: 'Gelen kutusu',
+                  message:
+                      'Görseldeki mesaj örnektir. Canlı hesap mesajı bağlı değil.',
                 ),
               ),
-            ),
+            for (final (name, x) in [
+              ('home', 0.0),
+              ('adventure', .2),
+              ('battle', .4),
+              ('hero', .6),
+              ('profile', .8),
+            ])
+              ArtworkHotspot(
+                id: 'inbox.nav-$name',
+                semanticLabel: 'Ana sekme $name',
+                normalizedRect: Rect.fromLTWH(x, .904, .2, .076),
+                onTap: () => widget.onRootNavigate == null
+                    ? widget.onBack()
+                    : widget.onRootNavigate!(name),
+              ),
           ],
-          hotspots: const [],
-        ),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.startTop,
-      floatingActionButton: SafeArea(
-        child: IconButton.filledTonal(
-          key: const ValueKey('rune-inbox-back'),
-          tooltip: 'Ana Dünya’ya dön',
-          onPressed: widget.onBack,
-          icon: const Icon(Icons.arrow_back),
         ),
       ),
     );

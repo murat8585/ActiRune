@@ -49,12 +49,12 @@ void main() {
       await tester.pump();
 
       expect(find.byType(CameraPrepScreen), findsOneWidget);
-      expect(find.text('Kontrol Ediliyor'), findsNWidgets(5));
       expect(
-        find.byKey(
-          const ValueKey('artwork-overlay-camera-prep.ready-disabled'),
-        ),
-        findsOneWidget,
+        tester
+            .widget<CameraPrepScreen>(find.byType(CameraPrepScreen))
+            .readiness
+            .allReady,
+        isFalse,
       );
 
       await tester.tap(

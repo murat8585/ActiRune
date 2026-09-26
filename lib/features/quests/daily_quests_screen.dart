@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../../core/widgets/artwork_interaction_surface.dart';
-import 'local_quest_panel.dart';
 import 'local_quest_state.dart';
 
 enum DailyQuestsRootDestination { home, adventure, battle, hero, profile }
@@ -84,11 +83,6 @@ class DailyQuestsScreen extends StatelessWidget {
   }
 
   Widget _buildScreen() {
-    final records =
-        questOwner?.recordsFor(QuestType.daily) ??
-        LocalQuestOwner.sampleRecords
-            .where((record) => record.type == QuestType.daily)
-            .toList();
     return Scaffold(
       backgroundColor: Colors.black,
       body: SafeArea(
@@ -97,13 +91,6 @@ class DailyQuestsScreen extends StatelessWidget {
         child: ArtworkInteractionSurface(
           assetPath: artworkAsset,
           sourceSize: artworkSize,
-          overlays: [
-            ArtworkOverlay(
-              id: 'daily-owned-state',
-              normalizedRect: const Rect.fromLTWH(.04, .205, .92, .655),
-              child: LocalQuestPanel(type: QuestType.daily, records: records),
-            ),
-          ],
           hotspots: [
             _hotspot(
               id: 'daily-quests.progress-reward',

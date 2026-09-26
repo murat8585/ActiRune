@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import '../../core/widgets/artwork_interaction_surface.dart';
-import '../../core/widgets/artwork_sample_mask.dart';
 import 'local_settings_state.dart';
 
 enum NotificationsRootDestination { home, adventure, battle, hero, profile }
@@ -105,30 +104,6 @@ class SettingsNotificationsScreen extends StatelessWidget {
         child: ArtworkInteractionSurface(
           assetPath: artworkAsset,
           sourceSize: artworkSize,
-          overlays: settingsOwner == null
-              ? const []
-              : [
-                  for (final (index, preference)
-                      in NotificationPreference.values.indexed)
-                    ArtworkOverlay(
-                      id: 'notifications-local-${preference.name}',
-                      normalizedRect: Rect.fromLTWH(
-                        .785,
-                        .184 + index * .100,
-                        .11,
-                        .06,
-                      ),
-                      child: ArtworkSampleMask(
-                        label: switch (settingsOwner!.value(
-                          _settingFor(preference),
-                        )) {
-                          true => 'Açık',
-                          false => 'Kapalı',
-                          null => '?',
-                        },
-                      ),
-                    ),
-                ],
           hotspots: [
             ArtworkHotspot(
               id: 'settings-notifications.back',

@@ -54,44 +54,28 @@ void main() {
       ),
     );
     await tester.pump();
-    expect(
-      find.byKey(const ValueKey('inbox-record-sample-wolfrune')),
-      findsOneWidget,
+    expect(owner.visible.length, 5);
+    await tester.tap(
+      find.byKey(const ValueKey('artwork-hotspot-inbox-tab-social')),
     );
-    expect(
-      find.byKey(const ValueKey('inbox-record-sample-gold-league')),
-      findsOneWidget,
-    );
-    await tester.tap(find.byKey(const ValueKey('inbox-tab-social')));
     await tester.pumpAndSettle();
     expect(owner.selected, InboxCategory.social);
     expect(
-      find.byKey(const ValueKey('inbox-record-sample-wolfrune')),
-      findsOneWidget,
+      owner.visible.every((record) => record.category == InboxCategory.social),
+      isTrue,
     );
-    expect(
-      find.byKey(const ValueKey('inbox-record-sample-gold-league')),
-      findsNothing,
+    await tester.tap(
+      find.byKey(const ValueKey('artwork-hotspot-inbox-tab-system')),
     );
-    final social = tester.widget<Container>(
-      find.byKey(const ValueKey('inbox-tab-style-social')),
-    );
-    expect(
-      (social.decoration! as BoxDecoration).color,
-      const Color(0xFF1D617D),
-    );
-    await tester.tap(find.byKey(const ValueKey('inbox-tab-system')));
     await tester.pumpAndSettle();
     expect(owner.selected, InboxCategory.system);
     expect(
-      find.byKey(const ValueKey('inbox-record-sample-wolfrune')),
-      findsNothing,
+      owner.visible.every((record) => record.category == InboxCategory.system),
+      isTrue,
     );
-    expect(
-      find.byKey(const ValueKey('inbox-record-sample-gold-league')),
-      findsOneWidget,
+    await tester.tap(
+      find.byKey(const ValueKey('artwork-hotspot-inbox-tab-all')),
     );
-    await tester.tap(find.byKey(const ValueKey('inbox-tab-all')));
     await tester.pumpAndSettle();
     expect(owner.visible.length, 5);
     expect(find.byType(AlertDialog), findsNothing);
@@ -132,34 +116,50 @@ void main() {
       await tester.pumpAndSettle();
       await tap(tester, 'home.quests');
       expect(find.byType(QuestCenterScreen), findsOneWidget);
-      await tester.tap(find.byKey(const ValueKey('quest-center-daily')));
+      await tester.tap(
+        find.byKey(const ValueKey('artwork-hotspot-quest-center.quest-1')),
+      );
       await tester.pumpAndSettle();
-      expect(find.byType(DailyQuestsScreen), findsOneWidget);
       expect(
-        find.byKey(const ValueKey('quest-record-sample-daily-explore')),
+        find.byKey(const ValueKey('feature-unavailable-dialog')),
         findsOneWidget,
       );
+      await tester.tap(find.byKey(const ValueKey('feature-unavailable-close')));
+      await tester.pumpAndSettle();
+      await tester.tap(
+        find.byKey(const ValueKey('artwork-hotspot-quest-center-daily')),
+      );
+      await tester.pumpAndSettle();
+      expect(find.byType(DailyQuestsScreen), findsOneWidget);
+      final daily = tester.widget<DailyQuestsScreen>(
+        find.byType(DailyQuestsScreen),
+      );
       expect(
-        find.byKey(const ValueKey('quest-record-sample-weekly-1')),
-        findsNothing,
+        daily.questOwner!
+            .recordsFor(QuestType.daily)
+            .any((record) => record.id == 'sample-daily-explore'),
+        isTrue,
       );
       Navigator.of(tester.element(find.byType(DailyQuestsScreen))).pop();
       await tester.pumpAndSettle();
-      await tester.tap(find.byKey(const ValueKey('quest-center-weekly')));
+      await tester.tap(
+        find.byKey(const ValueKey('artwork-hotspot-quest-center-weekly')),
+      );
       await tester.pumpAndSettle();
       expect(find.byType(WeeklyQuestsScreen), findsOneWidget);
-      expect(
-        find.byKey(const ValueKey('quest-record-sample-weekly-1')),
-        findsOneWidget,
+      final weekly = tester.widget<WeeklyQuestsScreen>(
+        find.byType(WeeklyQuestsScreen),
       );
       expect(
-        find.byKey(const ValueKey('quest-record-sample-daily-explore')),
-        findsNothing,
+        weekly.questOwner!
+            .recordsFor(QuestType.weekly)
+            .any((record) => record.id == 'sample-weekly-1'),
+        isTrue,
       );
     },
   );
 
-  testWidgets('owned quest status renders while reward mutation stays gated', (
+  testWidgets('owned quest state updates while reward mutation stays gated', (
     tester,
   ) async {
     final owner = LocalQuestOwner();
@@ -167,10 +167,10 @@ void main() {
       MaterialApp(home: DailyQuestsScreen(questOwner: owner)),
     );
     await tester.pump();
-    expect(find.text('0/1 • Sürüyor'), findsWidgets);
+    expect(owner.byId('sample-daily-explore').progress, 0);
     owner.setLocalProgress('sample-daily-explore', 1);
     await tester.pump();
-    expect(find.text('1/1 • Tamamlandı'), findsOneWidget);
+    expect(owner.byId('sample-daily-explore').progress, 1);
     final claim = tester.widget<Semantics>(
       find.byKey(const ValueKey('artwork-hotspot-daily-quests.claim-explore')),
     );
@@ -180,7 +180,7 @@ void main() {
     owner.dispose();
   });
 
-  testWidgets('skipped calibration Home masks example verified activity', (
+  testWidgets('skipped calibration Home keeps approved art unobstructed', (
     tester,
   ) async {
     await tester.pumpWidget(
@@ -190,11 +190,6 @@ void main() {
     final surface = tester.widget<ArtworkInteractionSurface>(
       find.byType(ArtworkInteractionSurface).first,
     );
-    expect(
-      surface.overlays.map((overlay) => overlay.id),
-      contains('home-activity-samples'),
-    );
-    expect(find.textContaining('Bugünkü hareket verisi yok'), findsOneWidget);
-    expect(find.textContaining('doğrulanmış hareket'), findsOneWidget);
+    expect(surface.overlays, isEmpty);
   });
 }

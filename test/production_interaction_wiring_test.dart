@@ -116,7 +116,7 @@ void main() {
     );
     await tester.pumpAndSettle();
     expect(find.byType(RuneInboxScreen), findsOneWidget);
-    await tester.tap(find.byKey(const ValueKey('rune-inbox-back')));
+    await tester.tap(find.byKey(const ValueKey('artwork-hotspot-inbox.back')));
     await tester.pumpAndSettle();
 
     await tester.tap(
@@ -213,7 +213,9 @@ void main() {
       );
       await tester.pumpAndSettle();
       expect(find.byType(SocialScreen), findsOneWidget);
-      await tester.pageBack();
+      await tester.tap(
+        find.byKey(const ValueKey('artwork-hotspot-social.back')),
+      );
       await tester.pumpAndSettle();
 
       await tester.tap(

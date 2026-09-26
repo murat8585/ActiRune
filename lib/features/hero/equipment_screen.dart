@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../../core/widgets/artwork_interaction_surface.dart';
-import '../../core/widgets/artwork_sample_mask.dart';
 import 'hero_item_state.dart';
 
 export 'hero_item_state.dart' show EquipmentSlot;
@@ -111,22 +110,6 @@ class EquipmentScreen extends StatelessWidget {
         child: ArtworkInteractionSurface(
           assetPath: artworkAsset,
           sourceSize: artworkSize,
-          overlays: itemOwner == null
-              ? const []
-              : [
-                  const ArtworkOverlay(
-                    id: 'equipment-sample-balances',
-                    normalizedRect: Rect.fromLTWH(.31, .005, .56, .065),
-                    child: ArtworkSampleMask(
-                      label: 'Canlı hesap verisi bağlı değil',
-                    ),
-                  ),
-                  ArtworkOverlay(
-                    id: 'equipment-owned-state',
-                    normalizedRect: const Rect.fromLTWH(.23, .18, .54, .54),
-                    child: _EquipmentOwnedPanel(owner: itemOwner!),
-                  ),
-                ],
           hotspots: [
             _hotspot(
               id: 'equipment.back',
@@ -253,25 +236,6 @@ class EquipmentScreen extends StatelessWidget {
           ],
         ),
       ),
-    );
-  }
-}
-
-class _EquipmentOwnedPanel extends StatelessWidget {
-  const _EquipmentOwnedPanel({required this.owner});
-
-  final HeroItemOwner owner;
-
-  @override
-  Widget build(BuildContext context) {
-    final itemId = owner.equippedItemIds[owner.selectedSlot];
-    final selected = owner.ownedItems.where((item) => item.id == itemId);
-    return ArtworkSampleMask(
-      label:
-          '${owner.selectedSlot.name}: '
-          '${itemId == null || selected.isEmpty ? 'takılı eşya yok' : selected.first.title}\n'
-          '${owner.selectedItem == null ? 'Envanterden eşya seçin' : 'Seçilen: ${owner.selectedItem!.title}'}\n'
-          'Tak                         Çıkar',
     );
   }
 }

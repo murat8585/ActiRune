@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../core/widgets/artwork_interaction_surface.dart';
+import '../../core/widgets/feature_unavailable_dialog.dart';
 import 'battle_session_engine.dart';
 
 enum CameraPrepCheckState { ready, checking, warning }
@@ -111,9 +112,14 @@ class CameraPrepScreen extends StatelessWidget {
     if (session.returnToBattlePrep()) onBack();
   }
 
-  void _start() {
+  void _start(BuildContext context) {
     if (!readiness.allReady ||
         session.snapshot.phase != BattleSessionPhase.cameraPrep) {
+      FeatureUnavailableDialog.show(
+        context,
+        feature: 'Kamera hazırlığı',
+        message: 'Hazırlık kontrolleri tamamlanmadan savaş başlatılamaz.',
+      );
       return;
     }
     session.startLiveBattle();
@@ -122,34 +128,6 @@ class CameraPrepScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final statuses = <({String id, Rect rect, CameraPrepCheckStatus status})>[
-      (
-        id: 'camera',
-        rect: const Rect.fromLTWH(0.5824, 0.3768, 0.3294, 0.0347),
-        status: readiness.camera,
-      ),
-      (
-        id: 'full-body',
-        rect: const Rect.fromLTWH(0.5824, 0.4270, 0.3294, 0.0347),
-        status: readiness.fullBody,
-      ),
-      (
-        id: 'lighting',
-        rect: const Rect.fromLTWH(0.5824, 0.4767, 0.3294, 0.0347),
-        status: readiness.lighting,
-      ),
-      (
-        id: 'space',
-        rect: const Rect.fromLTWH(0.5824, 0.5269, 0.3294, 0.0347),
-        status: readiness.space,
-      ),
-      (
-        id: 'pose',
-        rect: const Rect.fromLTWH(0.5824, 0.5772, 0.3294, 0.0347),
-        status: readiness.poseDetection,
-      ),
-    ];
-
     return Scaffold(
       backgroundColor: Colors.black,
       body: SafeArea(
@@ -158,20 +136,6 @@ class CameraPrepScreen extends StatelessWidget {
         child: ArtworkInteractionSurface(
           assetPath: CameraPrepScreen.artworkAsset,
           sourceSize: CameraPrepScreen.artworkSize,
-          overlays: [
-            for (final item in statuses)
-              ArtworkOverlay(
-                id: 'camera-prep.${item.id}-status',
-                normalizedRect: item.rect,
-                child: _ReadinessBadge(status: item.status),
-              ),
-            if (!readiness.allReady)
-              const ArtworkOverlay(
-                id: 'camera-prep.ready-disabled',
-                normalizedRect: Rect.fromLTWH(0.1010, 0.8038, 0.7694, 0.0658),
-                child: ColoredBox(color: Color(0x99000000)),
-              ),
-          ],
           hotspots: [
             ArtworkHotspot(
               id: 'camera-prep.back',
@@ -204,8 +168,7 @@ class CameraPrepScreen extends StatelessWidget {
                 0.7694,
                 0.0658,
               ),
-              enabled: readiness.allReady,
-              onTap: _start,
+              onTap: () => _start(context),
             ),
             ArtworkHotspot(
               id: 'camera-prep.recheck',
@@ -219,56 +182,6 @@ class CameraPrepScreen extends StatelessWidget {
               onTap: onRecheck,
             ),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-class _ReadinessBadge extends StatelessWidget {
-  const _ReadinessBadge({required this.status});
-
-  final CameraPrepCheckStatus status;
-
-  @override
-  Widget build(BuildContext context) {
-    final (icon, color) = switch (status.state) {
-      CameraPrepCheckState.ready => (
-        Icons.check_circle_outline,
-        const Color(0xFF79F7AE),
-      ),
-      CameraPrepCheckState.checking => (
-        Icons.hourglass_empty,
-        const Color(0xFFFFC96B),
-      ),
-      CameraPrepCheckState.warning => (
-        Icons.error_outline,
-        const Color(0xFFFF7A7A),
-      ),
-    };
-
-    return ColoredBox(
-      color: const Color(0xFF071827),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8),
-        child: FittedBox(
-          fit: BoxFit.scaleDown,
-          alignment: Alignment.centerLeft,
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(icon, color: color, size: 28),
-              const SizedBox(width: 10),
-              Text(
-                status.label,
-                style: TextStyle(
-                  color: color,
-                  fontSize: 22,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-          ),
         ),
       ),
     );

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../../core/widgets/artwork_interaction_surface.dart';
-import '../../core/widgets/artwork_sample_mask.dart';
 import 'home_preview_dialog.dart';
 import 'local_event_state.dart';
 
@@ -143,37 +142,6 @@ class _EventsScreenState extends State<EventsScreen> {
         child: ArtworkInteractionSurface(
           assetPath: EventsScreen.artworkAsset,
           sourceSize: EventsScreen.artworkSize,
-          overlays: [
-            const ArtworkOverlay(
-              id: 'events-sample-balances',
-              normalizedRect: Rect.fromLTWH(.32, .005, .57, .045),
-              child: ArtworkSampleMask(label: 'Canlı hesap verisi bağlı değil'),
-            ),
-            const ArtworkOverlay(
-              id: 'events-featured-sample',
-              normalizedRect: Rect.fromLTWH(.035, .215, .93, .245),
-              child: ArtworkSampleMask(
-                label:
-                    'Rune Fırtınası • görsel örnek\nCanlı takvim, ilerleme ve ödül verisi bağlı değil',
-              ),
-            ),
-            ArtworkOverlay(
-              id: 'events-owned-records',
-              normalizedRect: const Rect.fromLTWH(.02, .525, .948, .31),
-              child: _EventReferencePanel(events: visibleEvents),
-            ),
-            ArtworkOverlay(
-              id: 'events.filter-selection-${selectedFilter.name}',
-              normalizedRect: _filterRect(selectedFilter),
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  color: const Color(0x1200D9FF),
-                  border: Border.all(color: const Color(0xFF55E5FF), width: 2),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-            ),
-          ],
           hotspots: [
             _hotspot(
               id: 'events.back',
@@ -247,51 +215,4 @@ class _EventsScreenState extends State<EventsScreen> {
       ),
     );
   }
-}
-
-class _EventReferencePanel extends StatelessWidget {
-  const _EventReferencePanel({required this.events});
-
-  final List<EventReference> events;
-
-  @override
-  Widget build(BuildContext context) => DecoratedBox(
-    decoration: BoxDecoration(
-      color: const Color(0xF0081A30),
-      border: Border.all(color: const Color(0xFFD8B873)),
-      borderRadius: BorderRadius.circular(12),
-    ),
-    child: Column(
-      children: [
-        const Padding(
-          padding: EdgeInsets.all(6),
-          child: Text(
-            'GÖRSEL ÖRNEKLER • canlı etkinlik takvimi bağlı değil',
-            textAlign: TextAlign.center,
-            style: TextStyle(color: Color(0xFFFFD991), fontSize: 11),
-          ),
-        ),
-        if (events.isEmpty)
-          const Expanded(
-            child: Center(
-              child: Text(
-                'Bu filtrede doğrulanmış etkinlik kaydı yok',
-                style: TextStyle(color: Colors.white),
-              ),
-            ),
-          )
-        else
-          for (final event in events)
-            Expanded(
-              child: Center(
-                child: Text(
-                  event.title,
-                  key: ValueKey('event-record-${event.id}'),
-                  style: const TextStyle(color: Colors.white, fontSize: 17),
-                ),
-              ),
-            ),
-      ],
-    ),
-  );
 }

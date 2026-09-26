@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../../core/widgets/artwork_interaction_surface.dart';
-import '../../core/widgets/artwork_sample_mask.dart';
 import 'hero_item_state.dart';
 
 enum CraftingCategory { weapons, armor, runes }
@@ -148,23 +147,6 @@ class CraftingScreen extends StatelessWidget {
         child: ArtworkInteractionSurface(
           assetPath: artworkAsset,
           sourceSize: artworkSize,
-          overlays: itemOwner == null
-              ? const []
-              : const [
-                  ArtworkOverlay(
-                    id: 'crafting-unverified-catalog',
-                    normalizedRect: Rect.fromLTWH(.025, .36, .95, .535),
-                    child: ArtworkSampleMask(
-                      label:
-                          'Doğrulanmış üretim tarifi ve malzeme kaynağı bağlı değil. Üretim kapalı.',
-                    ),
-                  ),
-                  ArtworkOverlay(
-                    id: 'crafting-unverified-balances',
-                    normalizedRect: Rect.fromLTWH(.30, .005, .62, .055),
-                    child: ArtworkSampleMask(label: 'Canlı bakiye bağlı değil'),
-                  ),
-                ],
           hotspots: [
             _hotspot(
               id: 'crafting.back',

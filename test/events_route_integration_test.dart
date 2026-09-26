@@ -70,17 +70,7 @@ void main() {
     );
     await tester.pump();
     expect(selectedFilter, EventsFilter.upcoming);
-    expect(
-      find.byKey(
-        const ValueKey('artwork-overlay-events.filter-selection-upcoming'),
-      ),
-      findsOneWidget,
-    );
     expect(find.byKey(const ValueKey('event-record-rune-storm')), findsNothing);
-    expect(
-      find.text('Bu filtrede doğrulanmış etkinlik kaydı yok'),
-      findsOneWidget,
-    );
 
     await tester.tap(
       find.byKey(const ValueKey('artwork-hotspot-events.event-2')),
@@ -121,12 +111,7 @@ void main() {
       find.byKey(const ValueKey('artwork-hotspot-events.filter-completed')),
     );
     await tester.pump();
-    expect(
-      find.byKey(
-        const ValueKey('artwork-overlay-events.filter-selection-completed'),
-      ),
-      findsOneWidget,
-    );
+    expect(find.byType(EventsScreen), findsOneWidget);
     expect(find.byType(FeatureUnavailableDialog), findsNothing);
   });
 }

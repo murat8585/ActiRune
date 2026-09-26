@@ -179,8 +179,11 @@ class _MainShellState extends State<MainShell> {
   Future<void> _openRuneInbox(BuildContext context) async {
     await Navigator.of(context).push<void>(
       MaterialPageRoute<void>(
-        builder: (routeContext) =>
-            RuneInboxScreen(onBack: () => Navigator.of(routeContext).pop()),
+        builder: (routeContext) => RuneInboxScreen(
+          onBack: () => Navigator.of(routeContext).pop(),
+          onRootNavigate: (next) =>
+              _closeChildStackAndSelect(routeContext, next),
+        ),
       ),
     );
   }
@@ -192,6 +195,8 @@ class _MainShellState extends State<MainShell> {
           onBack: () => Navigator.of(routeContext).pop(),
           onDaily: () => _openDailyQuests(routeContext),
           onWeekly: () => _openWeeklyQuests(routeContext),
+          onRootNavigate: (next) =>
+              _closeChildStackAndSelect(routeContext, next),
           questOwner: _questOwner,
         ),
       ),
@@ -722,9 +727,14 @@ class _MainShellState extends State<MainShell> {
   }
 
   Future<void> _openSocial(BuildContext context) async {
-    await Navigator.of(
-      context,
-    ).push<void>(MaterialPageRoute<void>(builder: (_) => const SocialScreen()));
+    await Navigator.of(context).push<void>(
+      MaterialPageRoute<void>(
+        builder: (routeContext) => SocialScreen(
+          onRootNavigate: (next) =>
+              _closeChildStackAndSelect(routeContext, next),
+        ),
+      ),
+    );
   }
 
   Future<void> _openProPaywall(BuildContext context) async {

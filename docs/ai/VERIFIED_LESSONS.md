@@ -27,3 +27,17 @@
 - Rollback: Revert the P5B branch commit; restore this file from `C:\ActiRune_RuntimeRecovery_20260926\VERIFIED_LESSONS.pre-P5B.md` if needed.
 - Invalidation conditions: Camera/ML Kit depth behavior, movement contract, detector thresholds or persistence schema changes; revalidate with a real pose corpus and device audit.
 - Evidence paths: `test/standing_calibration_detectors_test.dart`; `test/calibration_standing_sequence_test.dart`; `test/calibration_wiring_test.dart`; `test/calibration_app_state_test.dart`.
+
+## LESSON-ID: ACTIRUNE-APPROVED-ART-NO-DRAWN-PANELS
+- Status: VERIFIED_PROJECT (Home, Friends, Inbox and Quest Center visual check; other routes remain audit pending)
+- Scope: ActiRune approved 3D/2.5D screen presentation and transparent hotspots.
+- Symptom fingerprint: Flutter text panels, sample-data masks, or extra route cards visibly cover approved artwork on an emulator screenshot.
+- Preconditions: The route has approved full-screen artwork and the user requires actions through its visible controls, without persistent Flutter writing over the image.
+- Root cause: `ArtworkOverlay` instances placed opaque sample masks and local-state panels over the selected PNG; screenshots showed the approved composition obscured.
+- Failed approach: Treat an approved full-screen PNG as a backdrop for large Flutter cards and warning labels.
+- Verified route: Render the original approved artwork bytes with `ArtworkInteractionSurface` and transparent `ArtworkHotspot` controls. Keep state owners and fail-closed action gates; report baked fixture data and absent state-specific visuals as unverified rather than drawing new permanent panels.
+- Verification commands: `flutter analyze --no-pub`; `flutter test --no-pub --reporter compact`; x86_64 emulator update install, cold launch, screenshots and APK/base.apk SHA-256 comparison.
+- Expected evidence: Analyzer has no issues, 461/461 tests pass, Home/Friends/Inbox/Quest Center screenshots show artwork without added cards/text, and unavailable social actions do not mutate an account.
+- Rollback: Revert the visual-recovery branch commit; pre-edit byte backups are under `C:\ActiRune_RuntimeRecovery_20260927\overlay_backups`.
+- Invalidation conditions: User approves dynamic artwork or a screen-specific state visual; new source artwork has blank dynamic fields; state owner or route geometry changes.
+- Evidence paths: `C:\ActiRune_RuntimeRecovery_20260927\social_visual_emulator\05_home_no_overlays_stable.png`; `06_social_no_overlays.png`; `08_inbox_no_overlays.png`; `09_quest_center_no_overlays.png`; `flutter_test_final_safety.log`.

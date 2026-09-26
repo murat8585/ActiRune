@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../../core/widgets/artwork_interaction_surface.dart';
-import '../../core/widgets/artwork_sample_mask.dart';
 import 'hero_item_state.dart';
 
 export 'hero_item_state.dart' show InventoryCategory, InventoryViewMode;
@@ -244,20 +243,6 @@ class InventoryScreen extends StatelessWidget {
         child: ArtworkInteractionSurface(
           assetPath: artworkAsset,
           sourceSize: artworkSize,
-          overlays: itemOwner == null
-              ? const []
-              : [
-                  ArtworkOverlay(
-                    id: 'inventory-owned-state',
-                    normalizedRect: const Rect.fromLTWH(.035, .285, .93, .565),
-                    child: _InventoryOwnedPanel(owner: itemOwner!),
-                  ),
-                  const ArtworkOverlay(
-                    id: 'inventory-crafting-entry',
-                    normalizedRect: Rect.fromLTWH(.05, .855, .31, .04),
-                    child: ArtworkSampleMask(label: 'Rün Dövme'),
-                  ),
-                ],
           hotspots: [
             _hotspot(
               id: 'inventory.back',
@@ -367,49 +352,4 @@ class InventoryScreen extends StatelessWidget {
       ),
     );
   }
-}
-
-class _InventoryOwnedPanel extends StatelessWidget {
-  const _InventoryOwnedPanel({required this.owner});
-
-  final HeroItemOwner owner;
-
-  @override
-  Widget build(BuildContext context) => DecoratedBox(
-    decoration: BoxDecoration(
-      color: const Color(0xF0081A30),
-      border: Border.all(color: const Color(0xFFD8B873)),
-      borderRadius: BorderRadius.circular(12),
-    ),
-    child: Column(
-      children: [
-        Text(
-          '${owner.selectedCategory.name.toUpperCase()} • ${owner.visibleItems.length} kayıt • ${owner.viewMode.name}'
-          '${owner.selectedItem == null ? '' : ' • ${owner.selectedItem!.title} ×${owner.selectedItem!.quantity}'}',
-          key: const ValueKey('inventory-state-summary'),
-          style: const TextStyle(color: Color(0xFFFFD991)),
-        ),
-        if (owner.visibleItems.isEmpty)
-          const Expanded(
-            child: Center(
-              child: Text(
-                'Doğrulanmış sahip olunan eşya yok',
-                style: TextStyle(color: Colors.white),
-              ),
-            ),
-          )
-        else
-          for (final item in owner.visibleItems.take(16))
-            Expanded(
-              child: Center(
-                child: Text(
-                  '${item.title} ×${item.quantity}',
-                  key: ValueKey('inventory-owned-${item.id}'),
-                  style: const TextStyle(color: Colors.white),
-                ),
-              ),
-            ),
-      ],
-    ),
-  );
 }

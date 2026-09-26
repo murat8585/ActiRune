@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../core/widgets/artwork_interaction_surface.dart';
+import '../../core/widgets/feature_unavailable_dialog.dart';
 import 'battle_session_engine.dart';
 
 class DefeatScreen extends StatelessWidget {
@@ -40,39 +41,6 @@ class DefeatScreen extends StatelessWidget {
             child: ArtworkInteractionSurface(
               assetPath: DefeatScreen.artworkAsset,
               sourceSize: DefeatScreen.artworkSize,
-              overlays: [
-                ArtworkOverlay(
-                  id: 'defeat.retry-count',
-                  normalizedRect: const Rect.fromLTWH(
-                    0.505,
-                    0.756,
-                    0.088,
-                    0.026,
-                  ),
-                  child: DecoratedBox(
-                    decoration: const BoxDecoration(color: Color(0xFF071827)),
-                    child: Center(
-                      child: FittedBox(
-                        fit: BoxFit.contain,
-                        child: Text(
-                          '$remaining / 3',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 24,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                if (!retryEnabled)
-                  const ArtworkOverlay(
-                    id: 'defeat.retry-disabled',
-                    normalizedRect: Rect.fromLTWH(0.142, 0.815, 0.716, 0.050),
-                    child: ColoredBox(color: Color(0x99000000)),
-                  ),
-              ],
               hotspots: [
                 ArtworkHotspot(
                   id: 'defeat.rewarded-retry',
@@ -83,8 +51,17 @@ class DefeatScreen extends StatelessWidget {
                     0.716,
                     0.055,
                   ),
-                  enabled: retryEnabled,
-                  onTap: onRewardedRetryRequested,
+                  onTap: () {
+                    if (retryEnabled) {
+                      onRewardedRetryRequested();
+                    } else {
+                      FeatureUnavailableDialog.show(
+                        context,
+                        feature: 'Tekrar savaş',
+                        message: 'Bu oturumda kullanılabilir tekrar hakkı yok.',
+                      );
+                    }
+                  },
                 ),
                 ArtworkHotspot(
                   id: 'defeat.return-adventure',

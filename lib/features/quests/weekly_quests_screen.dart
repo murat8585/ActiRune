@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../../core/widgets/artwork_interaction_surface.dart';
-import '../../core/widgets/artwork_sample_mask.dart';
-import 'local_quest_panel.dart';
 import 'local_quest_state.dart';
 
 enum WeeklyQuestsRootDestination { home, adventure, battle, hero, profile }
@@ -80,11 +78,6 @@ class WeeklyQuestsScreen extends StatelessWidget {
   }
 
   Widget _buildScreen() {
-    final records =
-        questOwner?.recordsFor(QuestType.weekly) ??
-        LocalQuestOwner.sampleRecords
-            .where((record) => record.type == QuestType.weekly)
-            .toList();
     return Scaffold(
       backgroundColor: Colors.black,
       body: SafeArea(
@@ -93,23 +86,6 @@ class WeeklyQuestsScreen extends StatelessWidget {
         child: ArtworkInteractionSurface(
           assetPath: artworkAsset,
           sourceSize: artworkSize,
-          overlays: [
-            const ArtworkOverlay(
-              id: 'weekly-profile-sample',
-              normalizedRect: Rect.fromLTWH(.16, .02, .135, .075),
-              child: ArtworkSampleMask(label: 'Profil verisi yok'),
-            ),
-            const ArtworkOverlay(
-              id: 'weekly-streak-sample',
-              normalizedRect: Rect.fromLTWH(.765, .02, .155, .075),
-              child: ArtworkSampleMask(label: 'Seri verisi yok'),
-            ),
-            ArtworkOverlay(
-              id: 'weekly-owned-state',
-              normalizedRect: const Rect.fromLTWH(.04, .21, .92, .67),
-              child: LocalQuestPanel(type: QuestType.weekly, records: records),
-            ),
-          ],
           hotspots: [
             _hotspot(
               id: 'weekly-quests.daily-streak',

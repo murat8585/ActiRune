@@ -65,28 +65,12 @@ void main() {
       );
       await tester.pump();
 
-      for (final id in const [
-        'camera',
-        'full-body',
-        'lighting',
-        'space',
-        'pose',
-      ]) {
-        expect(
-          find.byKey(ValueKey('artwork-overlay-camera-prep.$id-status')),
-          findsOneWidget,
-        );
-      }
-
-      expect(find.text('Kontrol Ediliyor'), findsOneWidget);
-      expect(find.text('Yetersiz Işık'), findsOneWidget);
-      expect(find.text('Biraz Geri Çekil'), findsOneWidget);
-      expect(find.text('Alanı Boşalt'), findsOneWidget);
       expect(
-        find.byKey(
-          const ValueKey('artwork-overlay-camera-prep.ready-disabled'),
-        ),
-        findsOneWidget,
+        tester
+            .widget<CameraPrepScreen>(find.byType(CameraPrepScreen))
+            .readiness
+            .allReady,
+        isFalse,
       );
 
       for (final id in const [
@@ -126,9 +110,15 @@ void main() {
     await tester.tap(
       find.byKey(const ValueKey('artwork-hotspot-camera-prep.ready')),
     );
-    await tester.pump();
+    await tester.pumpAndSettle();
     expect(started, 0);
     expect(session.snapshot.phase, BattleSessionPhase.cameraPrep);
+    expect(
+      find.byKey(const ValueKey('feature-unavailable-dialog')),
+      findsOneWidget,
+    );
+    await tester.tap(find.byKey(const ValueKey('feature-unavailable-close')));
+    await tester.pumpAndSettle();
 
     await tester.pumpWidget(
       buildSubject(
@@ -140,8 +130,11 @@ void main() {
     await tester.pump();
 
     expect(
-      find.byKey(const ValueKey('artwork-overlay-camera-prep.ready-disabled')),
-      findsNothing,
+      tester
+          .widget<CameraPrepScreen>(find.byType(CameraPrepScreen))
+          .readiness
+          .allReady,
+      isTrue,
     );
     await tester.tap(
       find.byKey(const ValueKey('artwork-hotspot-camera-prep.ready')),

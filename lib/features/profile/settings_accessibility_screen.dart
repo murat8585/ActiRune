@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import '../../core/widgets/artwork_interaction_surface.dart';
-import '../../core/widgets/artwork_sample_mask.dart';
 import 'local_settings_state.dart';
 
 enum AccessibilityRootDestination { home, adventure, battle, hero, profile }
@@ -99,30 +98,6 @@ class SettingsAccessibilityScreen extends StatelessWidget {
         child: ArtworkInteractionSurface(
           assetPath: artworkAsset,
           sourceSize: artworkSize,
-          overlays: settingsOwner == null
-              ? const []
-              : [
-                  for (final (index, toggle)
-                      in AccessibilityToggle.values.indexed)
-                    ArtworkOverlay(
-                      id: 'accessibility-local-${toggle.name}',
-                      normalizedRect: Rect.fromLTWH(
-                        .765,
-                        .390 + index * .098,
-                        .12,
-                        .055,
-                      ),
-                      child: ArtworkSampleMask(
-                        label: switch (settingsOwner!.value(
-                          _settingFor(toggle),
-                        )) {
-                          true => 'Açık',
-                          false => 'Kapalı',
-                          null => '?',
-                        },
-                      ),
-                    ),
-                ],
           hotspots: [
             ArtworkHotspot(
               id: 'settings-accessibility.back',

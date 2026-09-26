@@ -64,13 +64,7 @@ void main() {
       tester.widget<EventDetailPopup>(find.byType(EventDetailPopup)).event.id,
       'movement-master-week',
     );
-    expect(
-      find.descendant(
-        of: find.byType(EventDetailPopup),
-        matching: find.text('Hareket Ustası Haftası'),
-      ),
-      findsOneWidget,
-    );
+    expect(find.byType(EventDetailPopup), findsOneWidget);
   });
 
   testWidgets(
@@ -88,13 +82,7 @@ void main() {
         find.byType(EventDetailPopup),
       );
       expect(detail.event.id, 'ancient-valley-challenge');
-      expect(
-        find.descendant(
-          of: find.byType(EventDetailPopup),
-          matching: find.text('Kadim Vadi Mücadelesi'),
-        ),
-        findsOneWidget,
-      );
+      expect(detail.event.title, 'Kadim Vadi Mücadelesi');
 
       await tester.tap(
         find.byKey(const ValueKey('artwork-hotspot-event-detail.join')),
