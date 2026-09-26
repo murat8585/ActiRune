@@ -1,6 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import '../../core/widgets/artwork_interaction_surface.dart';
+import '../../core/widgets/artwork_sample_mask.dart';
+import 'local_settings_state.dart';
 
 enum NotificationsRootDestination { home, adventure, battle, hero, profile }
 
@@ -19,6 +23,7 @@ class SettingsNotificationsScreen extends StatelessWidget {
     this.onToggle,
     this.onReminderHours,
     this.onRootNavigate,
+    this.settingsOwner,
     this.battleRootEnabled = true,
   });
 
@@ -30,6 +35,7 @@ class SettingsNotificationsScreen extends StatelessWidget {
   final ValueChanged<NotificationPreference>? onToggle;
   final VoidCallback? onReminderHours;
   final ValueChanged<NotificationsRootDestination>? onRootNavigate;
+  final LocalSettingsOwner? settingsOwner;
   final bool battleRootEnabled;
 
   ArtworkHotspot _toggleHotspot({
@@ -38,14 +44,27 @@ class SettingsNotificationsScreen extends StatelessWidget {
     required Rect normalizedRect,
   }) {
     final callback = onToggle;
+    final owner = settingsOwner;
     return ArtworkHotspot(
       id: 'settings-notifications.toggle-${preference.name}',
       semanticLabel: semanticLabel,
       normalizedRect: normalizedRect,
-      enabled: callback != null,
-      onTap: callback == null ? () {} : () => callback(preference),
+      enabled: callback != null || owner != null,
+      onTap: () {
+        if (owner != null) unawaited(owner.toggle(_settingFor(preference)));
+        callback?.call(preference);
+      },
     );
   }
+
+  LocalSetting _settingFor(NotificationPreference preference) =>
+      switch (preference) {
+        NotificationPreference.questReminders => LocalSetting.questReminders,
+        NotificationPreference.events => LocalSetting.events,
+        NotificationPreference.social => LocalSetting.social,
+        NotificationPreference.runeLeague => LocalSetting.runeLeague,
+        NotificationPreference.system => LocalSetting.system,
+      };
 
   ArtworkHotspot _rootHotspot({
     required NotificationsRootDestination destination,
@@ -68,6 +87,16 @@ class SettingsNotificationsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (settingsOwner != null) {
+      return AnimatedBuilder(
+        animation: settingsOwner!,
+        builder: (context, _) => _buildScreen(),
+      );
+    }
+    return _buildScreen();
+  }
+
+  Widget _buildScreen() {
     return Scaffold(
       backgroundColor: Colors.black,
       body: SafeArea(
@@ -76,6 +105,30 @@ class SettingsNotificationsScreen extends StatelessWidget {
         child: ArtworkInteractionSurface(
           assetPath: artworkAsset,
           sourceSize: artworkSize,
+          overlays: settingsOwner == null
+              ? const []
+              : [
+                  for (final (index, preference)
+                      in NotificationPreference.values.indexed)
+                    ArtworkOverlay(
+                      id: 'notifications-local-${preference.name}',
+                      normalizedRect: Rect.fromLTWH(
+                        .785,
+                        .184 + index * .100,
+                        .11,
+                        .06,
+                      ),
+                      child: ArtworkSampleMask(
+                        label: switch (settingsOwner!.value(
+                          _settingFor(preference),
+                        )) {
+                          true => 'Açık',
+                          false => 'Kapalı',
+                          null => '?',
+                        },
+                      ),
+                    ),
+                ],
           hotspots: [
             ArtworkHotspot(
               id: 'settings-notifications.back',

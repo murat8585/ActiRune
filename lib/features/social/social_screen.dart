@@ -12,13 +12,13 @@ class SocialScreen extends StatelessWidget {
       children: const [
         RuneCard(
           child: Text(
-            'V1 asenkron 1:1 meydan okuma, arkadaşlar, rövanş ve paylaşım.',
+            'Doğrulanmış arkadaş ve raid kaydı bağlı değil. Davet ve katılım henüz kullanılamıyor.',
           ),
         ),
         SizedBox(height: 12),
         RuneCard(
           child: Text(
-            'Bu ekranın üretim layout’u docs/visual_reference altındaki kilitli görsele göre uygulanacaktır.',
+            'İlk canlı sosyal mod: arkadaş davetiyle iki kişilik boss raid. Sunucu sahibi bağlandığında açılacak.',
           ),
         ),
       ],

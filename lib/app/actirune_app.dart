@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../core/design/actirune_theme.dart';
 import '../core/widgets/feature_unavailable_dialog.dart';
@@ -17,11 +18,13 @@ class ActiRuneApp extends StatefulWidget {
     this.calibrationCameraSessionFactory =
         createProductionCalibrationCameraSession,
     this.calibrationStateStore,
+    this.preferences,
     this.initialCalibrationState = const CalibrationAppState.notStarted(),
   });
 
   final CalibrationCameraSessionFactory calibrationCameraSessionFactory;
   final CalibrationStateStore? calibrationStateStore;
+  final SharedPreferences? preferences;
   final CalibrationAppState initialCalibrationState;
 
   @override
@@ -73,7 +76,10 @@ class _ActiRuneAppState extends State<ActiRuneApp> {
               _stateStore.write(CalibrationAppState.completed(profile)),
         ),
       ),
-      GoRoute(path: '/app', builder: (_, _) => const MainShell()),
+      GoRoute(
+        path: '/app',
+        builder: (_, _) => MainShell(preferences: widget.preferences),
+      ),
     ],
   );
 

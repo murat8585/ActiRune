@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../core/platform/app_settings_launcher.dart';
 import '../core/widgets/feature_unavailable_dialog.dart';
@@ -27,6 +28,8 @@ import '../features/home/rune_shrine_ready_screen.dart';
 import '../features/profile/achievements_screen.dart';
 import '../features/profile/player_level_screen.dart';
 import '../features/profile/profile_history_screen.dart';
+import '../features/profile/profile_history_state.dart';
+import '../features/profile/local_settings_state.dart';
 import '../features/profile/profile_screen.dart';
 import '../features/profile/settings_accessibility_screen.dart';
 import '../features/profile/settings_account_screen.dart';
@@ -58,6 +61,7 @@ class MainShell extends StatefulWidget {
     this.onWeeklyQuestChainReward,
     this.onQuestChainStreakDetails,
     this.onQuestChainCompletionRewards,
+    this.preferences,
   });
 
   final BattleRootBuilder? battleRootBuilder;
@@ -65,6 +69,7 @@ class MainShell extends StatefulWidget {
   final VoidCallback? onWeeklyQuestChainReward;
   final VoidCallback? onQuestChainStreakDetails;
   final VoidCallback? onQuestChainCompletionRewards;
+  final SharedPreferences? preferences;
 
   @override
   State<MainShell> createState() => _MainShellState();
@@ -74,11 +79,17 @@ class _MainShellState extends State<MainShell> {
   _ShellDestination destination = _ShellDestination.home;
   final LocalQuestOwner _questOwner = LocalQuestOwner();
   final HeroItemOwner _itemOwner = HeroItemOwner();
+  final ProfileHistoryOwner _historyOwner = ProfileHistoryOwner();
+  late final LocalSettingsOwner _localSettingsOwner = LocalSettingsOwner(
+    widget.preferences,
+  );
 
   @override
   void dispose() {
     _questOwner.dispose();
     _itemOwner.dispose();
+    _historyOwner.dispose();
+    _localSettingsOwner.dispose();
     super.dispose();
   }
 
@@ -575,9 +586,7 @@ class _MainShellState extends State<MainShell> {
       MaterialPageRoute<void>(
         builder: (routeContext) => ProfileHistoryScreen(
           onBack: () => Navigator.of(routeContext).pop(),
-          onTab: (_) => _showUnavailable(routeContext, 'Geçmiş Filtresi'),
-          onRange: () => _showUnavailable(routeContext, 'Tarih Aralığı'),
-          onEntry: (_) => _showUnavailable(routeContext, 'Geçmiş Kaydı Detayı'),
+          historyOwner: _historyOwner,
           onRootNavigate: (next) =>
               _closeChildStackAndSelect(routeContext, next.name),
           battleRootEnabled: true,
@@ -612,7 +621,7 @@ class _MainShellState extends State<MainShell> {
       MaterialPageRoute<void>(
         builder: (routeContext) => SettingsNotificationsScreen(
           onBack: () => Navigator.of(routeContext).pop(),
-          onToggle: (_) => _showHomePreview(routeContext, 'Bildirim Tercihi'),
+          settingsOwner: _localSettingsOwner,
           onReminderHours: () =>
               _showHomePreview(routeContext, 'Hatırlatma Saatleri'),
           onRootNavigate: (next) =>
@@ -674,8 +683,7 @@ class _MainShellState extends State<MainShell> {
         builder: (routeContext) => SettingsAccessibilityScreen(
           onBack: () => Navigator.of(routeContext).pop(),
           onTextSize: () => _showHomePreview(routeContext, 'Metin Boyutu'),
-          onToggle: (_) =>
-              _showHomePreview(routeContext, 'Erişilebilirlik Tercihi'),
+          settingsOwner: _localSettingsOwner,
           onColorSupport: () =>
               _showHomePreview(routeContext, 'Renk Ayrımı Desteği'),
           onRootNavigate: (next) =>

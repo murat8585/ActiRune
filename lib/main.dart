@@ -11,6 +11,7 @@ Future<void> main() async {
   final initialState = await store.read();
   runApp(
     ActiRuneApp(
+      preferences: preferences,
       calibrationStateStore: store,
       initialCalibrationState: initialState,
     ),

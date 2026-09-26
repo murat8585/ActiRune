@@ -1,6 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import '../../core/widgets/artwork_interaction_surface.dart';
+import '../../core/widgets/artwork_sample_mask.dart';
+import 'local_settings_state.dart';
 
 enum AccessibilityRootDestination { home, adventure, battle, hero, profile }
 
@@ -14,6 +18,7 @@ class SettingsAccessibilityScreen extends StatelessWidget {
     this.onToggle,
     this.onColorSupport,
     this.onRootNavigate,
+    this.settingsOwner,
     this.battleRootEnabled = true,
   });
 
@@ -26,6 +31,7 @@ class SettingsAccessibilityScreen extends StatelessWidget {
   final ValueChanged<AccessibilityToggle>? onToggle;
   final VoidCallback? onColorSupport;
   final ValueChanged<AccessibilityRootDestination>? onRootNavigate;
+  final LocalSettingsOwner? settingsOwner;
   final bool battleRootEnabled;
 
   ArtworkHotspot _toggleHotspot({
@@ -34,14 +40,25 @@ class SettingsAccessibilityScreen extends StatelessWidget {
     required Rect normalizedRect,
   }) {
     final callback = onToggle;
+    final owner = settingsOwner;
     return ArtworkHotspot(
       id: 'settings-accessibility.toggle-${toggle.name}',
       semanticLabel: semanticLabel,
       normalizedRect: normalizedRect,
-      enabled: callback != null,
-      onTap: callback == null ? () {} : () => callback(toggle),
+      enabled: callback != null || owner != null,
+      onTap: () {
+        if (owner != null) unawaited(owner.toggle(_settingFor(toggle)));
+        callback?.call(toggle);
+      },
     );
   }
+
+  LocalSetting _settingFor(AccessibilityToggle toggle) => switch (toggle) {
+    AccessibilityToggle.highContrast => LocalSetting.highContrast,
+    AccessibilityToggle.reducedAnimation => LocalSetting.reducedAnimation,
+    AccessibilityToggle.haptics => LocalSetting.haptics,
+    AccessibilityToggle.audioCues => LocalSetting.audioCues,
+  };
 
   ArtworkHotspot _rootHotspot({
     required AccessibilityRootDestination destination,
@@ -64,6 +81,16 @@ class SettingsAccessibilityScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (settingsOwner != null) {
+      return AnimatedBuilder(
+        animation: settingsOwner!,
+        builder: (context, _) => _buildScreen(),
+      );
+    }
+    return _buildScreen();
+  }
+
+  Widget _buildScreen() {
     return Scaffold(
       backgroundColor: Colors.black,
       body: SafeArea(
@@ -72,6 +99,30 @@ class SettingsAccessibilityScreen extends StatelessWidget {
         child: ArtworkInteractionSurface(
           assetPath: artworkAsset,
           sourceSize: artworkSize,
+          overlays: settingsOwner == null
+              ? const []
+              : [
+                  for (final (index, toggle)
+                      in AccessibilityToggle.values.indexed)
+                    ArtworkOverlay(
+                      id: 'accessibility-local-${toggle.name}',
+                      normalizedRect: Rect.fromLTWH(
+                        .765,
+                        .390 + index * .098,
+                        .12,
+                        .055,
+                      ),
+                      child: ArtworkSampleMask(
+                        label: switch (settingsOwner!.value(
+                          _settingFor(toggle),
+                        )) {
+                          true => 'Açık',
+                          false => 'Kapalı',
+                          null => '?',
+                        },
+                      ),
+                    ),
+                ],
           hotspots: [
             ArtworkHotspot(
               id: 'settings-accessibility.back',

@@ -12,6 +12,7 @@ import 'package:actirune/features/home/events_screen.dart';
 import 'package:actirune/features/home/home_preview_dialog.dart';
 import 'package:actirune/features/home/rune_shrine_ready_screen.dart';
 import 'package:actirune/features/profile/profile_screen.dart';
+import 'package:actirune/features/profile/local_settings_state.dart';
 import 'package:actirune/features/profile/settings_accessibility_screen.dart';
 import 'package:actirune/features/profile/settings_account_screen.dart';
 import 'package:actirune/features/profile/settings_hub_screen.dart';
@@ -295,6 +296,11 @@ void main() {
     tester,
   ) async {
     await openSettingsSection(tester, 'notifications');
+    final owner = tester
+        .widget<SettingsNotificationsScreen>(
+          find.byType(SettingsNotificationsScreen),
+        )
+        .settingsOwner!;
     for (final toggle in <String>[
       'questReminders',
       'events',
@@ -303,7 +309,8 @@ void main() {
       'system',
     ]) {
       await tapHotspot(tester, 'settings-notifications.toggle-$toggle');
-      await expectPreview(tester);
+      expect(owner.value(LocalSetting.values.byName(toggle)), isTrue);
+      expect(find.byType(HomePreviewDialog), findsNothing);
     }
     await tapHotspot(tester, 'settings-notifications.reminder-hours');
     await expectPreview(tester);
@@ -335,6 +342,11 @@ void main() {
     tester,
   ) async {
     await openSettingsSection(tester, 'accessibility');
+    final owner = tester
+        .widget<SettingsAccessibilityScreen>(
+          find.byType(SettingsAccessibilityScreen),
+        )
+        .settingsOwner!;
     await tapHotspot(tester, 'settings-accessibility.text-size');
     await expectPreview(tester);
 
@@ -345,7 +357,8 @@ void main() {
       'audioCues',
     ]) {
       await tapHotspot(tester, 'settings-accessibility.toggle-$toggle');
-      await expectPreview(tester);
+      expect(owner.value(LocalSetting.values.byName(toggle)), isTrue);
+      expect(find.byType(HomePreviewDialog), findsNothing);
     }
 
     await tapHotspot(tester, 'settings-accessibility.color-support');

@@ -12,6 +12,7 @@ import 'package:actirune/features/home/home_screen.dart';
 import 'package:actirune/features/home/rune_inbox_screen.dart';
 import 'package:actirune/features/home/rune_shrine_ready_screen.dart';
 import 'package:actirune/features/profile/achievements_screen.dart';
+import 'package:actirune/features/profile/local_settings_state.dart';
 import 'package:actirune/features/profile/profile_screen.dart';
 import 'package:actirune/features/profile/settings_accessibility_screen.dart';
 import 'package:actirune/features/profile/settings_account_screen.dart';
@@ -306,8 +307,15 @@ void main() {
     final notifications = tester.widget<SettingsNotificationsScreen>(
       find.byType(SettingsNotificationsScreen),
     );
-    expect(notifications.onToggle, isNotNull);
+    expect(notifications.settingsOwner, isNotNull);
     expect(notifications.onReminderHours, isNotNull);
+    await tester.tap(
+      find.byKey(
+        const ValueKey('artwork-hotspot-settings-notifications.toggle-events'),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(notifications.settingsOwner!.value(LocalSetting.events), isTrue);
     await tester.tap(
       find.byKey(const ValueKey('artwork-hotspot-settings-notifications.back')),
     );
@@ -354,7 +362,7 @@ void main() {
       find.byType(SettingsAccessibilityScreen),
     );
     expect(accessibility.onTextSize, isNotNull);
-    expect(accessibility.onToggle, isNotNull);
+    expect(accessibility.settingsOwner, same(notifications.settingsOwner));
     expect(accessibility.onColorSupport, isNotNull);
   });
 
