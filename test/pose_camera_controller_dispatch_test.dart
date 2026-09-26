@@ -1,4 +1,7 @@
 import 'package:actirune/features/pose/detector/lunge_detector.dart';
+import 'package:actirune/features/pose/detector/reverse_lunge_detector.dart';
+import 'package:actirune/features/pose/detector/high_knee_detector.dart';
+import 'package:actirune/features/pose/detector/cross_body_knee_raise_detector.dart';
 import 'package:actirune/features/pose/detector/movement_detector_factory.dart';
 import 'package:actirune/features/pose/detector/plank_detector.dart';
 import 'package:actirune/features/pose/detector/pose_rep_detector.dart';
@@ -16,6 +19,18 @@ void main() {
       expect(factory.create(PoseExerciseType.squat), isA<SquatDetector>());
       expect(factory.create(PoseExerciseType.lunge), isA<LungeDetector>());
       expect(factory.create(PoseExerciseType.pushUp), isA<PushUpDetector>());
+      expect(
+        factory.create(PoseExerciseType.reverseLunge),
+        isA<ReverseLungeDetector>(),
+      );
+      expect(
+        factory.create(PoseExerciseType.highKnee),
+        isA<HighKneeDetector>(),
+      );
+      expect(
+        factory.create(PoseExerciseType.crossBodyKneeRaise),
+        isA<CrossBodyKneeRaiseDetector>(),
+      );
     });
 
     test('plank fails closed without authoritative hold duration', () {

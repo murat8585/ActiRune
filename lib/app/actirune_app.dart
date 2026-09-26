@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import '../core/design/actirune_theme.dart';
 import '../core/widgets/feature_unavailable_dialog.dart';
 import '../features/onboarding/calibration_app_state.dart';
+import '../features/onboarding/first_calibration_engine.dart';
 import '../features/onboarding/first_calibration_flow_screen.dart';
 import '../features/onboarding/onboarding_screen.dart';
 import 'main_shell.dart';
@@ -13,15 +14,12 @@ import 'main_shell.dart';
 class ActiRuneApp extends StatefulWidget {
   const ActiRuneApp({
     super.key,
-    this.requiredPlankHoldDuration = const Duration(seconds: 10),
     this.calibrationCameraSessionFactory =
         createProductionCalibrationCameraSession,
     this.calibrationStateStore,
     this.initialCalibrationState = const CalibrationAppState.notStarted(),
   });
 
-  /// Product-owned first-calibration Plank target.
-  final Duration? requiredPlankHoldDuration;
   final CalibrationCameraSessionFactory calibrationCameraSessionFactory;
   final CalibrationStateStore? calibrationStateStore;
   final CalibrationAppState initialCalibrationState;
@@ -61,14 +59,18 @@ class _ActiRuneAppState extends State<ActiRuneApp> {
           onSkipCalibration: () =>
               _stateStore.write(const CalibrationAppState.skipped()),
           onRunCalibration: () async {
-            await FeatureUnavailableDialog.show(
-              context,
-              feature: 'İlk Kalibrasyon',
-              message:
-                  'Yeni hareket algılayıcıları P5B aşamasında bağlanacak. Kalibrasyonu şimdilik geçerek uygulamaya devam edebilirsin.',
+            await _stateStore.write(const CalibrationAppState.inProgress());
+            if (!context.mounted) return null;
+            return Navigator.of(context).push<FirstCalibrationAssessment>(
+              MaterialPageRoute(
+                builder: (_) => FirstCalibrationFlowScreen(
+                  cameraSessionFactory: widget.calibrationCameraSessionFactory,
+                ),
+              ),
             );
-            return null;
           },
+          onCalibrationReady: (profile) =>
+              _stateStore.write(CalibrationAppState.completed(profile)),
         ),
       ),
       GoRoute(path: '/app', builder: (_, _) => const MainShell()),

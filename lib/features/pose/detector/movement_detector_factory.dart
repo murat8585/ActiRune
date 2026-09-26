@@ -1,10 +1,21 @@
 import 'lunge_detector.dart';
+import 'reverse_lunge_detector.dart';
+import 'high_knee_detector.dart';
+import 'cross_body_knee_raise_detector.dart';
 import 'plank_detector.dart';
 import 'pose_rep_detector.dart';
 import 'push_up_detector.dart';
 import 'squat_detector.dart';
 
-enum PoseExerciseType { squat, lunge, pushUp, plank }
+enum PoseExerciseType {
+  squat,
+  lunge,
+  pushUp,
+  plank,
+  reverseLunge,
+  highKnee,
+  crossBodyKneeRaise,
+}
 
 /// Creates the correct deterministic detector for the prepared movement.
 ///
@@ -21,6 +32,9 @@ class MovementDetectorFactory {
     return switch (movement) {
       PoseExerciseType.squat => SquatDetector(),
       PoseExerciseType.lunge => LungeDetector(),
+      PoseExerciseType.reverseLunge => ReverseLungeDetector(),
+      PoseExerciseType.highKnee => HighKneeDetector(),
+      PoseExerciseType.crossBodyKneeRaise => CrossBodyKneeRaiseDetector(),
       PoseExerciseType.pushUp => PushUpDetector(),
       PoseExerciseType.plank => PlankDetector(
         requiredHoldDuration: _requirePlankDuration(requiredPlankHoldDuration),

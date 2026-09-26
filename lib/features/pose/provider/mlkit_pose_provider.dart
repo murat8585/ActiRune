@@ -58,7 +58,7 @@ class MlKitPoseProvider implements PoseProvider {
     JointPoint? p(PoseLandmarkType type) {
       final l = pose.landmarks[type];
       if (l == null) return null;
-      return JointPoint(x: l.x, y: l.y, confidence: l.likelihood);
+      return JointPoint(x: l.x, y: l.y, z: l.z, confidence: l.likelihood);
     }
 
     final pairs = <Joint, PoseLandmarkType>{

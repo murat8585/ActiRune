@@ -40,13 +40,10 @@ enum _CalibrationFlowStep { inputs, cameraPrep, movements }
 class FirstCalibrationFlowScreen extends StatefulWidget {
   const FirstCalibrationFlowScreen({
     super.key,
-    this.requiredPlankHoldDuration,
     this.cameraSessionFactory = createProductionCalibrationCameraSession,
     this.settingsLauncher = const AppSettingsLauncher(),
   });
 
-  /// A product-owned target. Null deliberately blocks Plank verification.
-  final Duration? requiredPlankHoldDuration;
   final CalibrationCameraSessionFactory cameraSessionFactory;
   final AppSettingsLauncher settingsLauncher;
 
@@ -131,22 +128,21 @@ class _FirstCalibrationFlowScreenState extends State<FirstCalibrationFlowScreen>
   String _movementLabel(CalibrationMovement movement) {
     return switch (movement) {
       CalibrationMovement.squat => 'Squat',
-      CalibrationMovement.lunge => 'Lunge',
-      CalibrationMovement.pushUp => 'Push-up',
-      CalibrationMovement.plank => 'Plank',
+      CalibrationMovement.reverseLunge => 'Geri Lunge',
+      CalibrationMovement.highKnee => 'Diz Kaldırma',
+      CalibrationMovement.crossBodyKneeRaise => 'Çapraz Diz-Dirsek',
     };
   }
 
   String _movementPrompt(CalibrationMovement movement) {
     return switch (movement) {
-      CalibrationMovement.squat =>
-        'Kadrajda kalıp bir kontrollü Squat tamamla.',
-      CalibrationMovement.lunge =>
-        'İki bacağın da görünürken bir kontrollü Lunge tamamla.',
-      CalibrationMovement.pushUp =>
-        'Gövden ve kolların görünürken bir kontrollü Push-up tamamla.',
-      CalibrationMovement.plank =>
-        'Gövde çizgini koruyarak ürünün tanımlı Plank süresini tamamla.',
+      CalibrationMovement.squat => 'Kontrollü çömel ve tekrar ayağa kalk.',
+      CalibrationMovement.reverseLunge =>
+        'Kameraya dön. Bir ayağını geriye al, kontrollü alçal ve ayağa dön.',
+      CalibrationMovement.highKnee =>
+        'Bir dizini kontrollü biçimde yukarı kaldır ve indir.',
+      CalibrationMovement.crossBodyKneeRaise =>
+        'Bir dizini kaldırırken karşı dirseğini dize yaklaştır.',
     };
   }
 
@@ -198,10 +194,7 @@ class _FirstCalibrationFlowScreenState extends State<FirstCalibrationFlowScreen>
       experienceKey: experienceKey,
     );
     _preferences = Map.unmodifiable(preferences);
-    final sequence = CalibrationMovementSequence(
-      preferences: _preferences,
-      requiredPlankHoldDuration: widget.requiredPlankHoldDuration,
-    );
+    final sequence = CalibrationMovementSequence(preferences: _preferences);
     _sequence = sequence;
     _cameraSession = widget.cameraSessionFactory(
       detector: sequence,

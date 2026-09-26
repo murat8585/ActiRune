@@ -10,12 +10,10 @@ import 'first_calibration_engine.dart';
 class CalibrationMovementSequence implements PoseRepDetector {
   CalibrationMovementSequence({
     required this.preferences,
-    required this.requiredPlankHoldDuration,
     this.detectorFactory = const MovementDetectorFactory(),
   });
 
   final Map<CalibrationMovement, CalibrationMovementPreference> preferences;
-  final Duration? requiredPlankHoldDuration;
   final MovementDetectorFactory detectorFactory;
 
   final Map<CalibrationMovement, CalibrationMovementEvidence> _evidence = {};
@@ -111,21 +109,8 @@ class CalibrationMovementSequence implements PoseRepDetector {
           'Bu hareket kanıtı olmadan kalibrasyon başarılı sayılamaz.';
       return;
     }
-    if (movement == CalibrationMovement.plank &&
-        (requiredPlankHoldDuration == null ||
-            requiredPlankHoldDuration! <= Duration.zero)) {
-      _configurationError =
-          'Plank doğrulama süresi ürün yapılandırmasında tanımlı değil.';
-      return;
-    }
-
     try {
-      _activeDetector = detectorFactory.create(
-        _poseExerciseFor(movement),
-        requiredPlankHoldDuration: movement == CalibrationMovement.plank
-            ? requiredPlankHoldDuration
-            : null,
-      );
+      _activeDetector = detectorFactory.create(_poseExerciseFor(movement));
     } on ArgumentError {
       _configurationError =
           'Bu hareket için doğrulama yapılandırması eksik. Kalibrasyon tamamlanamaz.';
@@ -142,18 +127,19 @@ class CalibrationMovementSequence implements PoseRepDetector {
   static PoseExerciseType _poseExerciseFor(CalibrationMovement movement) {
     return switch (movement) {
       CalibrationMovement.squat => PoseExerciseType.squat,
-      CalibrationMovement.lunge => PoseExerciseType.lunge,
-      CalibrationMovement.pushUp => PoseExerciseType.pushUp,
-      CalibrationMovement.plank => PoseExerciseType.plank,
+      CalibrationMovement.reverseLunge => PoseExerciseType.reverseLunge,
+      CalibrationMovement.highKnee => PoseExerciseType.highKnee,
+      CalibrationMovement.crossBodyKneeRaise =>
+        PoseExerciseType.crossBodyKneeRaise,
     };
   }
 
   static String _exerciseNameFor(CalibrationMovement movement) {
     return switch (movement) {
       CalibrationMovement.squat => 'squat',
-      CalibrationMovement.lunge => 'lunge',
-      CalibrationMovement.pushUp => 'push_up',
-      CalibrationMovement.plank => 'plank',
+      CalibrationMovement.reverseLunge => 'reverse_lunge',
+      CalibrationMovement.highKnee => 'high_knee',
+      CalibrationMovement.crossBodyKneeRaise => 'cross_body_knee_raise',
     };
   }
 }

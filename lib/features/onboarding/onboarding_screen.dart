@@ -31,9 +31,9 @@ class OnboardingScreen extends StatefulWidget {
   /// disabled rather than fabricating calibration success.
   final CalibrationRunner? onRunCalibration;
 
-  /// Receives the non-medical starting profile only after a fail-closed
-  /// calibration assessment succeeds. Persistence remains caller-owned.
-  final ValueChanged<StartingCalibrationProfile>? onCalibrationReady;
+  /// Persists the non-medical starting profile after real evidence succeeds.
+  /// A failed write must not expose a successful result screen.
+  final Future<void> Function(StartingCalibrationProfile)? onCalibrationReady;
   final Future<void> Function()? onSkipCalibration;
 
   /// Optional seam for tests/embedding. Production falls back to `/app`.
@@ -58,33 +58,49 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     if (runner == null || _calibrationInFlight) return;
 
     setState(() => _calibrationInFlight = true);
-    FirstCalibrationAssessment? assessment;
     try {
-      assessment = await runner();
-    } catch (error) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Kalibrasyon başlatılamadı. Yeniden deneyebilirsin.'),
-          ),
-        );
+      FirstCalibrationAssessment? assessment;
+      try {
+        assessment = await runner();
+      } catch (_) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                'Kalibrasyon başlatılamadı. Yeniden deneyebilirsin.',
+              ),
+            ),
+          );
+        }
+        return;
       }
+
+      if (!mounted ||
+          assessment == null ||
+          !assessment.readyForStartingProfile) {
+        return;
+      }
+      final startingProfile = assessment.startingProfile;
+      if (startingProfile == null) return;
+
+      try {
+        await widget.onCalibrationReady?.call(startingProfile);
+      } catch (_) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Kalibrasyon sonucu kaydedilemedi. Yeniden dene.'),
+            ),
+          );
+        }
+        return;
+      }
+      if (mounted) setState(() => _phase = _OnboardingPhase.calibrationResult);
     } finally {
       if (mounted) {
         setState(() => _calibrationInFlight = false);
       }
     }
-
-    if (!mounted || assessment == null || !assessment.readyForStartingProfile) {
-      return;
-    }
-
-    final startingProfile = assessment.startingProfile;
-    if (startingProfile == null) return;
-
-    widget.onCalibrationReady?.call(startingProfile);
-    if (!mounted) return;
-    setState(() => _phase = _OnboardingPhase.calibrationResult);
   }
 
   void _enterApp() {
@@ -98,7 +114,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   Future<void> _skipCalibration() async {
     final skip = widget.onSkipCalibration;
-    if (skip == null || _skipInFlight) return;
+    if (skip == null || _skipInFlight || _calibrationInFlight) return;
     setState(() => _skipInFlight = true);
     try {
       await skip();
@@ -125,12 +141,15 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           onAccessibility: widget.onAccessibility,
         ),
         _OnboardingPhase.firstCalibration => FirstCalibrationScreen(
-          enabled: widget.onRunCalibration != null && !_calibrationInFlight,
+          enabled:
+              widget.onRunCalibration != null &&
+              !_calibrationInFlight &&
+              !_skipInFlight,
           onStartCalibration: _runCalibration,
           onSkipCalibration: widget.onSkipCalibration == null
               ? null
               : _skipCalibration,
-          skipEnabled: !_skipInFlight,
+          skipEnabled: !_skipInFlight && !_calibrationInFlight,
         ),
         _OnboardingPhase.calibrationResult => CalibrationResultScreen(
           onStartAdventure: _enterApp,

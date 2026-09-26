@@ -67,4 +67,35 @@ void main() {
       expect(restored.hasCompletedCalibration, isFalse);
     },
   );
+
+  test('P5A completed schema never reinterprets generic lunge', () async {
+    SharedPreferences.setMockInitialValues({});
+    final preferences = await SharedPreferences.getInstance();
+    await preferences.setString(
+      SharedPreferencesCalibrationStateStore.storageKey,
+      '{"status":"completed","startingProfile":{"goalKey":"x",'
+      '"preferredSessionMinutes":20,"experienceKey":"x",'
+      '"movementPreferences":[{"movement":"squat","suitability":"standard"},'
+      '{"movement":"lunge","suitability":"standard"},'
+      '{"movement":"pushUp","suitability":"standard"},'
+      '{"movement":"plank","suitability":"standard"}]}}',
+    );
+    final restored = await SharedPreferencesCalibrationStateStore(
+      preferences,
+    ).read();
+    expect(restored.status, CalibrationStatus.inProgress);
+    expect(restored.hasCompletedCalibration, isFalse);
+  });
+
+  test('P5A skipped state remains readable without schema version', () async {
+    SharedPreferences.setMockInitialValues({
+      SharedPreferencesCalibrationStateStore.storageKey: '{"status":"skipped"}',
+    });
+    final preferences = await SharedPreferences.getInstance();
+    final restored = await SharedPreferencesCalibrationStateStore(
+      preferences,
+    ).read();
+    expect(restored.status, CalibrationStatus.skipped);
+    expect(restored.startingProfile, isNull);
+  });
 }

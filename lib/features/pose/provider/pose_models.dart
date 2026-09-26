@@ -20,10 +20,14 @@ class JointPoint {
     required this.x,
     required this.y,
     required this.confidence,
+    this.z,
   });
   final double x;
   final double y;
   final double confidence;
+
+  /// Experimental ML Kit depth relative to the hips; absent in legacy frames.
+  final double? z;
 }
 
 class PoseFrame {

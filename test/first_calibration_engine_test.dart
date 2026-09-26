@@ -55,14 +55,14 @@ void main() {
     );
   });
 
-  test('all four core movements need preference and concrete evidence', () {
+  test('all four standing movements need preference and concrete evidence', () {
     final preferences =
         Map<CalibrationMovement, CalibrationMovementPreference>.from(
           _validPreferences(),
-        )..remove(CalibrationMovement.plank);
+        )..remove(CalibrationMovement.crossBodyKneeRaise);
     final evidence = Map<CalibrationMovement, CalibrationMovementEvidence>.from(
       _validEvidence(),
-    )..remove(CalibrationMovement.lunge);
+    )..remove(CalibrationMovement.reverseLunge);
 
     final assessment = engine.evaluate(
       _validInput(preferences: preferences, evidence: evidence),
@@ -73,7 +73,7 @@ void main() {
       contains(
         const CalibrationBlocker(
           code: CalibrationBlockerCode.movementPreferenceMissing,
-          movement: CalibrationMovement.plank,
+          movement: CalibrationMovement.crossBodyKneeRaise,
         ),
       ),
     );
@@ -82,7 +82,7 @@ void main() {
       contains(
         const CalibrationBlocker(
           code: CalibrationBlockerCode.movementEvidenceMissing,
-          movement: CalibrationMovement.lunge,
+          movement: CalibrationMovement.reverseLunge,
         ),
       ),
     );
@@ -97,8 +97,8 @@ void main() {
               _validPreferences(),
             )
             ..[CalibrationMovement
-                .pushUp] = const CalibrationMovementPreference(
-              movement: CalibrationMovement.pushUp,
+                .highKnee] = const CalibrationMovementPreference(
+              movement: CalibrationMovement.highKnee,
               suitability: CalibrationMovementSuitability.alternativeRequired,
             );
 
@@ -109,7 +109,7 @@ void main() {
         contains(
           const CalibrationBlocker(
             code: CalibrationBlockerCode.alternativeMissing,
-            movement: CalibrationMovement.pushUp,
+            movement: CalibrationMovement.highKnee,
           ),
         ),
       );
@@ -118,7 +118,7 @@ void main() {
         contains(
           const CalibrationBlocker(
             code: CalibrationBlockerCode.evidencePreferenceMismatch,
-            movement: CalibrationMovement.pushUp,
+            movement: CalibrationMovement.highKnee,
           ),
         ),
       );
@@ -126,27 +126,28 @@ void main() {
   );
 
   test(
-    'easy Push-up alternative can be accepted without inventing difficulty',
+    'named High Knee alternative can be accepted without inventing difficulty',
     () {
       final preferences =
           Map<CalibrationMovement, CalibrationMovementPreference>.from(
               _validPreferences(),
             )
             ..[CalibrationMovement
-                .pushUp] = const CalibrationMovementPreference(
-              movement: CalibrationMovement.pushUp,
+                .highKnee] = const CalibrationMovementPreference(
+              movement: CalibrationMovement.highKnee,
               suitability: CalibrationMovementSuitability.alternativeRequired,
-              alternativeKey: 'easy-push-up-variant',
+              alternativeKey: 'supported-high-knee-variant',
             );
       final evidence =
           Map<CalibrationMovement, CalibrationMovementEvidence>.from(
               _validEvidence(),
             )
-            ..[CalibrationMovement.pushUp] = const CalibrationMovementEvidence(
-              movement: CalibrationMovement.pushUp,
-              status: CalibrationEvidenceStatus.alternativeVerified,
-              evidenceId: 'attempt-push-up-alt-1',
-            );
+            ..[CalibrationMovement.highKnee] =
+                const CalibrationMovementEvidence(
+                  movement: CalibrationMovement.highKnee,
+                  status: CalibrationEvidenceStatus.alternativeVerified,
+                  evidenceId: 'attempt-high-knee-alt-1',
+                );
 
       final assessment = engine.evaluate(
         _validInput(preferences: preferences, evidence: evidence),
@@ -156,9 +157,9 @@ void main() {
       expect(
         assessment
             .startingProfile!
-            .movementPreferences[CalibrationMovement.pushUp]!
+            .movementPreferences[CalibrationMovement.highKnee]!
             .alternativeKey,
-        'easy-push-up-variant',
+        'supported-high-knee-variant',
       );
     },
   );

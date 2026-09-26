@@ -115,7 +115,7 @@ void main() {
       MaterialApp(
         home: OnboardingScreen(
           onRunCalibration: () async => _calibrationAssessment(),
-          onCalibrationReady: profiles.add,
+          onCalibrationReady: (profile) async => profiles.add(profile),
         ),
       ),
     );
@@ -131,6 +131,27 @@ void main() {
     expect(profiles.single.goalKey, 'general-fitness');
     expect(profiles.single.preferredSessionMinutes, 20);
     expect(profiles.single.experienceKey, 'starter');
+  });
+
+  testWidgets('failed completed-profile write keeps result closed', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: OnboardingScreen(
+          onRunCalibration: () async => _calibrationAssessment(),
+          onCalibrationReady: (_) async => throw StateError('write failed'),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await startWelcome(tester);
+    await tester.tap(
+      find.byKey(const ValueKey('artwork-hotspot-first-calibration.start')),
+    );
+    await tester.pumpAndSettle();
+    expect(find.byType(FirstCalibrationScreen), findsOneWidget);
+    expect(find.byType(CalibrationResultScreen), findsNothing);
   });
 
   testWidgets(

@@ -63,6 +63,7 @@ class SharedPreferencesCalibrationStateStore implements CalibrationStateStore {
   SharedPreferencesCalibrationStateStore(this.preferences);
 
   static const storageKey = 'actirune.calibration_state.v1';
+  static const schemaVersion = 2;
 
   final SharedPreferences preferences;
 
@@ -83,6 +84,12 @@ class SharedPreferencesCalibrationStateStore implements CalibrationStateStore {
         return CalibrationAppState(status: status);
       }
 
+      // P5A completed profiles used the old four-movement enum. Never map
+      // generic lunge or floor movements into a standing-calibration result.
+      if (decoded['schemaVersion'] != schemaVersion) {
+        return const CalibrationAppState.inProgress();
+      }
+
       final profileJson = decoded['startingProfile'];
       if (profileJson is! Map<String, dynamic>) {
         return const CalibrationAppState.inProgress();
@@ -96,8 +103,12 @@ class SharedPreferencesCalibrationStateStore implements CalibrationStateStore {
 
   @override
   Future<void> write(CalibrationAppState state) async {
-    final data = <String, Object?>{'status': state.status.name};
+    final data = <String, Object?>{
+      'schemaVersion': schemaVersion,
+      'status': state.status.name,
+    };
     if (state.hasCompletedCalibration) {
+      _validateProfile(state.startingProfile!);
       data['startingProfile'] = _profileToJson(state.startingProfile!);
     }
     final saved = await preferences.setString(storageKey, jsonEncode(data));
@@ -152,11 +163,41 @@ class SharedPreferencesCalibrationStateStore implements CalibrationStateStore {
       throw const FormatException('Incomplete movement preferences');
     }
 
-    return StartingCalibrationProfile(
+    if (json['goalKey'] is! String ||
+        (json['goalKey'] as String).trim().isEmpty ||
+        json['preferredSessionMinutes'] is! int ||
+        (json['preferredSessionMinutes'] as int) <= 0 ||
+        json['experienceKey'] is! String ||
+        (json['experienceKey'] as String).trim().isEmpty) {
+      throw const FormatException('Invalid starting profile');
+    }
+
+    final profile = StartingCalibrationProfile(
       goalKey: json['goalKey'] as String,
       preferredSessionMinutes: json['preferredSessionMinutes'] as int,
       experienceKey: json['experienceKey'] as String,
       movementPreferences: preferences,
     );
+    _validateProfile(profile);
+    return profile;
+  }
+
+  static void _validateProfile(StartingCalibrationProfile profile) {
+    final preferences = profile.movementPreferences;
+    if (profile.goalKey.trim().isEmpty ||
+        profile.preferredSessionMinutes <= 0 ||
+        profile.experienceKey.trim().isEmpty ||
+        preferences.length != CalibrationMovement.values.length ||
+        CalibrationMovement.values.any((movement) {
+          final preference = preferences[movement];
+          return preference == null ||
+              preference.movement != movement ||
+              (preference.suitability ==
+                      CalibrationMovementSuitability.alternativeRequired &&
+                  (preference.alternativeKey == null ||
+                      preference.alternativeKey!.trim().isEmpty));
+        })) {
+      throw const FormatException('Invalid completed calibration profile');
+    }
   }
 }

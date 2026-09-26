@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 
-enum CalibrationMovement { squat, lunge, pushUp, plank }
+enum CalibrationMovement { squat, reverseLunge, highKnee, crossBodyKneeRaise }
 
 enum CalibrationMovementSuitability { standard, alternativeRequired }
 
