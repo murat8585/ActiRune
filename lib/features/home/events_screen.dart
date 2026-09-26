@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 
 import '../../core/widgets/artwork_interaction_surface.dart';
+import '../../core/widgets/artwork_sample_mask.dart';
 import 'home_preview_dialog.dart';
+import 'local_event_state.dart';
+
+export 'local_event_state.dart' show EventsFilter;
 
 enum EventsRootDestination { home, adventure, battle, hero, profile }
-
-enum EventsFilter { active, upcoming, completed }
 
 class EventsScreen extends StatefulWidget {
   const EventsScreen({
@@ -15,6 +17,7 @@ class EventsScreen extends StatefulWidget {
     this.onFeaturedEvent,
     this.onFilter,
     this.onEvent,
+    this.eventOwner = const LocalEventOwner(),
     this.onRootNavigate,
     this.battleRootEnabled = true,
   });
@@ -27,7 +30,8 @@ class EventsScreen extends StatefulWidget {
   final VoidCallback? onInfo;
   final VoidCallback? onFeaturedEvent;
   final ValueChanged<EventsFilter>? onFilter;
-  final ValueChanged<int>? onEvent;
+  final ValueChanged<String>? onEvent;
+  final LocalEventOwner eventOwner;
   final ValueChanged<EventsRootDestination>? onRootNavigate;
   final bool battleRootEnabled;
 
@@ -37,6 +41,9 @@ class EventsScreen extends StatefulWidget {
 
 class _EventsScreenState extends State<EventsScreen> {
   EventsFilter selectedFilter = EventsFilter.active;
+
+  List<EventReference> get visibleEvents =>
+      widget.eventOwner.visibleFor(selectedFilter);
 
   Rect _filterRect(EventsFilter filter) {
     return switch (filter) {
@@ -92,16 +99,18 @@ class _EventsScreenState extends State<EventsScreen> {
 
   ArtworkHotspot _eventHotspot({
     required int index,
-    required String semanticLabel,
     required Rect normalizedRect,
   }) {
     final callback = widget.onEvent;
+    final event = index < visibleEvents.length ? visibleEvents[index] : null;
     return ArtworkHotspot(
       id: 'events.event-$index',
-      semanticLabel: semanticLabel,
+      semanticLabel: event?.title ?? 'Etkinlik yok',
       normalizedRect: normalizedRect,
-      enabled: callback != null,
-      onTap: callback == null ? () {} : () => callback(index),
+      enabled: callback != null && event != null,
+      onTap: callback == null || event == null
+          ? () {}
+          : () => callback(event.id),
     );
   }
 
@@ -135,6 +144,24 @@ class _EventsScreenState extends State<EventsScreen> {
           assetPath: EventsScreen.artworkAsset,
           sourceSize: EventsScreen.artworkSize,
           overlays: [
+            const ArtworkOverlay(
+              id: 'events-sample-balances',
+              normalizedRect: Rect.fromLTWH(.32, .005, .57, .045),
+              child: ArtworkSampleMask(label: 'Canlı hesap verisi bağlı değil'),
+            ),
+            const ArtworkOverlay(
+              id: 'events-featured-sample',
+              normalizedRect: Rect.fromLTWH(.035, .215, .93, .245),
+              child: ArtworkSampleMask(
+                label:
+                    'Rune Fırtınası • görsel örnek\nCanlı takvim, ilerleme ve ödül verisi bağlı değil',
+              ),
+            ),
+            ArtworkOverlay(
+              id: 'events-owned-records',
+              normalizedRect: const Rect.fromLTWH(.02, .525, .948, .31),
+              child: _EventReferencePanel(events: visibleEvents),
+            ),
             ArtworkOverlay(
               id: 'events.filter-selection-${selectedFilter.name}',
               normalizedRect: _filterRect(selectedFilter),
@@ -180,17 +207,14 @@ class _EventsScreenState extends State<EventsScreen> {
             ),
             _eventHotspot(
               index: 0,
-              semanticLabel: 'Rune Fırtınası',
               normalizedRect: const Rect.fromLTWH(0.020, 0.525, 0.948, 0.097),
             ),
             _eventHotspot(
               index: 1,
-              semanticLabel: 'Hareket Ustası Haftası',
               normalizedRect: const Rect.fromLTWH(0.020, 0.630, 0.948, 0.097),
             ),
             _eventHotspot(
               index: 2,
-              semanticLabel: 'Kadim Vadi Mücadelesi',
               normalizedRect: const Rect.fromLTWH(0.020, 0.735, 0.948, 0.097),
             ),
             _rootHotspot(
@@ -223,4 +247,51 @@ class _EventsScreenState extends State<EventsScreen> {
       ),
     );
   }
+}
+
+class _EventReferencePanel extends StatelessWidget {
+  const _EventReferencePanel({required this.events});
+
+  final List<EventReference> events;
+
+  @override
+  Widget build(BuildContext context) => DecoratedBox(
+    decoration: BoxDecoration(
+      color: const Color(0xF0081A30),
+      border: Border.all(color: const Color(0xFFD8B873)),
+      borderRadius: BorderRadius.circular(12),
+    ),
+    child: Column(
+      children: [
+        const Padding(
+          padding: EdgeInsets.all(6),
+          child: Text(
+            'GÖRSEL ÖRNEKLER • canlı etkinlik takvimi bağlı değil',
+            textAlign: TextAlign.center,
+            style: TextStyle(color: Color(0xFFFFD991), fontSize: 11),
+          ),
+        ),
+        if (events.isEmpty)
+          const Expanded(
+            child: Center(
+              child: Text(
+                'Bu filtrede doğrulanmış etkinlik kaydı yok',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          )
+        else
+          for (final event in events)
+            Expanded(
+              child: Center(
+                child: Text(
+                  event.title,
+                  key: ValueKey('event-record-${event.id}'),
+                  style: const TextStyle(color: Colors.white, fontSize: 17),
+                ),
+              ),
+            ),
+      ],
+    ),
+  );
 }

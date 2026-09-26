@@ -168,6 +168,11 @@ void main() {
       await tapHotspot(tester, 'event-detail.close');
       expect(find.byType(EventsScreen), findsOneWidget);
 
+      expect(
+        find.byKey(const ValueKey('event-record-rune-storm')),
+        findsNothing,
+      );
+      await tapHotspot(tester, 'events.filter-active');
       for (final index in <int>[0, 1, 2]) {
         await tapHotspot(tester, 'events.event-$index');
         expect(find.byType(EventDetailPopup), findsOneWidget);

@@ -17,6 +17,7 @@ import '../features/home/daily_summary_popup.dart';
 import '../features/home/event_detail_popup.dart';
 import '../features/home/events_screen.dart';
 import '../features/home/home_screen.dart';
+import '../features/home/local_event_state.dart';
 import '../features/home/home_preview_dialog.dart';
 import '../features/home/quest_center_screen.dart';
 import '../features/home/rune_inbox_screen.dart';
@@ -213,7 +214,8 @@ class _MainShellState extends State<MainShell> {
     );
   }
 
-  Future<void> _openEventDetail(BuildContext context) async {
+  Future<void> _openEventDetail(BuildContext context, String eventId) async {
+    final event = const LocalEventOwner().byId(eventId);
     await showGeneralDialog<void>(
       context: context,
       barrierDismissible: false,
@@ -221,11 +223,24 @@ class _MainShellState extends State<MainShell> {
       barrierColor: Colors.transparent,
       transitionDuration: Duration.zero,
       pageBuilder: (dialogContext, _, _) => EventDetailPopup(
+        event: event,
         onClose: () => Navigator.of(dialogContext).pop(),
-        onJoin: () => _showUnavailable(dialogContext, 'Etkinliğe Katıl'),
-        onViewTasks: () =>
-            _showUnavailable(dialogContext, 'Etkinlik Görevleri'),
-        onTask: (_) => _showUnavailable(dialogContext, 'Etkinlik Görevi'),
+        onJoin: () => _showUnavailable(
+          dialogContext,
+          'Etkinliğe Katıl',
+          message:
+              'Canlı katılım sahibi bağlı değil; ${event.title} için katılım kaydedilmedi.',
+        ),
+        onViewTasks: () => _showUnavailable(
+          dialogContext,
+          'Etkinlik Görevleri',
+          message: '${event.title} için doğrulanmış görev kaydı bağlı değil.',
+        ),
+        onTask: (_) => _showUnavailable(
+          dialogContext,
+          'Etkinlik Görevi',
+          message: '${event.title} için doğrulanmış görev kaydı bağlı değil.',
+        ),
       ),
     );
   }
@@ -332,8 +347,9 @@ class _MainShellState extends State<MainShell> {
       MaterialPageRoute<void>(
         builder: (routeContext) => EventsScreen(
           onBack: () => Navigator.of(routeContext).pop(),
-          onFeaturedEvent: () => _openEventDetail(routeContext),
-          onEvent: (_) => _openEventDetail(routeContext),
+          onFeaturedEvent: () =>
+              _openEventDetail(routeContext, LocalEventOwner.runeStorm.id),
+          onEvent: (eventId) => _openEventDetail(routeContext, eventId),
           onRootNavigate: (next) =>
               _closeChildStackAndSelect(routeContext, next.name),
           battleRootEnabled: true,

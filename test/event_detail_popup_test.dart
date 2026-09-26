@@ -27,6 +27,10 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byType(EventDetailPopup), findsOneWidget);
+    expect(
+      tester.widget<EventDetailPopup>(find.byType(EventDetailPopup)).event.id,
+      'rune-storm',
+    );
 
     await tester.tap(
       find.byKey(const ValueKey('artwork-hotspot-events.nav-profile')),
@@ -56,7 +60,49 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byType(EventDetailPopup), findsOneWidget);
+    expect(
+      tester.widget<EventDetailPopup>(find.byType(EventDetailPopup)).event.id,
+      'movement-master-week',
+    );
+    expect(
+      find.descendant(
+        of: find.byType(EventDetailPopup),
+        matching: find.text('Hareket Ustası Haftası'),
+      ),
+      findsOneWidget,
+    );
   });
+
+  testWidgets(
+    'Kadim Vadi retains its own detail identity and join is blocked',
+    (tester) async {
+      await tester.pumpWidget(const MaterialApp(home: MainShell()));
+      await tester.pumpAndSettle();
+      await openEvents(tester);
+      await tester.tap(
+        find.byKey(const ValueKey('artwork-hotspot-events.event-2')),
+      );
+      await tester.pumpAndSettle();
+
+      final detail = tester.widget<EventDetailPopup>(
+        find.byType(EventDetailPopup),
+      );
+      expect(detail.event.id, 'ancient-valley-challenge');
+      expect(
+        find.descendant(
+          of: find.byType(EventDetailPopup),
+          matching: find.text('Kadim Vadi Mücadelesi'),
+        ),
+        findsOneWidget,
+      );
+
+      await tester.tap(
+        find.byKey(const ValueKey('artwork-hotspot-event-detail.join')),
+      );
+      await tester.pumpAndSettle();
+      expect(find.textContaining('katılım kaydedilmedi'), findsOneWidget);
+    },
+  );
 
   testWidgets('Event Detail action hotspots dispatch independently', (
     tester,

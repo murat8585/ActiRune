@@ -45,7 +45,7 @@ void main() {
     tester,
   ) async {
     EventsFilter? selectedFilter;
-    int? selectedEvent;
+    String? selectedEvent;
     var featuredCount = 0;
 
     await tester.pumpWidget(
@@ -76,12 +76,28 @@ void main() {
       ),
       findsOneWidget,
     );
+    expect(find.byKey(const ValueKey('event-record-rune-storm')), findsNothing);
+    expect(
+      find.text('Bu filtrede doğrulanmış etkinlik kaydı yok'),
+      findsOneWidget,
+    );
 
+    await tester.tap(
+      find.byKey(const ValueKey('artwork-hotspot-events.event-2')),
+      warnIfMissed: false,
+    );
+    await tester.pump();
+    expect(selectedEvent, isNull);
+
+    await tester.tap(
+      find.byKey(const ValueKey('artwork-hotspot-events.filter-active')),
+    );
+    await tester.pump();
     await tester.tap(
       find.byKey(const ValueKey('artwork-hotspot-events.event-2')),
     );
     await tester.pump();
-    expect(selectedEvent, 2);
+    expect(selectedEvent, 'ancient-valley-challenge');
   });
 
   testWidgets('Home Events info and filters use local preview behavior', (
