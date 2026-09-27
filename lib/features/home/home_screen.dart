@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import '../../core/design/actirune_theme.dart';
-import '../../core/design/rune_card.dart';
-import '../battle/battle_screen.dart';
+import 'package:go_router/go_router.dart';
+import '../../core/ui/clean_base_assets.dart';
+import '../../core/ui/clean_base_overlay.dart';
+import '../../core/ui/clean_base_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -9,147 +10,43 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.all(16),
-          children: [
-            Row(
-              children: [
-                const CircleAvatar(child: Icon(Icons.person)),
-                const SizedBox(width: 12),
-                const Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Orin',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      Text('Lv. 8   320 / 600 XP'),
-                    ],
-                  ),
-                ),
-                IconButton(onPressed: () {}, icon: const Icon(Icons.settings)),
-              ],
-            ),
-            const SizedBox(height: 16),
-            Container(
-              height: 380,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(24),
-                gradient: const LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Color(0xFF15466A),
-                    Color(0xFF09243A),
-                    Color(0xFF061729),
-                  ],
-                ),
-              ),
-              child: const Stack(
-                children: [
-                  Positioned(
-                    top: 20,
-                    right: 20,
-                    child: RuneCard(child: Text('YEŞİL VADİ\nBölüm 3-2')),
-                  ),
-                  Center(
-                    child: Icon(
-                      Icons.shield,
-                      size: 150,
-                      color: ActiRuneColors.gold,
-                    ),
-                  ),
-                  Positioned(
-                    left: 20,
-                    bottom: 28,
-                    child: Text(
-                      'Vadi Muhafızı\nZırh %63',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 16),
-            SizedBox(
-              height: 62,
-              child: FilledButton.icon(
-                onPressed: () => Navigator.of(
-                  context,
-                ).push(MaterialPageRoute(builder: (_) => const BattleScreen())),
-                icon: const Icon(Icons.sports_martial_arts),
-                label: const Text(
-                  'SAVAŞA DEVAM ET',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
-            const Row(
-              children: [
-                Expanded(
-                  child: RuneCard(
-                    child: Column(
-                      children: [
-                        Text('Bugünün Macerası'),
-                        Text(
-                          '2 / 4',
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                SizedBox(width: 8),
-                Expanded(
-                  child: RuneCard(
-                    child: Column(
-                      children: [
-                        Text('Haftalık Yolculuk'),
-                        Text(
-                          '3 / 5',
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                SizedBox(width: 8),
-                Expanded(
-                  child: RuneCard(
-                    child: Column(
-                      children: [
-                        Text('Aktif Seri'),
-                        Text(
-                          '4 gün',
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
+      body: CleanBaseScreen(
+        assetPath: CleanBaseAssets.home,
+        children: [
+          // Quest shortcut in the left-side action rail.
+          CleanBaseHotspot(
+            left: 0,
+            top: 330,
+            width: 170,
+            height: 250,
+            semanticLabel: 'Görev Merkezi',
+            onTap: () => context.go('/app/quests'),
+          ),
+          ..._bottomNavigation(context, activeIndex: 0),
+        ],
       ),
     );
   }
+}
+
+List<Widget> _bottomNavigation(BuildContext context, {required int activeIndex}) {
+  const routes = <String?>[
+    '/app',
+    '/app/adventure',
+    '/app/battle/prep',
+    '/app/hero',
+    null,
+  ];
+  const labels = ['Ana Dünya', 'Macera', 'Savaş', 'Kahraman', 'Profil'];
+  return List<Widget>.generate(5, (index) {
+    final route = routes[index];
+    return CleanBaseHotspot(
+      left: index * 216.0,
+      top: 1690,
+      width: 216,
+      height: 230,
+      semanticLabel: labels[index],
+      onTap: route == null || index == activeIndex ? () {} : () => context.go(route),
+    );
+  });
 }
