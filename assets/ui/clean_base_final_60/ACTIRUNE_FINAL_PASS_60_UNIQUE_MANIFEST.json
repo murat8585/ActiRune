@@ -1,5 +1,6 @@
 {
   "count": 60,
+  "unique_sha256_count": 60,
   "files": [
     {
       "file": "01__ORIGINAL_OUTPUT_22__PASS.png",
@@ -107,74 +108,74 @@
       "size_bytes": 2613177
     },
     {
-      "file": "22__EARLY_RETRY_POS_11__PASS.png",
+      "file": "22__EARLY_QA_POS_08__PASS.png",
+      "sha256": "BEB139A2905D2D9C8661833E5FC24CC4438D82D0A6E24F4C3BD74D25AB742C2A",
+      "size_bytes": 2359740
+    },
+    {
+      "file": "23__EARLY_QA_POS_11__PASS.png",
       "sha256": "B19465D9ACEA28C64A7246B45A5C821652FB5813E4BAF13C6965EE223275175F",
       "size_bytes": 2238037
     },
     {
-      "file": "23__EARLY_RETRY_POS_15__PASS.png",
-      "sha256": "61F5181BE0B1FDDF7E198A7124D657F269306B68214B958A78D9D43EA521FD91",
-      "size_bytes": 2750703
+      "file": "24__EARLY_QA_POS_12__PASS.png",
+      "sha256": "9CFA2CB45DCBED50ABC9A08379E8D293B394713A4063C3653285A7E6AFC07055",
+      "size_bytes": 2219991
     },
     {
-      "file": "24__EARLY_RETRY_POS_16__PASS.png",
-      "sha256": "3BA2682C8276D710CC8EE1558C302250D79B1D3957D6CA678DE30E1BD724A1AE",
-      "size_bytes": 2726947
+      "file": "25__EARLY_QA_POS_13__PASS.png",
+      "sha256": "D2A119EACF34825406DD401125F6C143FE153EE6AB7DF60B6D5460D26F6DDD8A",
+      "size_bytes": 2659897
     },
     {
-      "file": "25__EARLY_RETRY_POS_18__PASS.png",
-      "sha256": "570BD689E30444AC2D4CF9532A4369CFEC26470D4F8212B431F4AC2F4F0F0BF4",
-      "size_bytes": 2698314
+      "file": "26__EARLY_QA_POS_19__PASS.png",
+      "sha256": "768692AAF460FF1A142D25ED70398F61C6A264D50AF63AE4616E543F3E39E5CE",
+      "size_bytes": 2666685
     },
     {
-      "file": "26__EARLY_RETRY_POS_20__PASS.png",
+      "file": "27__EARLY_QA_POS_20__PASS.png",
       "sha256": "CDDE6AFA888EEAEFFB18FCC7202177AFAE3AC884FF05A554A5D0CF998EE319B8",
       "size_bytes": 2783977
     },
     {
-      "file": "27__EARLY_RETRY_POS_21__PASS.png",
+      "file": "28__EARLY_QA_POS_21__PASS.png",
       "sha256": "71D7FDAD6CCA1D2A145CDBFFF4FF7CE9F28079171E933BC698A17C7C2E339874",
       "size_bytes": 2725553
     },
     {
-      "file": "28__EARLY_RETRY_POS_22__PASS.png",
+      "file": "29__EARLY_QA_POS_22__PASS.png",
       "sha256": "2D7DB540082F5D33619826F161559B3FEFF676E63DFC7A3DC191030113A41524",
       "size_bytes": 2728840
     },
     {
-      "file": "29__EARLY_RETRY_POS_23__PASS.png",
+      "file": "30__EARLY_QA_POS_23__PASS.png",
       "sha256": "5B5FEF9471C2D051001AFB763735358ED7F4D3B7ECC2164FCD510CEC032CC69D",
       "size_bytes": 2778047
     },
     {
-      "file": "30__EARLY_RETRY_POS_24__PASS.png",
+      "file": "31__EARLY_QA_POS_24__PASS.png",
       "sha256": "3EE4AF96E68953B715365BE53E6C9EC8331F43D38785C8C554B1F0060A7FC6A7",
       "size_bytes": 2820688
     },
     {
-      "file": "31__EARLY_RETRY_POS_25__PASS.png",
+      "file": "32__EARLY_QA_POS_25__PASS.png",
       "sha256": "61F5181BE0B1FDDF7E198A7124D657F269306B68214B958A78D9D43EA521FD91",
       "size_bytes": 2750703
     },
     {
-      "file": "32__EARLY_RETRY_POS_26__PASS.png",
+      "file": "33__EARLY_QA_POS_26__PASS.png",
       "sha256": "3BA2682C8276D710CC8EE1558C302250D79B1D3957D6CA678DE30E1BD724A1AE",
       "size_bytes": 2726947
     },
     {
-      "file": "33__EARLY_RETRY_POS_27__PASS.png",
+      "file": "34__EARLY_QA_POS_27__PASS.png",
       "sha256": "E38B292162AB9A0397704BAFA50164776E1217E5881DAD3609D4FF0C402656F7",
       "size_bytes": 2905939
     },
     {
-      "file": "34__EARLY_RETRY_POS_28__PASS.png",
+      "file": "35__EARLY_QA_POS_28__PASS.png",
       "sha256": "570BD689E30444AC2D4CF9532A4369CFEC26470D4F8212B431F4AC2F4F0F0BF4",
       "size_bytes": 2698314
-    },
-    {
-      "file": "35__EARLY_RETRY_POS_29__PASS.png",
-      "sha256": "768692AAF460FF1A142D25ED70398F61C6A264D50AF63AE4616E543F3E39E5CE",
-      "size_bytes": 2666685
     },
     {
       "file": "36__LATE_QA_POS_02__PASS.png",
