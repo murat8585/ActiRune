@@ -1,0 +1,43 @@
+name: Export Batch05 Shop Sources
+
+on:
+  push:
+    branches:
+      - codex/export-batch05-shop-sources-20260927
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Collect original Batch 05 source PNGs
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p export
+          cp visual_authority/20260921/current/01_CANONICAL_FINAL/VIS_0221__P1_SHOP_REVISION_FINAL.png export/
+          cp visual_authority/20260921/current/06_CURRENT_STRONG_CHILD_REFERENCES/VIS_0186__CURRENT_SHOP_FEATURED.png export/
+          cp visual_authority/20260921/current/06_CURRENT_STRONG_CHILD_REFERENCES/VIS_0187__CURRENT_SHOP_CRYSTALS.png export/
+          cp visual_authority/20260921/current/06_CURRENT_STRONG_CHILD_REFERENCES/VIS_0188__CURRENT_SHOP_HERO.png export/
+          cp visual_authority/20260921/current/06_CURRENT_STRONG_CHILD_REFERENCES/VIS_0189__CURRENT_SHOP_LUMI.png export/
+          cp visual_authority/20260921/current/06_CURRENT_STRONG_CHILD_REFERENCES/VIS_0190__CURRENT_SHOP_EFFECTS.png export/
+          cp visual_authority/20260921/current/06_CURRENT_STRONG_CHILD_REFERENCES/VIS_0191__CURRENT_SHOP_RUNES_EVENT.png export/
+          cp visual_authority/20260921/current/06_CURRENT_STRONG_CHILD_REFERENCES/VIS_0192__CURRENT_SHOP_STAR_GATE_ALT.png export/
+          cp visual_authority/20260921/current/06_CURRENT_STRONG_CHILD_REFERENCES/VIS_0193__CURRENT_SHOP_PACKAGES.png export/
+          cp visual_authority/20260921/current/06_CURRENT_STRONG_CHILD_REFERENCES/VIS_0194__CURRENT_SHOP_DAILY_DEALS.png export/
+          test "$(find export -maxdepth 1 -type f -name '*.png' | wc -l)" -eq 10
+          sha256sum export/*.png > export/SHA256SUMS.txt
+
+      - name: Upload source bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: ACTIRUNE_BATCH05_ORIGINAL_SOURCES
+          path: export/
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 7
