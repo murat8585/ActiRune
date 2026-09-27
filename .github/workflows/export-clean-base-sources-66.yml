@@ -1,0 +1,121 @@
+name: Export Clean Base Source PNGs 66
+
+on:
+  push:
+    branches:
+      - codex/export-clean-base-sources-66-20260927
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source-export branch
+        uses: actions/checkout@v4
+
+      - name: Collect exact original source PNGs
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf export
+          mkdir -p export
+          cat > expected_sources.txt <<'EOF'
+VIS_0354__CORE_HOME_ANCHOR.png
+VIS_0231__CORE_ADVENTURE_ANCHOR.png
+VIS_0166__CURRENT_BATTLE_PREP_PATCH_BASE.png
+VIS_0171__P1_HERO_MAIN_FINAL.png
+VIS_0227__P1_DAILY_QUESTS_FINAL.png
+VIS_0228__P1_WEEKLY_QUESTS_FINAL.png
+VIS_0226__P1_PERSONAL_DAILY_ADVENTURE_FINAL.png
+VIS_0225__P1_RUNE_SHRINE_READY_FINAL.png
+VIS_0218__P1_WORLD_PROGRESSION_FINAL.png
+VIS_0174__P1_QUEST_CHAIN_FINAL.png
+P0_BATTLE_PREP_FINAL.png
+P0_CAMERA_PREP_FINAL.png
+VIS_0168__CORE_LIVE_BATTLE_ANCHOR.png
+VIS_0353__CORE_FORM_COACH_OVERLAY_ANCHOR.png
+P0_VICTORY_FINAL.png
+P0_DEFEAT_FINAL_CANDIDATE.png
+02_P1_EQUIPMENT_FINAL.png
+03_P1_INVENTORY_FINAL.png
+04_P1_CRAFTING_FINAL.png
+VIS_0178__P1_LUMI_FINAL.png
+05_P1_MOVEMENT_MASTERY_FINAL.png
+VIS_0221__P1_SHOP_REVISION_FINAL.png
+VIS_0215__P1_ACHIEVEMENTS_FINAL.png
+VIS_0175__CURRENT_EQUIPMENT_PATCH_BASE.png
+01_EVENTS_FINAL.png
+06_RUNE_GELEN_KUTUSU_APPROVED_REFERENCE.png
+VIS_0363__CURRENT_INVENTORY_MULTI_CATEGORY_REFERENCE.png
+VIS_0361__CURRENT_INVENTORY_EQUIPMENT_REFERENCE.png
+VIS_0362__CURRENT_INVENTORY_MATERIALS_REFERENCE.png
+VIS_0364__CURRENT_INVENTORY_RUNES_REFERENCE.png
+VIS_0188__CURRENT_SHOP_HERO.png
+03_DAILY_SUMMARY_POPUP_FINAL.png
+04_WEEKLY_LEAGUE_RESULT_POPUP_FINAL.png
+VIS_0173__CURRENT_QUESTS_PARENT_ALT.png
+06_P1_PLAYER_LEVEL_FINAL.png
+VIS_0358__CURRENT_CRAFT_ARMOR_REFERENCE.png
+VIS_0359__CURRENT_CRAFT_RUNES_REFERENCE.png
+VIS_0360__CURRENT_CRAFT_WEAPON_REFERENCE.png
+VIS_0369__CURRENT_MASTERY_MULTI_MOVEMENT_REFERENCE.png
+VIS_0370__CURRENT_MASTERY_SQUAT_REFERENCE.png
+VIS_0365__CURRENT_LUMI_ABILITIES_REFERENCE.png
+VIS_0367__CURRENT_LUMI_BOND_REFERENCE.png
+VIS_0368__CURRENT_LUMI_EVOLUTION_REFERENCE.png
+VIS_0187__CURRENT_SHOP_CRYSTALS.png
+VIS_0190__CURRENT_SHOP_EFFECTS.png
+VIS_0186__CURRENT_SHOP_FEATURED.png
+VIS_0189__CURRENT_SHOP_LUMI.png
+VIS_0191__CURRENT_SHOP_RUNES_EVENT.png
+01_P1_PROFILE_FINAL_REVISION.png
+VIS_0216__P1_PRO_PAYWALL_FINAL.png
+VIS_0219__P1_PRO_FORM_COACH_FINAL.png
+02_RUNE_DOSTLARI_APPROVED_REFERENCE.png
+13_PROFILE_HISTORY_FINAL.png
+VIS_0222__P1_PROFILE_FINAL.png
+VIS_0169__CURRENT_VICTORY_PATCH_BASE.png
+07_P1_SETTINGS_HUB_FINAL.png
+12_SETTINGS_ACCESSIBILITY_FINAL.png
+08_SETTINGS_ACCOUNT_FINAL.png
+09_SETTINGS_NOTIFICATIONS_FINAL.png
+11_SETTINGS_PERMISSIONS_FINAL.png
+10_SETTINGS_PRIVACY_FINAL.png
+VIS_0180__P1_FIRST_CALIBRATION_FINAL.png
+06_CALIBRATION_RESULT_FINAL.png
+VIS_0204__CURRENT_RUNE_EVENT_COUNTDOWN.png
+07_RUNE_SHRINE_RESULT_FINAL.png
+02_EVENT_DETAIL_POPUP_FINAL.png
+EOF
+          expected_count=$(grep -cve '^$' expected_sources.txt)
+          test "$expected_count" -eq 66
+          printf 'filename\trepository_path\tsha256\n' > export/SOURCE_MANIFEST.tsv
+          while IFS= read -r name; do
+            [ -n "$name" ] || continue
+            mapfile -t matches < <(git ls-files | awk -v n="$name" 'BEGIN{FS="/"} $NF==n {print}')
+            if [ "${#matches[@]}" -ne 1 ]; then
+              echo "ERROR: $name expected exactly 1 tracked match, found ${#matches[@]}" >&2
+              printf '%s\n' "${matches[@]:-}" >&2
+              exit 1
+            fi
+            src="${matches[0]}"
+            cp -- "$src" "export/$name"
+            sum=$(sha256sum "export/$name" | awk '{print $1}')
+            printf '%s\t%s\t%s\n' "$name" "$src" "$sum" >> export/SOURCE_MANIFEST.tsv
+          done < expected_sources.txt
+          actual_count=$(find export -maxdepth 1 -type f -name '*.png' | wc -l)
+          test "$actual_count" -eq 66
+          sha256sum export/*.png > export/SHA256SUMS.txt
+          printf 'EXPECTED_SOURCE_COUNT=66\nACTUAL_SOURCE_COUNT=%s\nSOURCE_REF=%s\n' "$actual_count" "${GITHUB_SHA}" > export/VERIFY.txt
+
+      - name: Upload verified source bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: ACTIRUNE_CLEAN_BASE_ORIGINAL_SOURCES_66
+          path: export/
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 7
