@@ -1,0 +1,61 @@
+name: Replace ActiRune final PASS 60 with unique set
+
+on:
+  push:
+    branches:
+      - codex/final-pass-60-assets-20260927
+    paths:
+      - '.github/workflows/replace-final-pass-60-unique.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  replace-assets:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+        with:
+          ref: codex/final-pass-60-assets-20260927
+          fetch-depth: 0
+
+      - name: Download corrected 60-unique package
+        run: |
+          set -euo pipefail
+          curl -fL --retry 3 --retry-delay 2 \
+            'https://at.adobe.com/Lci6EkQQXdH9qdGg' \
+            -o /tmp/actirune-final-60.zip
+
+      - name: Extract and verify 60 unique PNGs
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/actirune-final-60
+          mkdir -p /tmp/actirune-final-60
+          unzip -q /tmp/actirune-final-60.zip -d /tmp/actirune-final-60
+          count=$(find /tmp/actirune-final-60 -maxdepth 1 -type f -name '*.png' | wc -l | tr -d ' ')
+          test "$count" = "60"
+          unique=$(find /tmp/actirune-final-60 -maxdepth 1 -type f -name '*.png' -print0 | sort -z | xargs -0 sha256sum | awk '{print $1}' | sort -u | wc -l | tr -d ' ')
+          test "$unique" = "60"
+          echo "Verified: 60 PNG files, 60 unique SHA-256 hashes."
+
+      - name: Replace final clean-base directory
+        run: |
+          set -euo pipefail
+          rm -rf assets/ui/clean_base_final_60
+          mkdir -p assets/ui/clean_base_final_60
+          find /tmp/actirune-final-60 -maxdepth 1 -type f -name '*.png' -exec cp {} assets/ui/clean_base_final_60/ \;
+          cp /tmp/actirune-final-60/ACTIRUNE_FINAL_PASS_60_UNIQUE_MANIFEST.json assets/ui/clean_base_final_60/ACTIRUNE_FINAL_PASS_60_UNIQUE_MANIFEST.json
+
+      - name: Commit corrected unique assets
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add assets/ui/clean_base_final_60
+          if git diff --cached --quiet; then
+            echo 'No changes to commit.'
+            exit 0
+          fi
+          git commit -m 'Replace final PASS assets with 60 unique images'
+          git push origin HEAD:codex/final-pass-60-assets-20260927
