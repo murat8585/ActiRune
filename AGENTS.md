@@ -1,22 +1,24 @@
-# AGENTS.md — ActiRune repository instructions
+# AGENTS.md
 
-Before making product, UX, battle, quest, economy, monetization, progression, social, or visual changes:
+## Scope
+These instructions apply to the repository root and all subdirectories unless a deeper AGENTS.md overrides them.
 
-1. Read `ACTIRUNE_PRODUCT_AUTHORITY.md`.
-2. Read `docs/product/ACTIRUNE_MASTER_PRODUCT_BIBLE_20260919.md`.
-3. Use `docs/product/ACTIRUNE_LOCKED_DECISIONS_QUICK_REFERENCE_20260919.md` as a fast checklist, not as a replacement for the full bible.
+## Product authority
+- Follow `ACTIRUNE_PRODUCT_AUTHORITY.md`.
+- Do not invent product behavior, providers, identifiers, pricing, rewards, backend authority, or production evidence.
+- Preserve fail-closed behavior where production authority is missing.
 
-## Core rules
+## Change discipline
+- Keep changes scoped to the authorized task.
+- Preserve existing runtime behavior unless the task explicitly changes it.
+- Do not weaken tests, validation gates, or release checks to make a change pass.
+- Do not treat generated or placeholder content as production authority.
 
-- Research first; do not use trial-and-error as product design.
-- Preserve LOCKED decisions unless the user explicitly changes them.
-- Never revive superseded V1.1 visual screens/assets as design authority.
-- Do not create generic flat Material replacements for approved premium 3D/2.5D references.
-- Do not hard-code Squat as the only battle movement. Battle flows must support movement profiles: Squat, Lunge, Push-up, Plank.
-- Preserve battle state across pause/resume.
-- No pay-to-win movement skipping.
-- No forced ads in camera setup, live battle, or form coach.
-- Keep health/safety and recovery logic ahead of retention pressure.
-- Keep unrelated Aile Güvende / Kinola project content out of this repository.
+## Flutter
+- Run formatting/analyzer/tests when the environment permits.
+- Keep artwork-driven screens aligned with their approved visual authority and interaction contracts.
+- Prefer existing shared widgets and navigation contracts over parallel implementations.
 
-When implementation and a locked product decision disagree, report the mismatch and implement toward the locked product authority unless the user explicitly instructs otherwise.
+## Evidence
+- Distinguish internal validation from production readiness.
+- Never fabricate physical-device, store, signing, billing, ad-provider, analytics, or backend proof.
