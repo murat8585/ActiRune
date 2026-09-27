@@ -9,7 +9,7 @@ abstract final class CleanBaseAssets {
   static const home = '$root/32__EARLY_QA_POS_25__PASS.png';
   static const questCenter = '$root/25__EARLY_QA_POS_13__PASS.png';
   static const dailyQuests = '$root/44__LATE_QA_POS_13__PASS.png';
-  static const weeklyQuests = '$root/59__FINAL_FIX__PROGRESSION_REWARD_PATH__PASS.png';
+  static const weeklyQuests = '$root/45__LATE_QA_POS_14__PASS.png';
   static const adventure = '$root/28__EARLY_QA_POS_21__PASS.png';
   static const battlePrep = '$root/46__LATE_QA_POS_15__PASS.png';
   static const cameraPrep = '$root/47__LATE_QA_POS_16__PASS.png';
