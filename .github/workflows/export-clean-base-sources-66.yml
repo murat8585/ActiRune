@@ -1,4 +1,4 @@
-name: Export Clean Base Source PNGs 66
+name: Export Clean Base Source PNGs Corrected 78
 
 on:
   push:
@@ -89,9 +89,21 @@ jobs:
           VIS_0204__CURRENT_RUNE_EVENT_COUNTDOWN.png
           07_RUNE_SHRINE_RESULT_FINAL.png
           02_EVENT_DETAIL_POPUP_FINAL.png
+          VIS_0192__CURRENT_SHOP_STAR_GATE_ALT.png
+          VIS_0193__CURRENT_SHOP_PACKAGES.png
+          VIS_0194__CURRENT_SHOP_DAILY_DEALS.png
+          VIS_0195__CURRENT_SHOP_PROFILE_CUSTOMIZATION.png
+          VIS_0196__CURRENT_RUNE_SHRINE_INTRO.png
+          VIS_0197__CURRENT_RUNE_SHRINE_DRAW.png
+          VIS_0198__CURRENT_RUNE_SHRINE_UPGRADE.png
+          VIS_0199__CURRENT_RUNE_SHRINE_MERGE.png
+          VIS_0200__CURRENT_RUNE_SHRINE_RESULT.png
+          VIS_0201__CURRENT_RUNE_DETAIL.png
+          VIS_0202__CURRENT_RUNE_MASTERY_LEVEL.png
+          VIS_0203__CURRENT_RUNE_SLOT_CONSTELLATION.png
           EOF
           expected_count=$(grep -cve '^$' expected_sources.txt)
-          test "$expected_count" -eq 66
+          test "$expected_count" -eq 78
           printf 'filename\trepository_path\tsha256\n' > export/SOURCE_MANIFEST.tsv
           while IFS= read -r name; do
             [ -n "$name" ] || continue
@@ -107,14 +119,14 @@ jobs:
             printf '%s\t%s\t%s\n' "$name" "$src" "$sum" >> export/SOURCE_MANIFEST.tsv
           done < expected_sources.txt
           actual_count=$(find export -maxdepth 1 -type f -name '*.png' | wc -l)
-          test "$actual_count" -eq 66
+          test "$actual_count" -eq 78
           sha256sum export/*.png > export/SHA256SUMS.txt
-          printf 'EXPECTED_SOURCE_COUNT=66\nACTUAL_SOURCE_COUNT=%s\nSOURCE_REF=%s\n' "$actual_count" "${GITHUB_SHA}" > export/VERIFY.txt
+          printf 'EXPECTED_SOURCE_COUNT=78\nACTUAL_SOURCE_COUNT=%s\nSOURCE_REF=%s\n' "$actual_count" "${GITHUB_SHA}" > export/VERIFY.txt
 
       - name: Upload verified source bundle
         uses: actions/upload-artifact@v4
         with:
-          name: ACTIRUNE_CLEAN_BASE_ORIGINAL_SOURCES_66
+          name: ACTIRUNE_CLEAN_BASE_ORIGINAL_SOURCES_CORRECTED_78
           path: export/
           if-no-files-found: error
           compression-level: 0
