@@ -21,8 +21,7 @@ class LiveBattleScreen extends StatefulWidget {
   });
 
   static const artworkAsset =
-      'visual_authority/20260921/current/02_CORE_LOCKED_ANCHORS/'
-      'VIS_0168__CORE_LIVE_BATTLE_ANCHOR.png';
+      'assets/ui/clean_base_final_60/56__FINAL_FIX__LIVE_BATTLE__PASS.png';
   static const artworkSize = Size(941, 1672);
 
   final BattleSessionEngine session;
