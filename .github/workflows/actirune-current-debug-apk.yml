@@ -1,0 +1,73 @@
+name: ActiRune Current 60-Asset Debug APK
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-debug-apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout exact selected SHA
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+
+      - name: Verify current 60-asset bundle
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -d assets/ui/clean_base_final_60
+          count=$(find assets/ui/clean_base_final_60 -maxdepth 1 -type f -name '*.png' | wc -l)
+          echo "PNG_COUNT=$count"
+          test "$count" -eq 60
+          grep -Fq 'assets/ui/clean_base_final_60/' pubspec.yaml
+
+      - name: Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Flutter toolchain
+        run: flutter --version
+
+      - name: Resolve dependencies
+        run: flutter pub get
+
+      - name: Build debug APK
+        run: flutter build apk --debug
+
+      - name: Verify APK contains all 60 current PNG assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          apk='build/app/outputs/flutter-apk/app-debug.apk'
+          test -f "$apk"
+          embedded=$(unzip -Z1 "$apk" | grep -E '^assets/flutter_assets/assets/ui/clean_base_final_60/.*\.png$' | wc -l)
+          echo "EMBEDDED_60_ASSET_PNG_COUNT=$embedded"
+          test "$embedded" -eq 60
+          mkdir -p dist
+          short_sha="${GITHUB_SHA:0:12}"
+          out="dist/ActiRune-60assets-${short_sha}-debug.apk"
+          cp "$apk" "$out"
+          sha256sum "$out" | tee "${out}.sha256"
+
+      - name: Upload verified debug APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: actirune-60assets-debug-${{ github.sha }}
+          path: |
+            dist/ActiRune-60assets-*-debug.apk
+            dist/ActiRune-60assets-*-debug.apk.sha256
+          if-no-files-found: error
+          retention-days: 7
