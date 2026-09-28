@@ -12,17 +12,28 @@ function Step([string]$message) {
     Write-Host "`n==> $message" -ForegroundColor Cyan
 }
 
+function Assert-LastExitCode([string]$label) {
+    if ($LASTEXITCODE -ne 0) {
+        throw "$label failed with exit code $LASTEXITCODE"
+    }
+}
+
 Step "Verify clean git working tree"
 $dirty = git status --porcelain
+Assert-LastExitCode "git status"
 if ($dirty) {
     throw "Working tree is not clean. Commit/stash local changes before running this script."
 }
 
 Step "Fetch and switch to exact after-60 branch"
 git fetch origin $branch
+Assert-LastExitCode "git fetch"
 git switch $branch
+Assert-LastExitCode "git switch"
 git pull --ff-only origin $branch
+Assert-LastExitCode "git pull"
 $head = (git rev-parse HEAD).Trim()
+Assert-LastExitCode "git rev-parse"
 Write-Host "HEAD=$head"
 
 Step "Verify final 60 clean-base assets"
@@ -38,15 +49,19 @@ if ($pngCount -ne 60) {
 
 Step "Flutter toolchain"
 flutter --version
+Assert-LastExitCode "flutter --version"
 
 Step "Resolve dependencies"
 flutter pub get
+Assert-LastExitCode "flutter pub get"
 
 Step "Verify formatting"
 dart format --output=none --set-exit-if-changed lib test
+Assert-LastExitCode "dart format"
 
 Step "Analyze"
 flutter analyze
+Assert-LastExitCode "flutter analyze"
 
 Step "Run focused first-10 tests"
 flutter test --no-pub `
@@ -60,14 +75,17 @@ flutter test --no-pub `
     test/camera_prep_interaction_test.dart `
     test/victory_interaction_test.dart `
     test/defeat_interaction_test.dart
+Assert-LastExitCode "focused Flutter tests"
 
 if (-not $SkipFullTests) {
     Step "Run full Flutter test suite"
     flutter test --no-pub
+    Assert-LastExitCode "full Flutter test suite"
 }
 
 Step "Build debug APK"
 flutter build apk --debug
+Assert-LastExitCode "flutter build apk --debug"
 if (-not (Test-Path $apkPath)) {
     throw "APK was not created at $apkPath"
 }
@@ -88,6 +106,7 @@ if (-not $DeviceId) {
             ForEach-Object { ($_ -split "\s+")[0] } |
             Where-Object { $_ -match '^emulator-\d+$' }
     )
+    Assert-LastExitCode "adb devices"
     if ($devices.Count -eq 1) {
         $DeviceId = $devices[0]
     } elseif ($devices.Count -eq 0) {
@@ -102,9 +121,11 @@ if (-not $DeviceId) {
 
 Step "Install APK on $DeviceId"
 adb -s $DeviceId install -r $apk
+Assert-LastExitCode "adb install"
 
 Step "Launch ActiRune on $DeviceId"
 adb -s $DeviceId shell monkey -p $packageId -c android.intent.category.LAUNCHER 1 | Out-Host
+Assert-LastExitCode "adb launch"
 
 Write-Host "`nDONE" -ForegroundColor Green
 Write-Host "HEAD=$head"
