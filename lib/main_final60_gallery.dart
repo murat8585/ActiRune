@@ -64,7 +64,7 @@ class _Final60GalleryScreenState extends State<Final60GalleryScreen> {
   void _go(int delta) {
     final assets = _assets;
     if (assets == null || assets.isEmpty) return;
-    final next = (_index + delta).clamp(0, assets.length - 1);
+    final next = (_index + delta).clamp(0, assets.length - 1).toInt();
     _controller.animateToPage(
       next,
       duration: const Duration(milliseconds: 180),
