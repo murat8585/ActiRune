@@ -136,6 +136,19 @@ class _LiveBattleScreenState extends State<LiveBattleScreen>
     _startCameraIfNeeded();
   }
 
+  void _debugVictory() {
+    if (!widget.session.snapshot.syntheticMode) return;
+    widget.session.markVictory();
+    _stopCamera();
+    widget.onVictory();
+  }
+
+  void _debugDefeat() {
+    if (!widget.session.snapshot.syntheticMode) return;
+    widget.session.markDefeat();
+    _stopCamera();
+  }
+
   void _stopCamera() {
     final camera = _poseCamera;
     if (camera != null) unawaited(camera.stop());
@@ -160,6 +173,8 @@ class _LiveBattleScreenState extends State<LiveBattleScreen>
 
   @override
   Widget build(BuildContext context) {
+    final syntheticMode = widget.session.snapshot.syntheticMode;
+
     return Scaffold(
       backgroundColor: Colors.black,
       body: SafeArea(
@@ -168,27 +183,47 @@ class _LiveBattleScreenState extends State<LiveBattleScreen>
         child: ArtworkInteractionSurface(
           assetPath: LiveBattleScreen.artworkAsset,
           sourceSize: LiveBattleScreen.artworkSize,
-          overlays: const [
-            ArtworkOverlay(
+          overlays: [
+            const ArtworkOverlay(
               id: 'live-battle.hero-name',
               normalizedRect: Rect.fromLTWH(0.100, 0.025, 0.255, 0.045),
               child: CleanBaseText('ActiHero', fontSize: 16),
             ),
-            ArtworkOverlay(
+            const ArtworkOverlay(
               id: 'live-battle.pause-label',
               normalizedRect: Rect.fromLTWH(0.390, 0.020, 0.220, 0.050),
               child: CleanBaseText('DURDUR', fontSize: 15),
             ),
-            ArtworkOverlay(
+            const ArtworkOverlay(
               id: 'live-battle.enemy-name',
               normalizedRect: Rect.fromLTWH(0.650, 0.025, 0.245, 0.045),
               child: CleanBaseText('GÖLGE MUHAFIZI', fontSize: 14),
             ),
-            ArtworkOverlay(
+            const ArtworkOverlay(
               id: 'live-battle.continue-label',
               normalizedRect: Rect.fromLTWH(0.395, 0.785, 0.500, 0.045),
               child: CleanBaseText('HAREKETE DEVAM', fontSize: 16),
             ),
+            if (syntheticMode)
+              const ArtworkOverlay(
+                id: 'live-battle.qa-victory-label',
+                normalizedRect: Rect.fromLTWH(0.325, 0.095, 0.165, 0.038),
+                child: CleanBaseText(
+                  'TEST ZAFER',
+                  fontSize: 12,
+                  color: Color(0xFF79F7AE),
+                ),
+              ),
+            if (syntheticMode)
+              const ArtworkOverlay(
+                id: 'live-battle.qa-defeat-label',
+                normalizedRect: Rect.fromLTWH(0.510, 0.095, 0.165, 0.038),
+                child: CleanBaseText(
+                  'TEST YENİLGİ',
+                  fontSize: 12,
+                  color: Color(0xFFFF7A7A),
+                ),
+              ),
           ],
           hotspots: [
             ArtworkHotspot(
@@ -227,6 +262,20 @@ class _LiveBattleScreenState extends State<LiveBattleScreen>
               normalizedRect: const Rect.fromLTWH(0.355, 0.770, 0.585, 0.080),
               onTap: _continueBattle,
             ),
+            if (syntheticMode)
+              ArtworkHotspot(
+                id: 'live-battle.qa-victory',
+                semanticLabel: 'Test Zafer',
+                normalizedRect: const Rect.fromLTWH(0.315, 0.085, 0.185, 0.060),
+                onTap: _debugVictory,
+              ),
+            if (syntheticMode)
+              ArtworkHotspot(
+                id: 'live-battle.qa-defeat',
+                semanticLabel: 'Test Yenilgi',
+                normalizedRect: const Rect.fromLTWH(0.500, 0.085, 0.185, 0.060),
+                onTap: _debugDefeat,
+              ),
           ],
         ),
       ),
