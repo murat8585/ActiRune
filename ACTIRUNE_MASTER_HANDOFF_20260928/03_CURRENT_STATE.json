@@ -1,0 +1,13 @@
+{
+  "project": "ActiRune",
+  "handoff_date": "2026-09-28",
+  "visual_generation": "COMPLETE",
+  "accepted_final_screens": 60,
+  "github_repo": "murat8585/ActiRune",
+  "production_authority": "production/closeout-20260924",
+  "integration_branch": "codex/clean-base-flutter-integration-20260927",
+  "final_assets_folder": "assets/ui/clean_base_final_60/",
+  "critical_blocker": "Final PNG numbering is not canonical screen numbering.",
+  "wrong_mappings_reverted": ["Home", "Adventure"],
+  "next_step": "Visually identify all 60 assets, build canonical mapping, then wire the first playable 10-screen flow."
+}

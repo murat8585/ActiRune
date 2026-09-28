@@ -1,0 +1,12 @@
+ACTIRUNE NEXT SESSION BOOTSTRAP
+
+1. Read this handoff first.
+2. Read GitHub `production/closeout-20260924`.
+3. Read GitHub `codex/clean-base-flutter-integration-20260927` current HEAD.
+4. Do NOT assume final PNG file number equals canonical screen number.
+5. Visually identify all assets under `assets/ui/clean_base_final_60/`.
+6. Build mapping: filename -> visual identity -> canonical screen -> Flutter file -> route.
+7. First playable flow: Home -> Quest Center -> Daily/Weekly -> Adventure -> Battle Prep -> Camera Prep -> Live Battle -> Victory/Defeat.
+8. Preserve ArtworkInteractionSurface and working route/state/backend logic.
+9. READ -> MAP -> CHANGE -> READBACK -> TEST.
+10. After first 10 pass, continue in groups through 60.
