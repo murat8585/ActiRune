@@ -2,6 +2,11 @@ name: ActiRune Current 60-Asset Debug APK
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - codex/first10-runtime-contract-20260928
+    paths:
+      - '.github/workflows/actirune-current-debug-apk.yml'
 
 permissions:
   contents: read
