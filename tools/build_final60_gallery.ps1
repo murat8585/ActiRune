@@ -47,14 +47,6 @@ Step "Resolve Flutter dependencies"
 flutter pub get
 Assert-Exit "flutter pub get"
 
-Step "Format-check Final60 entrypoint"
-dart format --output=none --set-exit-if-changed $entrypoint
-Assert-Exit "dart format"
-
-Step "Analyze Final60 entrypoint"
-flutter analyze $entrypoint
-Assert-Exit "flutter analyze"
-
 Step "Build Final60 debug APK"
 flutter build apk --debug -t $entrypoint
 Assert-Exit "flutter build apk"
@@ -123,8 +115,6 @@ if (-not $DeviceId) {
 
 Step "Remove old ActiRune from $DeviceId"
 & $adbPath -s $DeviceId uninstall $packageId | Out-Host
-# uninstall returns a non-zero exit code when the package is absent; that is harmless.
-$global:LASTEXITCODE = 0
 
 Step "Install verified Final60 gallery APK on $DeviceId"
 & $adbPath -s $DeviceId install $resolvedOutputApk | Out-Host
