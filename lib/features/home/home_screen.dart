@@ -5,11 +5,6 @@ import '../../core/widgets/clean_base_text.dart';
 
 enum HomeRootDestination { home, adventure, battle, hero, profile }
 
-/// Final60 clean-base Home integration.
-///
-/// The PNG owns the premium static art and panel geometry. Localizable labels
-/// and navigation semantics stay in Flutter so later language packs do not
-/// require regenerating the artwork.
 class HomeScreen extends StatelessWidget {
   const HomeScreen({
     super.key,
@@ -28,6 +23,8 @@ class HomeScreen extends StatelessWidget {
   static const artworkAsset =
       'assets/ui/clean_base_final_60/32__EARLY_QA_POS_25__PASS.png';
   static const artworkSize = Size(941, 1672);
+  static const _gold = Color(0xFFE8C875);
+  static const _ivory = Color(0xFFF3E7C6);
 
   final VoidCallback? onDailyStreak;
   final VoidCallback? onMessages;
@@ -76,8 +73,8 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const navY = 0.904;
-    const navH = 0.082;
+    const navY = 0.900;
+    const navH = 0.098;
 
     return Scaffold(
       backgroundColor: Colors.black,
@@ -90,58 +87,115 @@ class HomeScreen extends StatelessWidget {
           overlays: const [
             ArtworkOverlay(
               id: 'home.player-name',
-              normalizedRect: Rect.fromLTWH(0.095, 0.022, 0.260, 0.045),
-              child: CleanBaseText('ActiHero', fontSize: 20),
+              normalizedRect: Rect.fromLTWH(0.145, 0.020, 0.215, 0.030),
+              child: CleanBaseText(
+                'ActiHero',
+                fontSize: 15,
+                color: _ivory,
+                textAlign: TextAlign.left,
+                alignment: Alignment.centerLeft,
+                letterSpacing: 0.55,
+              ),
             ),
             ArtworkOverlay(
               id: 'home.world-map-label',
-              normalizedRect: Rect.fromLTWH(0.055, 0.696, 0.390, 0.042),
-              child: CleanBaseText('DÜNYA HARİTASI', fontSize: 17),
+              normalizedRect: Rect.fromLTWH(0.105, 0.720, 0.300, 0.034),
+              child: CleanBaseText(
+                'DÜNYA HARİTASI',
+                fontSize: 16,
+                color: _gold,
+                letterSpacing: 1.05,
+              ),
             ),
             ArtworkOverlay(
               id: 'home.battle-label',
-              normalizedRect: Rect.fromLTWH(0.555, 0.696, 0.390, 0.042),
-              child: CleanBaseText('SAVAŞA HAZIRLAN', fontSize: 17),
+              normalizedRect: Rect.fromLTWH(0.595, 0.720, 0.305, 0.034),
+              child: CleanBaseText(
+                'SAVAŞA HAZIRLAN',
+                fontSize: 16,
+                color: _gold,
+                letterSpacing: 1.0,
+              ),
             ),
             ArtworkOverlay(
               id: 'home.rewards-label',
-              normalizedRect: Rect.fromLTWH(0.045, 0.824, 0.270, 0.038),
-              child: CleanBaseText('ÖDÜLLER', fontSize: 15),
+              normalizedRect: Rect.fromLTWH(0.090, 0.838, 0.220, 0.030),
+              child: CleanBaseText(
+                'ÖDÜLLER',
+                fontSize: 14,
+                color: _ivory,
+                letterSpacing: 0.9,
+              ),
             ),
             ArtworkOverlay(
               id: 'home.quests-label',
-              normalizedRect: Rect.fromLTWH(0.365, 0.824, 0.270, 0.038),
-              child: CleanBaseText('GÖREVLER', fontSize: 15),
+              normalizedRect: Rect.fromLTWH(0.385, 0.838, 0.230, 0.030),
+              child: CleanBaseText(
+                'GÖREVLER',
+                fontSize: 14,
+                color: _ivory,
+                letterSpacing: 0.9,
+              ),
             ),
             ArtworkOverlay(
               id: 'home.summary-label',
-              normalizedRect: Rect.fromLTWH(0.685, 0.824, 0.270, 0.038),
-              child: CleanBaseText('DÜNÜN ÖZETİ', fontSize: 15),
+              normalizedRect: Rect.fromLTWH(0.700, 0.838, 0.215, 0.030),
+              child: CleanBaseText(
+                'DÜNÜN ÖZETİ',
+                fontSize: 14,
+                color: _ivory,
+                letterSpacing: 0.8,
+              ),
             ),
             ArtworkOverlay(
               id: 'home.nav-home-label',
-              normalizedRect: Rect.fromLTWH(0.005, navY + 0.052, 0.190, 0.024),
-              child: CleanBaseText('Ana Dünya', fontSize: 12, background: Colors.transparent),
+              normalizedRect: Rect.fromLTWH(0.018, 0.958, 0.165, 0.026),
+              child: CleanBaseText(
+                'Ana Dünya',
+                fontSize: 11,
+                color: _gold,
+                letterSpacing: 0.25,
+              ),
             ),
             ArtworkOverlay(
               id: 'home.nav-adventure-label',
-              normalizedRect: Rect.fromLTWH(0.205, navY + 0.052, 0.190, 0.024),
-              child: CleanBaseText('Macera', fontSize: 12, background: Colors.transparent),
+              normalizedRect: Rect.fromLTWH(0.215, 0.958, 0.170, 0.026),
+              child: CleanBaseText(
+                'Macera',
+                fontSize: 11,
+                color: _ivory,
+                letterSpacing: 0.25,
+              ),
             ),
             ArtworkOverlay(
               id: 'home.nav-battle-label',
-              normalizedRect: Rect.fromLTWH(0.405, navY + 0.052, 0.180, 0.024),
-              child: CleanBaseText('Savaş', fontSize: 12, background: Colors.transparent),
+              normalizedRect: Rect.fromLTWH(0.410, 0.958, 0.170, 0.026),
+              child: CleanBaseText(
+                'Savaş',
+                fontSize: 11,
+                color: _ivory,
+                letterSpacing: 0.25,
+              ),
             ),
             ArtworkOverlay(
               id: 'home.nav-hero-label',
-              normalizedRect: Rect.fromLTWH(0.590, navY + 0.052, 0.195, 0.024),
-              child: CleanBaseText('Kahraman', fontSize: 12, background: Colors.transparent),
+              normalizedRect: Rect.fromLTWH(0.605, 0.958, 0.180, 0.026),
+              child: CleanBaseText(
+                'Kahraman',
+                fontSize: 11,
+                color: _ivory,
+                letterSpacing: 0.25,
+              ),
             ),
             ArtworkOverlay(
               id: 'home.nav-profile-label',
-              normalizedRect: Rect.fromLTWH(0.795, navY + 0.052, 0.195, 0.024),
-              child: CleanBaseText('Profil', fontSize: 12, background: Colors.transparent),
+              normalizedRect: Rect.fromLTWH(0.805, 0.958, 0.175, 0.026),
+              child: CleanBaseText(
+                'Profil',
+                fontSize: 11,
+                color: _ivory,
+                letterSpacing: 0.25,
+              ),
             ),
           ],
           hotspots: [
@@ -172,31 +226,31 @@ class HomeScreen extends StatelessWidget {
             _hotspot(
               id: 'home.world-map',
               semanticLabel: 'Dünya Haritası',
-              normalizedRect: const Rect.fromLTWH(0.030, 0.620, 0.455, 0.125),
+              normalizedRect: const Rect.fromLTWH(0.035, 0.635, 0.445, 0.135),
               callback: onWorldMap,
             ),
             _rootHotspot(
               id: 'home.battle-card',
               destination: HomeRootDestination.battle,
               semanticLabel: 'Savaşa Hazırlan',
-              normalizedRect: const Rect.fromLTWH(0.515, 0.620, 0.455, 0.125),
+              normalizedRect: const Rect.fromLTWH(0.515, 0.635, 0.450, 0.135),
             ),
             _hotspot(
               id: 'home.rewards',
               semanticLabel: 'Ödüller',
-              normalizedRect: const Rect.fromLTWH(0.025, 0.755, 0.305, 0.115),
+              normalizedRect: const Rect.fromLTWH(0.025, 0.780, 0.305, 0.105),
               callback: onRewards,
             ),
             _hotspot(
               id: 'home.quests',
               semanticLabel: 'Görevler',
-              normalizedRect: const Rect.fromLTWH(0.345, 0.755, 0.310, 0.115),
+              normalizedRect: const Rect.fromLTWH(0.345, 0.780, 0.310, 0.105),
               callback: onQuests,
             ),
             _hotspot(
               id: 'home.yesterday-summary',
               semanticLabel: 'Dünün Özeti',
-              normalizedRect: const Rect.fromLTWH(0.670, 0.755, 0.305, 0.115),
+              normalizedRect: const Rect.fromLTWH(0.670, 0.780, 0.305, 0.105),
               callback: onYesterdaySummary,
             ),
             _rootHotspot(
