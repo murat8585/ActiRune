@@ -1,0 +1,79 @@
+name: ActiRune Temporary Current 60-Asset APK Builder
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/actirune-temp-build-current-60-apk.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  build-current-apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout current integration branch
+        uses: actions/checkout@v4
+        with:
+          ref: codex/first10-runtime-contract-20260928
+
+      - name: Verify exact current branch and 60 assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected='51150e51f940b4f174486b768f43a1fcef7c7fd8'
+          actual=$(git rev-parse HEAD)
+          echo "EXPECTED_HEAD=$expected"
+          echo "ACTUAL_HEAD=$actual"
+          test "$actual" = "$expected"
+          test -d assets/ui/clean_base_final_60
+          count=$(find assets/ui/clean_base_final_60 -maxdepth 1 -type f -name '*.png' | wc -l)
+          echo "SOURCE_60_PNG_COUNT=$count"
+          test "$count" -eq 60
+          grep -Fq 'assets/ui/clean_base_final_60/' pubspec.yaml
+
+      - name: Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Setup Flutter 3.47.5
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.47.5'
+          channel: stable
+          cache: true
+
+      - name: Resolve dependencies
+        run: flutter pub get
+
+      - name: Build debug APK
+        run: flutter build apk --debug
+
+      - name: Verify APK and prepare artifact
+        shell: bash
+        run: |
+          set -euo pipefail
+          apk='build/app/outputs/flutter-apk/app-debug.apk'
+          test -f "$apk"
+          embedded=$(unzip -Z1 "$apk" | grep -E '^assets/flutter_assets/assets/ui/clean_base_final_60/.*\.png$' | wc -l)
+          echo "EMBEDDED_60_PNG_COUNT=$embedded"
+          test "$embedded" -eq 60
+          mkdir -p dist
+          out='dist/ActiRune-60assets-51150e51-debug.apk'
+          cp "$apk" "$out"
+          sha256sum "$out" | tee "$out.sha256"
+
+      - name: Upload verified APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: actirune-60assets-51150e51-debug
+          path: |
+            dist/ActiRune-60assets-51150e51-debug.apk
+            dist/ActiRune-60assets-51150e51-debug.apk.sha256
+          if-no-files-found: error
+          retention-days: 7
