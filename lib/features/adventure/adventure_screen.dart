@@ -24,6 +24,8 @@ class AdventureScreen extends StatelessWidget {
   static const artworkAsset =
       'assets/ui/clean_base_final_60/33__EARLY_QA_POS_26__PASS.png';
   static const artworkSize = Size(941, 1672);
+  static const _gold = Color(0xFFE8C875);
+  static const _ivory = Color(0xFFF3E7C6);
 
   final VoidCallback? onDailyStreak;
   final VoidCallback? onMessages;
@@ -73,7 +75,7 @@ class AdventureScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const navY = 0.910;
-    const navH = 0.082;
+    const navH = 0.088;
 
     return Scaffold(
       backgroundColor: Colors.black,
@@ -85,54 +87,84 @@ class AdventureScreen extends StatelessWidget {
           sourceSize: artworkSize,
           overlays: const [
             ArtworkOverlay(
-              id: 'adventure.title',
-              normalizedRect: Rect.fromLTWH(0.325, 0.390, 0.350, 0.050),
-              child: CleanBaseText('MACERA', fontSize: 24),
-            ),
-            ArtworkOverlay(
               id: 'adventure.story-label',
-              normalizedRect: Rect.fromLTWH(0.055, 0.638, 0.270, 0.042),
-              child: CleanBaseText('BÖLÜM HİKAYESİ', fontSize: 15),
+              normalizedRect: Rect.fromLTWH(0.095, 0.628, 0.205, 0.030),
+              child: CleanBaseText(
+                'BÖLÜM HİKAYESİ',
+                fontSize: 13,
+                color: _ivory,
+                letterSpacing: 0.55,
+              ),
             ),
             ArtworkOverlay(
               id: 'adventure.map-label',
-              normalizedRect: Rect.fromLTWH(0.365, 0.638, 0.270, 0.042),
-              child: CleanBaseText('DÜNYA HARİTASI', fontSize: 15),
+              normalizedRect: Rect.fromLTWH(0.400, 0.628, 0.205, 0.030),
+              child: CleanBaseText(
+                'DÜNYA HARİTASI',
+                fontSize: 13,
+                color: _gold,
+                letterSpacing: 0.55,
+              ),
             ),
             ArtworkOverlay(
               id: 'adventure.encounter-label',
-              normalizedRect: Rect.fromLTWH(0.675, 0.638, 0.270, 0.042),
-              child: CleanBaseText('SONRAKİ SAVAŞ', fontSize: 15),
-            ),
-            ArtworkOverlay(
-              id: 'adventure.log-label',
-              normalizedRect: Rect.fromLTWH(0.330, 0.785, 0.340, 0.040),
-              child: CleanBaseText('MACERA GÜNLÜĞÜ', fontSize: 15),
+              normalizedRect: Rect.fromLTWH(0.705, 0.628, 0.205, 0.030),
+              child: CleanBaseText(
+                'SONRAKİ SAVAŞ',
+                fontSize: 13,
+                color: _ivory,
+                letterSpacing: 0.5,
+              ),
             ),
             ArtworkOverlay(
               id: 'adventure.nav-home-label',
-              normalizedRect: Rect.fromLTWH(0.000, navY + 0.050, 0.200, 0.026),
-              child: CleanBaseText('Ana Dünya', fontSize: 12, background: Colors.transparent),
+              normalizedRect: Rect.fromLTWH(0.020, 0.960, 0.165, 0.024),
+              child: CleanBaseText(
+                'Ana Dünya',
+                fontSize: 11,
+                color: _ivory,
+                letterSpacing: 0.25,
+              ),
             ),
             ArtworkOverlay(
               id: 'adventure.nav-adventure-label',
-              normalizedRect: Rect.fromLTWH(0.200, navY + 0.050, 0.200, 0.026),
-              child: CleanBaseText('Macera', fontSize: 12, background: Colors.transparent),
+              normalizedRect: Rect.fromLTWH(0.215, 0.960, 0.170, 0.024),
+              child: CleanBaseText(
+                'Macera',
+                fontSize: 11,
+                color: _gold,
+                letterSpacing: 0.25,
+              ),
             ),
             ArtworkOverlay(
               id: 'adventure.nav-battle-label',
-              normalizedRect: Rect.fromLTWH(0.400, navY + 0.050, 0.190, 0.026),
-              child: CleanBaseText('Savaş', fontSize: 12, background: Colors.transparent),
+              normalizedRect: Rect.fromLTWH(0.410, 0.960, 0.170, 0.024),
+              child: CleanBaseText(
+                'Savaş',
+                fontSize: 11,
+                color: _ivory,
+                letterSpacing: 0.25,
+              ),
             ),
             ArtworkOverlay(
               id: 'adventure.nav-hero-label',
-              normalizedRect: Rect.fromLTWH(0.590, navY + 0.050, 0.200, 0.026),
-              child: CleanBaseText('Kahraman', fontSize: 12, background: Colors.transparent),
+              normalizedRect: Rect.fromLTWH(0.605, 0.960, 0.180, 0.024),
+              child: CleanBaseText(
+                'Kahraman',
+                fontSize: 11,
+                color: _ivory,
+                letterSpacing: 0.25,
+              ),
             ),
             ArtworkOverlay(
               id: 'adventure.nav-profile-label',
-              normalizedRect: Rect.fromLTWH(0.790, navY + 0.050, 0.210, 0.026),
-              child: CleanBaseText('Profil', fontSize: 12, background: Colors.transparent),
+              normalizedRect: Rect.fromLTWH(0.805, 0.960, 0.175, 0.024),
+              child: CleanBaseText(
+                'Profil',
+                fontSize: 11,
+                color: _ivory,
+                letterSpacing: 0.25,
+              ),
             ),
           ],
           hotspots: [
