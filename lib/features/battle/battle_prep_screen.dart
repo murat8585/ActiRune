@@ -25,6 +25,8 @@ class BattlePrepScreen extends StatelessWidget {
   static const artworkAsset =
       'assets/ui/clean_base_final_60/46__LATE_QA_POS_15__PASS.png';
   static const artworkSize = Size(941, 1672);
+  static const _gold = Color(0xFFE8C875);
+  static const _ivory = Color(0xFFF3E7C6);
 
   final BattleSessionEngine session;
   final VoidCallback onBack;
@@ -48,11 +50,6 @@ class BattlePrepScreen extends StatelessWidget {
     callback();
   }
 
-  void _leaveForRoot(BattlePrepRootDestination destination) {
-    session.retire();
-    onRootNavigate(destination);
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -65,52 +62,90 @@ class BattlePrepScreen extends StatelessWidget {
           sourceSize: BattlePrepScreen.artworkSize,
           overlays: const [
             ArtworkOverlay(
-              id: 'battle-prep.title',
-              normalizedRect: Rect.fromLTWH(0.070, 0.025, 0.420, 0.055),
-              child: CleanBaseText('SAVAŞ HAZIRLIĞI', fontSize: 23),
+              id: 'battle-prep.back-icon',
+              normalizedRect: Rect.fromLTWH(0.020, 0.018, 0.070, 0.045),
+              child: Center(
+                child: Icon(
+                  Icons.arrow_back_ios_new_rounded,
+                  color: _gold,
+                  size: 24,
+                ),
+              ),
             ),
             ArtworkOverlay(
               id: 'battle-prep.enemy-label',
-              normalizedRect: Rect.fromLTWH(0.595, 0.245, 0.300, 0.045),
-              child: CleanBaseText('GÖLGE MUHAFIZI', fontSize: 17),
+              normalizedRect: Rect.fromLTWH(0.605, 0.242, 0.300, 0.034),
+              child: CleanBaseText(
+                'GÖLGE MUHAFIZI',
+                fontSize: 15,
+                color: _gold,
+                letterSpacing: 0.85,
+              ),
             ),
             ArtworkOverlay(
               id: 'battle-prep.equipment-label',
-              normalizedRect: Rect.fromLTWH(0.060, 0.565, 0.170, 0.035),
-              child: CleanBaseText('Ekipman', fontSize: 14),
+              normalizedRect: Rect.fromLTWH(0.070, 0.564, 0.145, 0.027),
+              child: CleanBaseText(
+                'EKİPMAN',
+                fontSize: 12,
+                color: _ivory,
+                letterSpacing: 0.55,
+              ),
             ),
             ArtworkOverlay(
               id: 'battle-prep.runes-label',
-              normalizedRect: Rect.fromLTWH(0.225, 0.665, 0.145, 0.035),
-              child: CleanBaseText('Runeler', fontSize: 14),
+              normalizedRect: Rect.fromLTWH(0.220, 0.670, 0.145, 0.026),
+              child: CleanBaseText(
+                'RUNELER',
+                fontSize: 12,
+                color: _ivory,
+                letterSpacing: 0.55,
+              ),
             ),
             ArtworkOverlay(
               id: 'battle-prep.strategy-label',
-              normalizedRect: Rect.fromLTWH(0.420, 0.755, 0.360, 0.040),
-              child: CleanBaseText('ÖNERİLEN STRATEJİ', fontSize: 16),
+              normalizedRect: Rect.fromLTWH(0.480, 0.748, 0.330, 0.030),
+              child: CleanBaseText(
+                'ÖNERİLEN STRATEJİ',
+                fontSize: 13,
+                color: _ivory,
+                textAlign: TextAlign.left,
+                alignment: Alignment.centerLeft,
+                letterSpacing: 0.6,
+              ),
             ),
             ArtworkOverlay(
               id: 'battle-prep.start-label',
-              normalizedRect: Rect.fromLTWH(0.065, 0.910, 0.490, 0.050),
-              child: CleanBaseText('SAVAŞA BAŞLA', fontSize: 21),
+              normalizedRect: Rect.fromLTWH(0.090, 0.904, 0.430, 0.040),
+              child: CleanBaseText(
+                'SAVAŞA BAŞLA',
+                fontSize: 18,
+                color: _ivory,
+                letterSpacing: 1.0,
+              ),
             ),
             ArtworkOverlay(
               id: 'battle-prep.return-label',
-              normalizedRect: Rect.fromLTWH(0.650, 0.912, 0.275, 0.046),
-              child: CleanBaseText('MACERAYA DÖN', fontSize: 16),
+              normalizedRect: Rect.fromLTWH(0.665, 0.907, 0.245, 0.036),
+              child: CleanBaseText(
+                'MACERAYA DÖN',
+                fontSize: 14,
+                color: _gold,
+                letterSpacing: 0.75,
+              ),
             ),
           ],
           hotspots: [
             ArtworkHotspot(
               id: 'battle-prep.back',
               semanticLabel: 'Geri',
-              normalizedRect: const Rect.fromLTWH(0.000, 0.000, 0.090, 0.065),
+              normalizedRect: const Rect.fromLTWH(0.000, 0.000, 0.120, 0.085),
               onTap: () => _leaveBattle(onBack),
             ),
             ArtworkHotspot(
               id: 'battle-prep.info',
               semanticLabel: 'Savaş Hazırlığı Bilgisi',
-              normalizedRect: const Rect.fromLTWH(0.910, 0.000, 0.090, 0.065),
+              normalizedRect: const Rect.fromLTWH(0.900, 0.000, 0.100, 0.075),
               onTap: onInfo,
             ),
             ArtworkHotspot(
@@ -146,44 +181,14 @@ class BattlePrepScreen extends StatelessWidget {
             ArtworkHotspot(
               id: 'battle-prep.start',
               semanticLabel: 'Savaşa Başla',
-              normalizedRect: const Rect.fromLTWH(0.035, 0.875, 0.555, 0.100),
+              normalizedRect: const Rect.fromLTWH(0.035, 0.870, 0.555, 0.105),
               onTap: _openCameraPrep,
             ),
             ArtworkHotspot(
               id: 'battle-prep.return-adventure',
               semanticLabel: 'Maceraya Dön',
-              normalizedRect: const Rect.fromLTWH(0.610, 0.875, 0.355, 0.100),
+              normalizedRect: const Rect.fromLTWH(0.610, 0.870, 0.355, 0.105),
               onTap: () => _leaveBattle(onReturnToAdventure),
-            ),
-            ArtworkHotspot(
-              id: 'battle-prep.nav-home',
-              semanticLabel: 'Ana Dünya',
-              normalizedRect: const Rect.fromLTWH(0.000, 0.000, 0.200, 0.012),
-              onTap: () => _leaveForRoot(BattlePrepRootDestination.home),
-            ),
-            ArtworkHotspot(
-              id: 'battle-prep.nav-adventure',
-              semanticLabel: 'Macera',
-              normalizedRect: const Rect.fromLTWH(0.200, 0.000, 0.200, 0.012),
-              onTap: () => _leaveForRoot(BattlePrepRootDestination.adventure),
-            ),
-            ArtworkHotspot(
-              id: 'battle-prep.nav-battle',
-              semanticLabel: 'Savaş',
-              normalizedRect: const Rect.fromLTWH(0.400, 0.000, 0.200, 0.012),
-              onTap: () => _leaveForRoot(BattlePrepRootDestination.battle),
-            ),
-            ArtworkHotspot(
-              id: 'battle-prep.nav-hero',
-              semanticLabel: 'Kahraman',
-              normalizedRect: const Rect.fromLTWH(0.600, 0.000, 0.200, 0.012),
-              onTap: () => _leaveForRoot(BattlePrepRootDestination.hero),
-            ),
-            ArtworkHotspot(
-              id: 'battle-prep.nav-profile',
-              semanticLabel: 'Profil',
-              normalizedRect: const Rect.fromLTWH(0.800, 0.000, 0.200, 0.012),
-              onTap: () => _leaveForRoot(BattlePrepRootDestination.profile),
             ),
           ],
         ),
