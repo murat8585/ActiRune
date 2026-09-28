@@ -25,6 +25,7 @@ import '../features/profile/settings_permissions_screen.dart';
 import '../features/profile/settings_privacy_screen.dart';
 import '../features/quests/daily_quests_screen.dart';
 import '../features/quests/quest_chain_screen.dart';
+import '../features/quests/quests_screen.dart';
 import '../features/quests/weekly_quests_screen.dart';
 
 enum _ShellDestination { home, adventure, battle, hero, profile }
@@ -149,6 +150,20 @@ class _MainShellState extends State<MainShell> {
         builder: (routeContext) => WeeklyQuestsScreen(
           onDailyStreak: () => _openDailyQuests(routeContext),
           onClaimQuestChainReward: widget.onWeeklyQuestChainReward,
+          onRootNavigate: (next) =>
+              _closeChildStackAndSelect(routeContext, next.name),
+          battleRootEnabled: _battleAvailable,
+        ),
+      ),
+    );
+  }
+
+  Future<void> _openQuestCenter(BuildContext context) async {
+    await Navigator.of(context).push<void>(
+      MaterialPageRoute<void>(
+        builder: (routeContext) => QuestsScreen(
+          onDailyQuests: () => _openDailyQuests(routeContext),
+          onWeeklyQuests: () => _openWeeklyQuests(routeContext),
           onRootNavigate: (next) =>
               _closeChildStackAndSelect(routeContext, next.name),
           battleRootEnabled: _battleAvailable,
@@ -409,7 +424,7 @@ class _MainShellState extends State<MainShell> {
     return [
       HomeScreen(
         onDailyStreak: () => _openDailyQuests(context),
-        onQuests: () => _openWeeklyQuests(context),
+        onQuests: () => _openQuestCenter(context),
         onEvents: () => _openEvents(context),
         onSettings: () => _openSettingsHub(context),
         onWorldMap: () => _openWorldProgression(context),
