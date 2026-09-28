@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import '../../core/widgets/artwork_interaction_surface.dart';
+import '../../core/widgets/clean_base_text.dart';
 import '../pose/detector/verified_rep.dart';
 import '../pose/provider/pose_camera_controller.dart';
 import 'battle_pose_detector_factory.dart';
@@ -21,17 +22,13 @@ class LiveBattleScreen extends StatefulWidget {
   });
 
   static const artworkAsset =
-      'visual_authority/20260921/current/02_CORE_LOCKED_ANCHORS/'
-      'VIS_0168__CORE_LIVE_BATTLE_ANCHOR.png';
+      'assets/ui/clean_base_final_60/56__FINAL_FIX__LIVE_BATTLE__PASS.png';
   static const artworkSize = Size(941, 1672);
 
   final BattleSessionEngine session;
   final VoidCallback onOpenFormCoach;
   final VoidCallback onVictory;
   final bool cameraEnabled;
-
-  /// Authoritative encounter/task hold target for plank. A plank encounter
-  /// remains camera-fail-closed when this value is absent or non-positive.
   final Duration? requiredPlankHoldDuration;
 
   @override
@@ -171,17 +168,39 @@ class _LiveBattleScreenState extends State<LiveBattleScreen>
         child: ArtworkInteractionSurface(
           assetPath: LiveBattleScreen.artworkAsset,
           sourceSize: LiveBattleScreen.artworkSize,
+          overlays: const [
+            ArtworkOverlay(
+              id: 'live-battle.hero-name',
+              normalizedRect: Rect.fromLTWH(0.100, 0.025, 0.255, 0.045),
+              child: CleanBaseText('ActiHero', fontSize: 16),
+            ),
+            ArtworkOverlay(
+              id: 'live-battle.pause-label',
+              normalizedRect: Rect.fromLTWH(0.390, 0.020, 0.220, 0.050),
+              child: CleanBaseText('DURDUR', fontSize: 15),
+            ),
+            ArtworkOverlay(
+              id: 'live-battle.enemy-name',
+              normalizedRect: Rect.fromLTWH(0.650, 0.025, 0.245, 0.045),
+              child: CleanBaseText('GÖLGE MUHAFIZI', fontSize: 14),
+            ),
+            ArtworkOverlay(
+              id: 'live-battle.continue-label',
+              normalizedRect: Rect.fromLTWH(0.395, 0.785, 0.500, 0.045),
+              child: CleanBaseText('HAREKETE DEVAM', fontSize: 16),
+            ),
+          ],
           hotspots: [
             ArtworkHotspot(
               id: 'live-battle.pause',
               semanticLabel: 'Durdur',
-              normalizedRect: const Rect.fromLTWH(0.030, 0.116, 0.074, 0.060),
+              normalizedRect: const Rect.fromLTWH(0.380, 0.010, 0.240, 0.070),
               onTap: _openFormCoach,
             ),
             ArtworkHotspot(
               id: 'live-battle.rune-power',
               semanticLabel: 'Rune Gücü',
-              normalizedRect: const Rect.fromLTWH(0.083, 0.783, 0.235, 0.082),
+              normalizedRect: const Rect.fromLTWH(0.325, 0.855, 0.135, 0.105),
               onTap: () => widget.session.requestSupportAction(
                 BattleSupportAction.runePower,
               ),
@@ -189,7 +208,7 @@ class _LiveBattleScreenState extends State<LiveBattleScreen>
             ArtworkHotspot(
               id: 'live-battle.protection',
               semanticLabel: 'Koruma',
-              normalizedRect: const Rect.fromLTWH(0.371, 0.783, 0.235, 0.082),
+              normalizedRect: const Rect.fromLTWH(0.790, 0.850, 0.190, 0.115),
               onTap: () => widget.session.requestSupportAction(
                 BattleSupportAction.protection,
               ),
@@ -197,15 +216,15 @@ class _LiveBattleScreenState extends State<LiveBattleScreen>
             ArtworkHotspot(
               id: 'live-battle.health-potion',
               semanticLabel: 'Güç İksiri',
-              normalizedRect: const Rect.fromLTWH(0.662, 0.783, 0.235, 0.082),
+              normalizedRect: const Rect.fromLTWH(0.615, 0.855, 0.135, 0.105),
               onTap: () => widget.session.requestSupportAction(
                 BattleSupportAction.powerPotion,
               ),
             ),
             ArtworkHotspot(
               id: 'live-battle.battle-continue',
-              semanticLabel: 'HAREKET DEVAM ETTİKÇE ZAFER YAKLAŞIR!',
-              normalizedRect: const Rect.fromLTWH(0.182, 0.872, 0.638, 0.063),
+              semanticLabel: 'Harekete devam',
+              normalizedRect: const Rect.fromLTWH(0.355, 0.770, 0.585, 0.080),
               onTap: _continueBattle,
             ),
           ],
