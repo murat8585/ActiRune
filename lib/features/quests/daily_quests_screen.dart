@@ -20,6 +20,8 @@ class DailyQuestsScreen extends StatelessWidget {
   static const artworkAsset =
       'assets/ui/clean_base_final_60/44__LATE_QA_POS_13__PASS.png';
   static const artworkSize = Size(941, 1672);
+  static const _gold = Color(0xFFE8C875);
+  static const _ivory = Color(0xFFF3E7C6);
 
   final VoidCallback? onProgressReward;
   final VoidCallback? onClaimExploreReward;
@@ -44,29 +46,8 @@ class DailyQuestsScreen extends StatelessWidget {
     );
   }
 
-  ArtworkHotspot _rootHotspot({
-    required DailyQuestsRootDestination destination,
-    required String semanticLabel,
-    required Rect normalizedRect,
-  }) {
-    final callback = onRootNavigate;
-    final enabled =
-        callback != null &&
-        (destination != DailyQuestsRootDestination.battle || battleRootEnabled);
-    return ArtworkHotspot(
-      id: 'daily-quests.nav-${destination.name}',
-      semanticLabel: semanticLabel,
-      normalizedRect: normalizedRect,
-      enabled: enabled,
-      onTap: enabled ? () => callback(destination) : () {},
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
-    const navY = 0.928;
-    const navH = 0.070;
-
     return Scaffold(
       backgroundColor: Colors.black,
       body: SafeArea(
@@ -77,121 +58,121 @@ class DailyQuestsScreen extends StatelessWidget {
           sourceSize: artworkSize,
           overlays: const [
             ArtworkOverlay(
+              id: 'daily.back-icon',
+              normalizedRect: Rect.fromLTWH(0.020, 0.018, 0.070, 0.045),
+              child: Center(
+                child: Icon(
+                  Icons.arrow_back_ios_new_rounded,
+                  color: _gold,
+                  size: 24,
+                ),
+              ),
+            ),
+            ArtworkOverlay(
               id: 'daily.title',
-              normalizedRect: Rect.fromLTWH(0.155, 0.170, 0.690, 0.060),
-              child: CleanBaseText('GÜNLÜK MACERA', fontSize: 24),
+              normalizedRect: Rect.fromLTWH(0.205, 0.174, 0.590, 0.043),
+              child: CleanBaseText(
+                'GÜNLÜK MACERA',
+                fontSize: 21,
+                color: _gold,
+                letterSpacing: 1.05,
+              ),
             ),
             ArtworkOverlay(
               id: 'daily.row-1',
-              normalizedRect: Rect.fromLTWH(0.215, 0.455, 0.340, 0.040),
-              child: CleanBaseText('KEŞİF', fontSize: 17),
+              normalizedRect: Rect.fromLTWH(0.215, 0.443, 0.320, 0.028),
+              child: CleanBaseText(
+                'KEŞİF',
+                fontSize: 14,
+                color: _ivory,
+                textAlign: TextAlign.left,
+                alignment: Alignment.centerLeft,
+              ),
             ),
             ArtworkOverlay(
               id: 'daily.row-2',
-              normalizedRect: Rect.fromLTWH(0.215, 0.555, 0.340, 0.040),
-              child: CleanBaseText('SAVAŞ', fontSize: 17),
+              normalizedRect: Rect.fromLTWH(0.215, 0.543, 0.320, 0.028),
+              child: CleanBaseText(
+                'SAVAŞ',
+                fontSize: 14,
+                color: _ivory,
+                textAlign: TextAlign.left,
+                alignment: Alignment.centerLeft,
+              ),
             ),
             ArtworkOverlay(
               id: 'daily.row-3',
-              normalizedRect: Rect.fromLTWH(0.215, 0.655, 0.340, 0.040),
-              child: CleanBaseText('HAREKET / FORM', fontSize: 17),
+              normalizedRect: Rect.fromLTWH(0.215, 0.643, 0.320, 0.028),
+              child: CleanBaseText(
+                'HAREKET / FORM',
+                fontSize: 14,
+                color: _ivory,
+                textAlign: TextAlign.left,
+                alignment: Alignment.centerLeft,
+                letterSpacing: 0.55,
+              ),
             ),
             ArtworkOverlay(
               id: 'daily.row-4',
-              normalizedRect: Rect.fromLTWH(0.215, 0.755, 0.340, 0.040),
-              child: CleanBaseText('LUMI / GELİŞİM', fontSize: 17),
+              normalizedRect: Rect.fromLTWH(0.215, 0.743, 0.320, 0.028),
+              child: CleanBaseText(
+                'LUMI / GELİŞİM',
+                fontSize: 14,
+                color: _ivory,
+                textAlign: TextAlign.left,
+                alignment: Alignment.centerLeft,
+                letterSpacing: 0.55,
+              ),
             ),
             ArtworkOverlay(
               id: 'daily.row-5',
-              normalizedRect: Rect.fromLTWH(0.215, 0.855, 0.340, 0.040),
-              child: CleanBaseText('TOPARLAMA / DENGE', fontSize: 17),
-            ),
-            ArtworkOverlay(
-              id: 'daily.nav-bg',
-              normalizedRect: Rect.fromLTWH(0.000, navY, 1.000, navH),
-              child: ColoredBox(color: Color(0xE606111E)),
-            ),
-            ArtworkOverlay(
-              id: 'daily.nav-home',
-              normalizedRect: Rect.fromLTWH(0.000, navY + 0.020, 0.200, 0.030),
-              child: CleanBaseText('Ana Dünya', fontSize: 12, background: Colors.transparent),
-            ),
-            ArtworkOverlay(
-              id: 'daily.nav-adventure',
-              normalizedRect: Rect.fromLTWH(0.200, navY + 0.020, 0.200, 0.030),
-              child: CleanBaseText('Macera', fontSize: 12, background: Colors.transparent),
-            ),
-            ArtworkOverlay(
-              id: 'daily.nav-battle',
-              normalizedRect: Rect.fromLTWH(0.400, navY + 0.020, 0.190, 0.030),
-              child: CleanBaseText('Savaş', fontSize: 12, background: Colors.transparent),
-            ),
-            ArtworkOverlay(
-              id: 'daily.nav-hero',
-              normalizedRect: Rect.fromLTWH(0.590, navY + 0.020, 0.200, 0.030),
-              child: CleanBaseText('Kahraman', fontSize: 12, background: Colors.transparent),
-            ),
-            ArtworkOverlay(
-              id: 'daily.nav-profile',
-              normalizedRect: Rect.fromLTWH(0.790, navY + 0.020, 0.210, 0.030),
-              child: CleanBaseText('Profil', fontSize: 12, background: Colors.transparent),
+              normalizedRect: Rect.fromLTWH(0.215, 0.843, 0.320, 0.028),
+              child: CleanBaseText(
+                'TOPARLAMA / DENGE',
+                fontSize: 13,
+                color: _ivory,
+                textAlign: TextAlign.left,
+                alignment: Alignment.centerLeft,
+                letterSpacing: 0.45,
+              ),
             ),
           ],
           hotspots: [
+            ArtworkHotspot(
+              id: 'daily-quests.back',
+              semanticLabel: 'Görev Merkezine Dön',
+              normalizedRect: const Rect.fromLTWH(0.000, 0.000, 0.120, 0.085),
+              onTap: () => Navigator.of(context).maybePop(),
+            ),
             _hotspot(
               id: 'daily-quests.progress-reward',
               semanticLabel: 'Günlük Rün Sandığı',
-              normalizedRect: const Rect.fromLTWH(0.365, 0.320, 0.270, 0.115),
+              normalizedRect: const Rect.fromLTWH(0.365, 0.315, 0.270, 0.115),
               callback: onProgressReward,
             ),
             _hotspot(
               id: 'daily-quests.claim-explore',
               semanticLabel: 'Keşif ödülünü al',
-              normalizedRect: const Rect.fromLTWH(0.720, 0.455, 0.235, 0.065),
+              normalizedRect: const Rect.fromLTWH(0.705, 0.445, 0.250, 0.065),
               callback: onClaimExploreReward,
             ),
             _hotspot(
               id: 'daily-quests.claim-battle',
               semanticLabel: 'Savaş ödülünü al',
-              normalizedRect: const Rect.fromLTWH(0.720, 0.555, 0.235, 0.065),
+              normalizedRect: const Rect.fromLTWH(0.705, 0.545, 0.250, 0.065),
               callback: onClaimBattleReward,
             ),
             _hotspot(
               id: 'daily-quests.free-change',
               semanticLabel: 'Görev değiştir',
-              normalizedRect: const Rect.fromLTWH(0.190, 0.850, 0.385, 0.060),
+              normalizedRect: const Rect.fromLTWH(0.190, 0.835, 0.385, 0.070),
               callback: onFreeTaskChange,
             ),
             _hotspot(
               id: 'daily-quests.change-help',
               semanticLabel: 'Görev değiştirme yardımı',
-              normalizedRect: const Rect.fromLTWH(0.570, 0.850, 0.085, 0.060),
+              normalizedRect: const Rect.fromLTWH(0.570, 0.835, 0.085, 0.070),
               callback: onTaskChangeHelp,
-            ),
-            _rootHotspot(
-              destination: DailyQuestsRootDestination.home,
-              semanticLabel: 'Ana Dünya',
-              normalizedRect: const Rect.fromLTWH(0.000, navY, 0.200, navH),
-            ),
-            _rootHotspot(
-              destination: DailyQuestsRootDestination.adventure,
-              semanticLabel: 'Macera',
-              normalizedRect: const Rect.fromLTWH(0.200, navY, 0.200, navH),
-            ),
-            _rootHotspot(
-              destination: DailyQuestsRootDestination.battle,
-              semanticLabel: 'Savaş',
-              normalizedRect: const Rect.fromLTWH(0.400, navY, 0.190, navH),
-            ),
-            _rootHotspot(
-              destination: DailyQuestsRootDestination.hero,
-              semanticLabel: 'Kahraman',
-              normalizedRect: const Rect.fromLTWH(0.590, navY, 0.200, navH),
-            ),
-            _rootHotspot(
-              destination: DailyQuestsRootDestination.profile,
-              semanticLabel: 'Profil',
-              normalizedRect: const Rect.fromLTWH(0.790, navY, 0.210, navH),
             ),
           ],
         ),
