@@ -1,0 +1,74 @@
+name: ActiRune First10 Emulator APK
+
+on:
+  push:
+    branches:
+      - codex/first10-runtime-contract-20260928
+    paths:
+      - '.github/workflows/actirune-first10-emulator-apk.yml'
+      - 'lib/**'
+      - 'test/**'
+      - 'pubspec.yaml'
+      - 'pubspec.lock'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: actirune-first10-emulator-apk
+  cancel-in-progress: true
+
+jobs:
+  validate-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - name: Checkout current branch
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Flutter toolchain
+        run: flutter --version
+
+      - name: Resolve dependencies
+        run: flutter pub get
+
+      - name: Verify formatting
+        run: dart format --output=none --set-exit-if-changed lib test
+
+      - name: Analyze
+        run: flutter analyze
+
+      - name: First10 focused tests
+        run: >-
+          flutter test --no-pub
+          test/home_runtime_state_test.dart
+          test/quests_screen_test.dart
+          test/main_shell_quest_center_route_test.dart
+          test/home_interaction_test.dart
+          test/daily_quests_screen_test.dart
+          test/weekly_quests_screen_test.dart
+          test/battle_prep_interaction_test.dart
+          test/camera_prep_interaction_test.dart
+          test/victory_interaction_test.dart
+          test/defeat_interaction_test.dart
+
+      - name: Full Flutter tests
+        run: flutter test --no-pub
+
+      - name: Build debug APK
+        run: flutter build apk --debug
+
+      - name: Upload emulator APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: actirune-first10-debug-apk
+          path: build/app/outputs/flutter-apk/app-debug.apk
+          if-no-files-found: error
+          retention-days: 1
