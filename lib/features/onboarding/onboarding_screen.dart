@@ -26,8 +26,8 @@ class OnboardingScreen extends StatefulWidget {
   /// Runs the real calibration owned by the product layer.
   ///
   /// The result screen is shown only when the returned typed assessment is
-  /// ready for a starting profile. A missing runner keeps the primary action
-  /// disabled rather than fabricating calibration success.
+  /// ready for a starting profile. A missing runner keeps calibration itself
+  /// unavailable, but no longer blocks entry to the app.
   final CalibrationRunner? onRunCalibration;
 
   /// Receives the non-medical starting profile only after a fail-closed
@@ -96,6 +96,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         _OnboardingPhase.firstCalibration => FirstCalibrationScreen(
           enabled: widget.onRunCalibration != null && !_calibrationInFlight,
           onStartCalibration: _runCalibration,
+          onSkip: _enterApp,
         ),
         _OnboardingPhase.calibrationResult => CalibrationResultScreen(
           onStartAdventure: _enterApp,
