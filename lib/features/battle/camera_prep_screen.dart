@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../core/widgets/artwork_interaction_surface.dart';
+import '../../core/widgets/clean_base_text.dart';
 import 'battle_session_engine.dart';
 
 enum CameraPrepCheckState { ready, checking, warning }
@@ -97,7 +98,7 @@ class CameraPrepScreen extends StatelessWidget {
   });
 
   static const artworkAsset =
-      'visual_authority/20260921/final_p0_battle/P0_CAMERA_PREP_FINAL.png';
+      'assets/ui/clean_base_final_60/47__LATE_QA_POS_16__PASS.png';
   static const artworkSize = Size(941, 1672);
 
   final BattleSessionEngine session;
@@ -122,34 +123,6 @@ class CameraPrepScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final statuses = <({String id, Rect rect, CameraPrepCheckStatus status})>[
-      (
-        id: 'camera',
-        rect: const Rect.fromLTWH(0.5824, 0.3768, 0.3294, 0.0347),
-        status: readiness.camera,
-      ),
-      (
-        id: 'full-body',
-        rect: const Rect.fromLTWH(0.5824, 0.4270, 0.3294, 0.0347),
-        status: readiness.fullBody,
-      ),
-      (
-        id: 'lighting',
-        rect: const Rect.fromLTWH(0.5824, 0.4767, 0.3294, 0.0347),
-        status: readiness.lighting,
-      ),
-      (
-        id: 'space',
-        rect: const Rect.fromLTWH(0.5824, 0.5269, 0.3294, 0.0347),
-        status: readiness.space,
-      ),
-      (
-        id: 'pose',
-        rect: const Rect.fromLTWH(0.5824, 0.5772, 0.3294, 0.0347),
-        status: readiness.poseDetection,
-      ),
-    ];
-
     return Scaffold(
       backgroundColor: Colors.black,
       body: SafeArea(
@@ -159,63 +132,101 @@ class CameraPrepScreen extends StatelessWidget {
           assetPath: CameraPrepScreen.artworkAsset,
           sourceSize: CameraPrepScreen.artworkSize,
           overlays: [
-            for (final item in statuses)
-              ArtworkOverlay(
-                id: 'camera-prep.${item.id}-status',
-                normalizedRect: item.rect,
-                child: _ReadinessBadge(status: item.status),
+            const ArtworkOverlay(
+              id: 'camera-prep.title',
+              normalizedRect: Rect.fromLTWH(0.245, 0.035, 0.510, 0.050),
+              child: CleanBaseText('SAVAŞ İÇİN HAZIRLIK', fontSize: 22),
+            ),
+            const ArtworkOverlay(
+              id: 'camera-prep.camera-label',
+              normalizedRect: Rect.fromLTWH(0.315, 0.445, 0.245, 0.038),
+              child: CleanBaseText('Kamera', fontSize: 16),
+            ),
+            ArtworkOverlay(
+              id: 'camera-prep.camera-status',
+              normalizedRect: const Rect.fromLTWH(0.575, 0.445, 0.285, 0.038),
+              child: _ReadinessBadge(status: readiness.camera),
+            ),
+            const ArtworkOverlay(
+              id: 'camera-prep.light-label',
+              normalizedRect: Rect.fromLTWH(0.315, 0.535, 0.245, 0.038),
+              child: CleanBaseText('Işık', fontSize: 16),
+            ),
+            ArtworkOverlay(
+              id: 'camera-prep.light-status',
+              normalizedRect: const Rect.fromLTWH(0.575, 0.535, 0.285, 0.038),
+              child: _ReadinessBadge(status: readiness.lighting),
+            ),
+            const ArtworkOverlay(
+              id: 'camera-prep.space-label',
+              normalizedRect: Rect.fromLTWH(0.315, 0.625, 0.245, 0.038),
+              child: CleanBaseText('Alan', fontSize: 16),
+            ),
+            ArtworkOverlay(
+              id: 'camera-prep.space-status',
+              normalizedRect: const Rect.fromLTWH(0.575, 0.625, 0.285, 0.038),
+              child: _ReadinessBadge(status: readiness.space),
+            ),
+            const ArtworkOverlay(
+              id: 'camera-prep.body-label',
+              normalizedRect: Rect.fromLTWH(0.315, 0.715, 0.245, 0.038),
+              child: CleanBaseText('Tam Vücut', fontSize: 15),
+            ),
+            ArtworkOverlay(
+              id: 'camera-prep.body-status',
+              normalizedRect: const Rect.fromLTWH(0.555, 0.704, 0.205, 0.034),
+              child: _ReadinessBadge(status: readiness.fullBody),
+            ),
+            ArtworkOverlay(
+              id: 'camera-prep.pose-status',
+              normalizedRect: const Rect.fromLTWH(0.760, 0.704, 0.205, 0.034),
+              child: _ReadinessBadge(status: readiness.poseDetection),
+            ),
+            const ArtworkOverlay(
+              id: 'camera-prep.pose-label',
+              normalizedRect: Rect.fromLTWH(0.620, 0.744, 0.285, 0.032),
+              child: CleanBaseText('Pose Algılama', fontSize: 13),
+            ),
+            ArtworkOverlay(
+              id: 'camera-prep.start-label',
+              normalizedRect: const Rect.fromLTWH(0.170, 0.862, 0.660, 0.055),
+              child: CleanBaseText(
+                'SAVAŞA BAŞLA',
+                fontSize: 21,
+                color: readiness.allReady ? Colors.white : Colors.white54,
               ),
+            ),
             if (!readiness.allReady)
               const ArtworkOverlay(
                 id: 'camera-prep.ready-disabled',
-                normalizedRect: Rect.fromLTWH(0.1010, 0.8038, 0.7694, 0.0658),
-                child: ColoredBox(color: Color(0x99000000)),
+                normalizedRect: Rect.fromLTWH(0.125, 0.835, 0.750, 0.100),
+                child: ColoredBox(color: Color(0x66000000)),
               ),
           ],
           hotspots: [
             ArtworkHotspot(
               id: 'camera-prep.back',
               semanticLabel: 'Savaş Hazırlığına Dön',
-              normalizedRect: const Rect.fromLTWH(
-                0.0191,
-                0.0108,
-                0.0786,
-                0.0407,
-              ),
+              normalizedRect: const Rect.fromLTWH(0.000, 0.000, 0.090, 0.060),
               onTap: _back,
             ),
             ArtworkHotspot(
               id: 'camera-prep.info',
               semanticLabel: 'Kamera Hazırlığı Bilgisi',
-              normalizedRect: const Rect.fromLTWH(
-                0.8959,
-                0.0108,
-                0.0776,
-                0.0407,
-              ),
+              normalizedRect: const Rect.fromLTWH(0.910, 0.000, 0.090, 0.060),
               onTap: onInfo,
             ),
             ArtworkHotspot(
               id: 'camera-prep.ready',
-              semanticLabel: 'Hazırım',
-              normalizedRect: const Rect.fromLTWH(
-                0.1010,
-                0.8038,
-                0.7694,
-                0.0658,
-              ),
+              semanticLabel: 'Savaşa Başla',
+              normalizedRect: const Rect.fromLTWH(0.125, 0.835, 0.750, 0.100),
               enabled: readiness.allReady,
               onTap: _start,
             ),
             ArtworkHotspot(
               id: 'camera-prep.recheck',
               semanticLabel: 'Tekrar Kontrol Et',
-              normalizedRect: const Rect.fromLTWH(
-                0.2062,
-                0.8864,
-                0.5877,
-                0.0467,
-              ),
+              normalizedRect: const Rect.fromLTWH(0.100, 0.790, 0.800, 0.040),
               onTap: onRecheck,
             ),
           ],
@@ -248,22 +259,22 @@ class _ReadinessBadge extends StatelessWidget {
     };
 
     return ColoredBox(
-      color: const Color(0xFF071827),
+      color: const Color(0x88071827),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 5),
         child: FittedBox(
           fit: BoxFit.scaleDown,
           alignment: Alignment.centerLeft,
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(icon, color: color, size: 28),
-              const SizedBox(width: 10),
+              Icon(icon, color: color, size: 22),
+              const SizedBox(width: 5),
               Text(
                 status.label,
                 style: TextStyle(
                   color: color,
-                  fontSize: 22,
+                  fontSize: 16,
                   fontWeight: FontWeight.w600,
                 ),
               ),
