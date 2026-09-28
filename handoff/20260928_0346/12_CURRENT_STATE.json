@@ -1,0 +1,83 @@
+{
+  "generated_at": "2026-09-28T03:46:00+03:00",
+  "project": "ActiRune",
+  "repository": "murat8585/ActiRune",
+  "visual_status": {
+    "final_selected_clean_base_screens": 60,
+    "status": "PASS as visual set",
+    "canonical_uploaded_filename_mapping": "INCOMPLETE_MUST_REVERIFY",
+    "do_not_regenerate_wholesale": true
+  },
+  "branches": {
+    "visual_authority": "visual-authority/20260921-current-all",
+    "production_base": {
+      "branch": "production/closeout-20260924",
+      "known_sha": "95d7a83a529bf7e04ca3939a85e65bd277de4f88"
+    },
+    "runtime_recovery": {
+      "branch": "fix/real-ui-navigation-20260925",
+      "audited_sha": "242f297a9399361b70affc5588d3170063b07078"
+    },
+    "final_assets": {
+      "branch": "codex/final-pass-60-assets-20260927",
+      "live_sha": "a30c3300eb07398056b426352dc6f3677c3270f7",
+      "directory": "assets/ui/clean_base_final_60/",
+      "directory_present": true
+    },
+    "integration": {
+      "branch": "codex/clean-base-flutter-integration-20260927",
+      "live_sha": "0e893b75c4669c5a467cc3419519e243277bb8ae",
+      "manifest_status": "integration-in-progress",
+      "pubspec_registered_asset_dir": "assets/ui/clean_base_final_60/",
+      "asset_dir_present_at_handoff": false
+    }
+  },
+  "verified_mapping_problem": [
+    "01__ORIGINAL_OUTPUT_22__PASS.png is not canonical Home",
+    "05__ORIGINAL_OUTPUT_26__PASS.png is not canonical Adventure"
+  ],
+  "safe_current_screen_state": {
+    "home": "visual_authority/20260921/current/02_CORE_LOCKED_ANCHORS/VIS_0354__CORE_HOME_ANCHOR.png",
+    "adventure": "visual_authority/20260921/current/02_CORE_LOCKED_ANCHORS/VIS_0231__CORE_ADVENTURE_ANCHOR.png"
+  },
+  "first_integration_chain": [
+    "Home",
+    "Quest Center",
+    "Daily Quests",
+    "Weekly Quests",
+    "Adventure",
+    "Battle Prep",
+    "Camera Prep",
+    "Live Battle",
+    "Victory",
+    "Defeat"
+  ],
+  "current_blocker": "Map uploaded PASS storage files to canonical 01-60 screen identities before wiring routes.",
+  "next_phase": "canonical mapping -> copy verified assets to integration branch -> first 10 screen integration -> analyze/tests -> emulator smoke -> remaining families -> APK/Vivo",
+  "clean_base_architecture": [
+    "premium static base artwork",
+    "Flutter runtime text",
+    "runtime localization",
+    "authoritative runtime state",
+    "transparent interaction hotspots"
+  ],
+  "canonical_characters": {
+    "ActiHero": "young male, wavy dark-brown hair, navy-black armor, restrained gold, cyan rune chest energy, blue cape",
+    "Lumi": "large adult white wolf, cyan eyes, white-silver fur, cyan rune energy, navy-black-gold harness"
+  },
+  "runtime_audit_20260926": {
+    "TOTAL_CONTROLS": 492,
+    "FULLY_WORKING": 185,
+    "BROKEN_OR_PREVIEW": 307,
+    "PREVIEW_ONLY": 41,
+    "FEATURE_UNAVAILABLE": 136,
+    "WRONG_ROUTE": 2,
+    "STATE_DISCONNECTED": 18,
+    "ENGINE_DISCONNECTED": 3,
+    "UNREACHABLE": 102,
+    "STATIC_ARTWORK_ONLY": 5,
+    "REAL_NAVIGATION": 170,
+    "REAL_LOCAL_STATE": 10,
+    "REAL_SYSTEM_ACTION": 5
+  }
+}

@@ -1,0 +1,69 @@
+ACTIRUNE — NEW SESSION BOOTSTRAP / CONTINUATION PROMPT
+
+Önce bu handoff ZIP'inin TAMAMINI oku. Ardından live GitHub readback yap. Kullanıcıya eski şeyleri tekrar yaptırma.
+
+PROJECT:
+murat8585/ActiRune
+
+AUTHORITY ORDER:
+1. Kullanıcının en yeni açık talimatı
+2. Live GitHub readback
+3. Bu 2026-09-28 master handoff içindeki CURRENT STATE / NEXT PLAN
+4. Product Bible / locked decisions / 20260921 visual authority
+5. Approved original source PNG
+6. Uyumlu production implementation/donor code
+7. Historical docs
+
+DO NOT restart general visual generation.
+Final-selected 60 clean-base visual set already exists and is treated as PASS.
+
+LIVE BRANCHES AT HANDOFF:
+- final assets: codex/final-pass-60-assets-20260927
+  head: a30c3300eb07398056b426352dc6f3677c3270f7
+- active integration: codex/clean-base-flutter-integration-20260927
+  head: 0e893b75c4669c5a467cc3419519e243277bb8ae
+- production base: production/closeout-20260924
+  known authority: 95d7a83a529bf7e04ca3939a85e65bd277de4f88
+- visual authority: visual-authority/20260921-current-all
+
+CRITICAL CURRENT PROBLEM:
+The uploaded storage filenames are NOT canonical output numbers.
+Already visually disproven:
+- storage 01__ORIGINAL_OUTPUT_22__PASS.png is NOT canonical Home
+- storage 05__ORIGINAL_OUTPUT_26__PASS.png is NOT canonical Adventure
+
+Home and Adventure were restored to prior correct visual-authority assets.
+
+ALSO CRITICAL:
+Integration branch pubspec registers assets/ui/clean_base_final_60/, but that directory was NOT found on the integration branch at handoff readback. It exists on the final-assets branch.
+
+FIRST JOB — NO GUESSING:
+1. Read all 60 PNGs on the final-assets branch.
+2. Visually identify each screen.
+3. Match each to `03_CANONICAL_60_SCREEN_SOURCE_MAP.csv`.
+4. Build a verified one-to-one map.
+5. Acceptance: 60 mapped, 60 canonical identities, 0 unknown, 0 duplicate, 0 missing.
+6. Create canonical runtime names.
+7. Copy/graft that verified canonical directory onto the production-based integration branch.
+8. Read back directory existence on integration branch.
+9. Only then wire first ten screens:
+   Home -> Quest Center -> Daily -> Weekly -> Adventure -> Battle Prep -> Camera Prep -> Live Battle -> Victory -> Defeat.
+10. Preserve ArtworkInteractionSurface, hotspots, existing route/state/engine code.
+11. Verify hotspot alignment against final artwork.
+12. Keep runtime values/text/localization in Flutter.
+13. Run analyze/tests + fresh emulator smoke before claiming PASS.
+
+WORK STYLE:
+- kısa canlı ilerleme mesajları yaz
+- gerçek yaptığın işi yaz
+- 'devam edeyim mi' diye tekrar tekrar sorma
+- research/readback first
+- tahmin etme
+- PASS görselleri sebepsiz regenerate etme
+- çalışan gameplay kodunu screenshot UI ile ezme
+
+CORE PRODUCT LOOP PRIORITY:
+Home -> Adventure -> Battle Prep -> Camera Prep -> real movement/pose -> attack/enemy -> Victory/Defeat -> reward/progression.
+
+CALIBRATION:
+Optional while appropriate. Functional skip-for-now path required; onboarding trap oluşturma.

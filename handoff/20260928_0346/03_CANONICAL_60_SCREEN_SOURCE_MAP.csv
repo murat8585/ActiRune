@@ -1,0 +1,61 @@
+canonical_output,screen_name,approved_source_file,family,visual_status,integration_status
+01,HOME,VIS_0354__CORE_HOME_ANCHOR.png,Core/Home,PASS final-selected,Canonical uploaded filename NOT yet verified
+02,QUEST CENTER,VIS_0173__CURRENT_QUESTS_PARENT_ALT.png,Quests,PASS final-selected,Canonical uploaded filename NOT yet verified
+03,DAILY QUESTS,VIS_0227__P1_DAILY_QUESTS_FINAL.png,Quests,PASS final-selected,Canonical uploaded filename NOT yet verified
+04,WEEKLY QUESTS,VIS_0228__P1_WEEKLY_QUESTS_FINAL.png,Quests,PASS final-selected,Canonical uploaded filename NOT yet verified
+05,ADVENTURE,VIS_0231__CORE_ADVENTURE_ANCHOR.png,Core/Adventure,PASS final-selected,Canonical uploaded filename NOT yet verified
+06,BATTLE PREP,P0_BATTLE_PREP_FINAL.png,Battle,PASS final-selected,Canonical uploaded filename NOT yet verified
+07,CAMERA PREP,P0_CAMERA_PREP_FINAL.png,Battle,PASS final-selected,Canonical uploaded filename NOT yet verified
+08,LIVE BATTLE,VIS_0168__CORE_LIVE_BATTLE_ANCHOR.png,Battle,PASS final-selected,Canonical uploaded filename NOT yet verified
+09,VICTORY,P0_VICTORY_FINAL.png,Battle Result,PASS final-selected,Canonical uploaded filename NOT yet verified
+10,DEFEAT,P0_DEFEAT_FINAL_CANDIDATE.png,Battle Result,PASS final-selected,Canonical uploaded filename NOT yet verified
+11,EQUIPMENT,02_P1_EQUIPMENT_FINAL.png,Hero/Equipment,PASS final-selected,Canonical uploaded filename NOT yet verified
+12,INVENTORY MAIN,03_P1_INVENTORY_FINAL.png,Inventory,PASS final-selected,Canonical uploaded filename NOT yet verified
+13,CRAFTING,04_P1_CRAFTING_FINAL.png,Crafting,PASS final-selected,Canonical uploaded filename NOT yet verified
+14,LUMI,VIS_0178__P1_LUMI_FINAL.png,Lumi,PASS final-selected,Canonical uploaded filename NOT yet verified
+15,MOVEMENT MASTERY,05_P1_MOVEMENT_MASTERY_FINAL.png,Movement,PASS final-selected,Canonical uploaded filename NOT yet verified
+16,EVENTS,01_EVENTS_FINAL.png,Events,PASS final-selected,Canonical uploaded filename NOT yet verified
+17,EVENT DETAIL POPUP,02_EVENT_DETAIL_POPUP_FINAL.png,Events,PASS final-selected,Canonical uploaded filename NOT yet verified
+18,RUNE INBOX,06_RUNE_GELEN_KUTUSU_APPROVED_REFERENCE.png,Social/Inbox,PASS final-selected,Canonical uploaded filename NOT yet verified
+19,INVENTORY EQUIPMENT,VIS_0361__CURRENT_INVENTORY_EQUIPMENT_REFERENCE.png,Inventory,PASS final-selected,Canonical uploaded filename NOT yet verified
+20,INVENTORY MATERIALS,VIS_0362__CURRENT_INVENTORY_MATERIALS_REFERENCE.png,Inventory,PASS final-selected,Canonical uploaded filename NOT yet verified
+21,INVENTORY MULTI CATEGORY,VIS_0363__CURRENT_INVENTORY_MULTI_CATEGORY_REFERENCE.png,Inventory,PASS final-selected,Canonical uploaded filename NOT yet verified
+22,INVENTORY RUNES,VIS_0364__CURRENT_INVENTORY_RUNES_REFERENCE.png,Inventory,PASS final-selected,Canonical uploaded filename NOT yet verified
+23,CRAFT ARMOR,VIS_0358__CURRENT_CRAFT_ARMOR_REFERENCE.png,Crafting,PASS final-selected,Canonical uploaded filename NOT yet verified
+24,CRAFT RUNES,VIS_0359__CURRENT_CRAFT_RUNES_REFERENCE.png,Crafting,PASS final-selected,Canonical uploaded filename NOT yet verified
+25,CRAFT WEAPON,VIS_0360__CURRENT_CRAFT_WEAPON_REFERENCE.png,Crafting,PASS final-selected,Canonical uploaded filename NOT yet verified
+26,LUMI ABILITIES,VIS_0365__CURRENT_LUMI_ABILITIES_REFERENCE.png,Lumi,PASS final-selected,Canonical uploaded filename NOT yet verified
+27,LUMI BOND EVOLUTION,VIS_0366__CURRENT_LUMI_BOND_EVOLUTION_REFERENCE.png,Lumi,PASS final-selected,Canonical uploaded filename NOT yet verified
+28,LUMI BOND,VIS_0367__CURRENT_LUMI_BOND_REFERENCE.png,Lumi,PASS final-selected,Canonical uploaded filename NOT yet verified
+29,LUMI EVOLUTION,VIS_0368__CURRENT_LUMI_EVOLUTION_REFERENCE.png,Lumi,PASS final-selected,Canonical uploaded filename NOT yet verified
+30,MOVEMENT MASTERY MULTI,VIS_0369__CURRENT_MASTERY_MULTI_MOVEMENT_REFERENCE.png,Movement,PASS final-selected,Canonical uploaded filename NOT yet verified
+31,MASTERY SQUAT,VIS_0370__CURRENT_MASTERY_SQUAT_REFERENCE.png,Movement,PASS final-selected,Canonical uploaded filename NOT yet verified
+32,HERO MAIN,VIS_0171__P1_HERO_MAIN_FINAL.png,Hero,PASS final-selected,Canonical uploaded filename NOT yet verified
+33,HERO EQUIPMENT DETAIL,VIS_0172__CURRENT_HERO_EQUIPMENT_DETAIL_ALT.png,Hero/Equipment,PASS final-selected,Canonical uploaded filename NOT yet verified
+34,PLAYER LEVEL,06_P1_PLAYER_LEVEL_FINAL.png,Progression,PASS final-selected,Canonical uploaded filename NOT yet verified
+35,ACHIEVEMENTS,VIS_0215__P1_ACHIEVEMENTS_FINAL.png,Progression,PASS final-selected,Canonical uploaded filename NOT yet verified
+36,BADGE EARNED,VIS_0183__CURRENT_BADGE_EARNED.png,Progression,PASS final-selected,Canonical uploaded filename NOT yet verified
+37,BADGES PROFILE,VIS_0184__CURRENT_BADGES_PROFILE.png,Profile,PASS final-selected,Canonical uploaded filename NOT yet verified
+38,WORLD PROGRESSION,VIS_0218__P1_WORLD_PROGRESSION_FINAL.png,Progression,PASS final-selected,Canonical uploaded filename NOT yet verified
+39,PERSONAL DAILY ADVENTURE,VIS_0226__P1_PERSONAL_DAILY_ADVENTURE_FINAL.png,Adventure,PASS final-selected,Canonical uploaded filename NOT yet verified
+40,RUNE SHRINE READY,VIS_0225__P1_RUNE_SHRINE_READY_FINAL.png,Rune Shrine,PASS final-selected,Canonical uploaded filename NOT yet verified
+41,SHOP MAIN,VIS_0221__P1_SHOP_REVISION_FINAL.png,Shop,PASS final-selected,Canonical uploaded filename NOT yet verified
+42,SHOP FEATURED,VIS_0186__CURRENT_SHOP_FEATURED.png,Shop,PASS final-selected,Canonical uploaded filename NOT yet verified
+43,SHOP CRYSTALS,VIS_0187__CURRENT_SHOP_CRYSTALS.png,Shop,PASS final-selected,Canonical uploaded filename NOT yet verified
+44,SHOP HERO,VIS_0188__CURRENT_SHOP_HERO.png,Shop,PASS final-selected,Canonical uploaded filename NOT yet verified
+45,SHOP LUMI,VIS_0189__CURRENT_SHOP_LUMI.png,Shop,PASS final-selected,Canonical uploaded filename NOT yet verified
+46,SHOP EFFECTS,VIS_0190__CURRENT_SHOP_EFFECTS.png,Shop,PASS final-selected,Canonical uploaded filename NOT yet verified
+47,SHOP RUNES EVENT,VIS_0191__CURRENT_SHOP_RUNES_EVENT.png,Shop,PASS final-selected,Canonical uploaded filename NOT yet verified
+48,SHOP STAR GATE,VIS_0192__CURRENT_SHOP_STAR_GATE_ALT.png,Shop,PASS final-selected,Canonical uploaded filename NOT yet verified
+49,SHOP PACKAGES,VIS_0193__CURRENT_SHOP_PACKAGES.png,Shop,PASS final-selected,Canonical uploaded filename NOT yet verified
+50,SHOP DAILY DEALS,VIS_0194__CURRENT_SHOP_DAILY_DEALS.png,Shop,PASS final-selected,Canonical uploaded filename NOT yet verified
+51,PROFILE CUSTOMIZATION SHOP,VIS_0195__CURRENT_SHOP_PROFILE_CUSTOMIZATION.png,Shop/Profile,PASS final-selected,Canonical uploaded filename NOT yet verified
+52,RUNE SHRINE INTRO,VIS_0196__CURRENT_RUNE_SHRINE_INTRO.png,Rune Shrine,PASS final-selected,Canonical uploaded filename NOT yet verified
+53,RUNE SHRINE DRAW,VIS_0197__CURRENT_RUNE_SHRINE_DRAW.png,Rune Shrine,PASS final-selected,Canonical uploaded filename NOT yet verified
+54,RUNE SHRINE UPGRADE,VIS_0198__CURRENT_RUNE_SHRINE_UPGRADE.png,Rune Shrine,PASS final-selected,Canonical uploaded filename NOT yet verified
+55,RUNE SHRINE MERGE,VIS_0199__CURRENT_RUNE_SHRINE_MERGE.png,Rune Shrine,PASS final-selected,Canonical uploaded filename NOT yet verified
+56,RUNE SHRINE RESULT,VIS_0200__CURRENT_RUNE_SHRINE_RESULT.png,Rune Shrine,PASS final-selected,Canonical uploaded filename NOT yet verified
+57,RUNE DETAIL,VIS_0201__CURRENT_RUNE_DETAIL.png,Rune System,PASS final-selected,Canonical uploaded filename NOT yet verified
+58,RUNE MASTERY LEVEL,VIS_0202__CURRENT_RUNE_MASTERY_LEVEL.png,Rune System,PASS final-selected,Canonical uploaded filename NOT yet verified
+59,RUNE SLOT CONSTELLATION,VIS_0203__CURRENT_RUNE_SLOT_CONSTELLATION.png,Rune System,PASS final-selected,Canonical uploaded filename NOT yet verified
+60,RUNE EVENT COUNTDOWN,VIS_0204__CURRENT_RUNE_EVENT_COUNTDOWN.png,Rune Event,PASS final-selected,Canonical uploaded filename NOT yet verified

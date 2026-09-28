@@ -1,0 +1,37 @@
+name: Export ActiRune Master Handoff 20260928
+
+on:
+  push:
+    branches:
+      - codex/handoff-a-to-z-20260928-0346
+    paths:
+      - 'handoff/20260928_0346/**'
+      - '.github/workflows/export-actirune-master-handoff-20260928.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout handoff branch
+        uses: actions/checkout@v4
+
+      - name: Generate SHA256 manifest
+        shell: bash
+        run: |
+          cd handoff/20260928_0346
+          find . -type f ! -name 'SHA256SUMS.txt' -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS.txt
+          echo "FILE_COUNT=$(find . -type f | wc -l)" >> PACKAGE_BUILD_INFO.txt
+          echo "GIT_COMMIT=${GITHUB_SHA}" >> PACKAGE_BUILD_INFO.txt
+          echo "BUILD_UTC=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> PACKAGE_BUILD_INFO.txt
+
+      - name: Upload master handoff artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ACTIRUNE_MASTER_HANDOFF_FULL_A_TO_Z_20260928_0346
+          path: handoff/20260928_0346/
+          if-no-files-found: error
+          compression-level: 9
+          retention-days: 30
