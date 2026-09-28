@@ -5,11 +5,13 @@ import '../../core/widgets/artwork_interaction_surface.dart';
 /// Canonical first-calibration entry screen.
 ///
 /// This screen starts a real calibration request owned by the parent flow. It
-/// never marks calibration successful by itself.
+/// never marks calibration successful by itself. Calibration is optional for
+/// product entry; [onSkip] lets the user continue without fabricating a result.
 class FirstCalibrationScreen extends StatelessWidget {
   const FirstCalibrationScreen({
     super.key,
     required this.onStartCalibration,
+    this.onSkip,
     this.enabled = true,
   });
 
@@ -19,13 +21,35 @@ class FirstCalibrationScreen extends StatelessWidget {
   static const artworkSize = Size(941, 1672);
 
   final VoidCallback onStartCalibration;
+  final VoidCallback? onSkip;
   final bool enabled;
 
   @override
   Widget build(BuildContext context) {
+    final skip = onSkip;
+
     return ArtworkInteractionSurface(
       assetPath: artworkAsset,
       sourceSize: artworkSize,
+      overlays: [
+        if (skip != null)
+          const ArtworkOverlay(
+            id: 'first-calibration.skip-label',
+            normalizedRect: Rect.fromLTWH(0.315, 0.914, 0.370, 0.036),
+            child: Center(
+              child: Text(
+                'ŞİMDİLİK GEÇ',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.white70,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0.8,
+                ),
+              ),
+            ),
+          ),
+      ],
       hotspots: [
         ArtworkHotspot(
           id: 'first-calibration.start',
@@ -34,6 +58,13 @@ class FirstCalibrationScreen extends StatelessWidget {
           enabled: enabled,
           onTap: onStartCalibration,
         ),
+        if (skip != null)
+          ArtworkHotspot(
+            id: 'first-calibration.skip',
+            semanticLabel: 'Şimdilik geç',
+            normalizedRect: const Rect.fromLTWH(0.250, 0.902, 0.500, 0.060),
+            onTap: skip,
+          ),
       ],
     );
   }
