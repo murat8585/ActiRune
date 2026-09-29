@@ -15,27 +15,27 @@ $assets = @(
     [pscustomobject]@{
         Name = "Home"
         Target = "32__EARLY_QA_POS_25__PASS.png"
-        Url = "https://at.adobe.com/hiHXqxAt8ujmvGH4"
+        Url = "https://at.adobe.com/uXkFGfbpJdRmNPVp"
     },
     [pscustomobject]@{
         Name = "CameraPrep"
         Target = "47__LATE_QA_POS_16__PASS.png"
-        Url = "https://at.adobe.com/oUEGKeSh3ndjp3ek"
+        Url = "https://at.adobe.com/t2l8UcREwwg4oWiG"
     },
     [pscustomobject]@{
         Name = "LiveBattle"
         Target = "56__FINAL_FIX__LIVE_BATTLE__PASS.png"
-        Url = "https://at.adobe.com/Kwn2XPQiecejDNTo"
+        Url = "https://at.adobe.com/8iMPkRAPMGR8hYc9"
     },
     [pscustomobject]@{
         Name = "Victory"
         Target = "48__LATE_QA_POS_18__PASS.png"
-        Url = "https://at.adobe.com/Dmw2QUp5WMuMB5uT"
+        Url = "https://at.adobe.com/k2MgEzcAIxo9JC2G"
     },
     [pscustomobject]@{
         Name = "Defeat"
         Target = "49__LATE_QA_POS_19__PASS.png"
-        Url = "https://at.adobe.com/msbh91aU0TXfmobP"
+        Url = "https://at.adobe.com/GjJVdAfK2tqqEgNM"
     }
 )
 
